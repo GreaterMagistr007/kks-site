@@ -164,6 +164,46 @@
     viewer.open(a.href, text.slice(0, 120));
   });
 
+  // --- аккордионы прохождения ---
+  // Состояние (что развёрнуто) хранится в localStorage: страница длинная, и по мере
+  // прохождения игрок возвращается к тем же этапам, что открывал в прошлый раз.
+  const accs = Array.from(document.querySelectorAll('details.acc'));
+  if (accs.length) {
+    const KEY = 'kks-open-' + location.pathname.replace(/[^\w.-]+/g, '-');
+    const load = () => {
+      try { return new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch (e) { return new Set(); }
+    };
+    const open = load();
+    const save = () => {
+      try { localStorage.setItem(KEY, JSON.stringify(Array.from(open))); } catch (e) { /* приватный режим */ }
+    };
+    accs.forEach(d => {
+      if (open.has(d.id)) d.open = true;
+      d.addEventListener('toggle', () => {
+        if (d.open) open.add(d.id); else open.delete(d.id);
+        save();
+      });
+    });
+    document.querySelectorAll('[data-acc]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const on = btn.dataset.acc === 'open';
+        // скрытые фильтром этапы не трогаем — кнопка работает по видимому списку
+        accs.forEach(d => { if (d.style.display !== 'none') d.open = on; });
+      });
+    });
+    // переход по ссылке-якорю раскрывает нужный аккордион (закрытый details не проскроллить)
+    const reveal = () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (!el) return;
+      for (let p = el; p; p = p.parentElement) if (p.tagName === 'DETAILS') p.open = true;
+      el.scrollIntoView({ block: 'start' });
+    };
+    window.addEventListener('hashchange', reveal);
+    reveal();
+  }
+
   // --- фильтры на страницах каталогов (квесты, города, карты) ---
   const box = document.querySelector('[data-filter-root]');
   if (box) {
@@ -192,6 +232,20 @@
         }
         r.style.display = ok ? '' : 'none';
         if (ok) shown++;
+      });
+      // группы аккордионов (прохождение): заголовок и секция прячутся целиком
+      document.querySelectorAll('.acc-group').forEach(sec => {
+        const items = Array.from(sec.querySelectorAll('[data-row]'));
+        if (items.length) sec.style.display = items.every(it => it.style.display === 'none') ? 'none' : '';
+      });
+      // оглавление идёт за фильтром: пункт исчезает вместе со своим разделом
+      const gone = el => {
+        for (let p = el; p; p = p.parentElement) if (p.style && p.style.display === 'none') return true;
+        return false;
+      };
+      document.querySelectorAll('[data-toc]').forEach(li => {
+        const target = document.getElementById(li.dataset.toc);
+        li.style.display = target && gone(target) ? 'none' : '';
       });
       groups.forEach(g => {
         const empty = g.items.every(it => it.style.display === 'none');
