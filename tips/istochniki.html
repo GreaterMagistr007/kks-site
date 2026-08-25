@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Источники — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="on">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>Источники</h1>
+
+<a class="back" href="../tips.html">← все разделы фишек</a><p>Свод собран из отчётов исследования, лежащих в <code>reports/</code>:
+- <code>14-engine-numbers.md</code> — числа и механики напрямую из скриптов игры (<code>PROGRAM/</code>, <code>RESOURCE/INI/</code>),
+  282 пронумерованных вывода. Высший приоритет достоверности: при противоречиях верно это.
+- <code>11-harbour-tips.md</code> — форум «Корсарская Гавань» (forums.corsairs-harbour.ru): темы t=4500, t=4519,
+  t=4711, t=4498, t=4560, t=4489, t=4491, t=4580, t=4485, раздел f=125, а также разделы по К:ИП и ГПК.
+  Около 2750 пунктов перечня плюс тематические разборы геометрии клинка, тактики фехтования,
+  корабельного апгрейда, оружия и орудий.
+- <code>13-gpk-crossover-tips.md</code> — Steam-гайды ККС, вики «Корсары», seaward.ru, pirates-life.ru,
+  PiratesAhoy!, sundukpirata.com, журнал ЛКИ; 546 пунктов, ККС плюс механики из ГПК.
+- <code>04-tips-tricks.md</code> — веб-источники общего характера, включая читы и настройки под Linux/Proton.
+- <code>05-timers-pitfalls.md</code> — таймеры и ловушки прохождения.
+- <code>16-more-tips.md</code> — добор источников: Steam-гайды по ККС и ГПК, раздел ККС на PiratesAhoy!,
+  Steam-обсуждения, playground.ru (чит-меню CheatSurfer, debug-консоль, разбор <code>reBalance mod V2</code>
+  как источника по ванильным таймерам).
+- <code>06-scripts-analysis.md</code> — таймеры, проверки навыков в диалогах, квестовые предметы.
+- <code>12-harbour-sidequests.md</code> — побочные линии, раздел «Что легко потерять навсегда».</p>
+<p>Подробные торговые таблицы: механика цен и маршруты — в <code>TRADE.md</code>, полные таблицы товаров по
+30 городам архипелага — в <code>TRADE_BY_TOWN.md</code>.
+Прохождение сюжета и побочных линий — в <code>GUIDE.md</code>. Карты архипелага — в каталоге <code>maps/</code>.</p>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8-бис. Таблица случайного лута `RandItems[52]` — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>8-бис. Таблица случайного лута `RandItems[52]`</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><p><code>[код]</code> <code>PROGRAM/ITEMS/initItems.c:3353-3555</code> (<code>InitRandItems()</code>). Именно из этого массива
+берётся кандидат при спавне предметов в сундуках и на локациях (<code>itemLogic.c:496, 878</code>).
+Индекс выбирается как <code>rand(RANDITEMS_QUANTITY - 1)</code> = <code>rand(51)</code> → <strong>индексы 0..50, элемент 51 недостижим</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Предмет</th>
+<th>maxQuantity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>POTION (константа)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Mineral9</td>
+<td>2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Mineral10</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>jewelry16 (опал)</td>
+<td><strong>15</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>jewelry1 (аметист)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>5</td>
+<td>jewelry2 (алмаз)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>6</td>
+<td>jewelry3 (рубин)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>7</td>
+<td>jewelry5 (золотой самородок)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>jewelry6 (серебряный самородок)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>9-13</td>
+<td>jewelry40, 41, 42, 43, 44</td>
+<td>4 каждый</td>
+</tr>
+<tr>
+<td>14</td>
+<td>potion1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>15</td>
+<td>mineral1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>16</td>
+<td>potion1 (<strong>дубль</strong>)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>17</td>
+<td>mineral17</td>
+<td>4</td>
+</tr>
+<tr>
+<td>18</td>
+<td>mineral13</td>
+<td>4</td>
+</tr>
+<tr>
+<td>19</td>
+<td>potion3 (антидот)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>20</td>
+<td>potion4 (бальзам)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Mineral11</td>
+<td>1</td>
+</tr>
+<tr>
+<td>22</td>
+<td>purse1 (кошель)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>23</td>
+<td>cannabis5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>24</td>
+<td>slave_01 (гарпун)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>25</td>
+<td>slave_02 (мачете)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>26</td>
+<td>topor_05 (томагавк)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>27</td>
+<td>blade_03 (Стокката)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>28</td>
+<td>cannabis4</td>
+<td>1</td>
+</tr>
+<tr>
+<td>29</td>
+<td>blade_05 (Катлас)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>30</td>
+<td>cannabis3</td>
+<td>1</td>
+</tr>
+<tr>
+<td>31</td>
+<td>jewelry1 (<strong>дубль</strong>)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Mineral19</td>
+<td>1</td>
+</tr>
+<tr>
+<td>33</td>
+<td>blade_07 (Эсток)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>34-35</td>
+<td>jewelry45, jewelry46</td>
+<td>4 каждый</td>
+</tr>
+<tr>
+<td>36</td>
+<td>bullet (пули)</td>
+<td><strong>20</strong></td>
+</tr>
+<tr>
+<td>37</td>
+<td>mineral3</td>
+<td>4</td>
+</tr>
+<tr>
+<td>38-39</td>
+<td>Mineral4, Mineral5</td>
+<td>1 каждый</td>
+</tr>
+<tr>
+<td>40</td>
+<td>Mineral6</td>
+<td>4</td>
+</tr>
+<tr>
+<td>41</td>
+<td>Mineral7</td>
+<td>1</td>
+</tr>
+<tr>
+<td>42</td>
+<td>potion5</td>
+<td>4</td>
+</tr>
+<tr>
+<td>43</td>
+<td>potionwine (вино)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>44</td>
+<td>potionrum (ром)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>45-49</td>
+<td>cannabis3, cannabis1, cannabis2, cannabis4, cannabis6</td>
+<td>1 каждый</td>
+</tr>
+<tr>
+<td>50</td>
+<td>jewelry52</td>
+<td>4</td>
+</tr>
+<tr>
+<td>51</td>
+<td>(недостижим из-за <code>rand(51)</code>)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code>
+276. <strong>В случайном луте всего 4 вида оружия</strong> (гарпун, мачете, томагавк, Стокката, Катлас, Эсток —
+     все качества POOR/ORDINARY). <strong>Хорошего и отличного оружия в случайном луте нет вообще</strong> —
+     оно только в лавках, у убитых NPC, в кладах и по квестам.
+277. <strong>Кирасы и огнестрельное оружие в <code>RandItems</code> отсутствуют полностью</strong> — их нельзя найти в сундуках.
+278. Больше всего в списке камней/минералов (~26 из 51 позиций, ≈51%) и зелий/травы (~14 позиций, ≈27%).
+279. <code>cannabis1..cannabis6</code> (7 записей с дублями) — самая частая группа наркотиков/травы в луте.
+280. <code>potion1</code> и <code>jewelry1</code> дублируются в списке (индексы 14/16 и 4/31), что удваивает их шанс.
+281. Максимальные количества: пули (20), опал jewelry16 (15) — остальное по 1-4.
+282. <strong>Шанс каждой конкретной позиции = <code>rare</code> предмета</strong> (по умолчанию 0.05); индекс выбирается
+     равномерно из 51, поэтому «ожидаемое число предметов за сундук» ≈ <code>попыток * средний rare</code>.</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3. Морской бой: пушки, ядра, форты, абордаж — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>3. Морской бой: пушки, ядра, форты, абордаж</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>3.1. Таблица всех типов орудий <code>[код]</code> <code>PROGRAM/cannons/cannons_init.c</code></h3>
+<table>
+<thead>
+<tr>
+<th>Тип</th>
+<th>Калибр</th>
+<th>Reload (база)</th>
+<th>Reload реал.*</th>
+<th>Цена</th>
+<th>Вес</th>
+<th>Dmg×</th>
+<th>HP пушки</th>
+<th>Даль-ть (FireRange)</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Пушка</td>
+<td>3</td>
+<td>10</td>
+<td>30</td>
+<td>105</td>
+<td>3</td>
+<td>1.0</td>
+<td>20</td>
+<td>350</td>
+<td>11-28</td>
+</tr>
+<tr>
+<td>Пушка</td>
+<td>6</td>
+<td>19</td>
+<td>57</td>
+<td>215</td>
+<td>6</td>
+<td>1.5</td>
+<td>45</td>
+<td>450</td>
+<td>30-47</td>
+</tr>
+<tr>
+<td>Пушка</td>
+<td>12</td>
+<td>31</td>
+<td>93</td>
+<td>425</td>
+<td>11</td>
+<td>2.0</td>
+<td>79</td>
+<td>550</td>
+<td>49-66</td>
+</tr>
+<tr>
+<td>Пушка</td>
+<td>16</td>
+<td>40</td>
+<td>120</td>
+<td>600</td>
+<td>16</td>
+<td>2.5</td>
+<td>76</td>
+<td>600</td>
+<td>68-85</td>
+</tr>
+<tr>
+<td>Пушка</td>
+<td>20</td>
+<td>48</td>
+<td>144</td>
+<td>815</td>
+<td>20</td>
+<td>3.0</td>
+<td>73</td>
+<td>650</td>
+<td>87-104</td>
+</tr>
+<tr>
+<td>Пушка</td>
+<td>24</td>
+<td>56</td>
+<td>168</td>
+<td>1200</td>
+<td>29</td>
+<td>4.0</td>
+<td>70</td>
+<td>700</td>
+<td>106-123</td>
+</tr>
+<tr>
+<td>Пушка</td>
+<td>32</td>
+<td>61</td>
+<td>183</td>
+<td>1705</td>
+<td>40</td>
+<td>5.0</td>
+<td>65</td>
+<td>650</td>
+<td>125-142</td>
+</tr>
+<tr>
+<td>Пушка</td>
+<td>36</td>
+<td>63</td>
+<td>189</td>
+<td>2055</td>
+<td>46</td>
+<td>6.0</td>
+<td>60</td>
+<td>600</td>
+<td>144-162</td>
+</tr>
+<tr>
+<td>Пушка</td>
+<td>42</td>
+<td>65</td>
+<td>195</td>
+<td>2490</td>
+<td>50</td>
+<td>7.0</td>
+<td>55</td>
+<td>550</td>
+<td>164-182</td>
+</tr>
+<tr>
+<td><strong>Пушка 48 (бомбарда)</strong></td>
+<td>48</td>
+<td>50</td>
+<td>150</td>
+<td><strong>21505</strong></td>
+<td>80</td>
+<td><strong>14.0</strong></td>
+<td>80</td>
+<td><strong>1600</strong></td>
+<td>184-203</td>
+</tr>
+<tr>
+<td>Кулеврина</td>
+<td>8</td>
+<td>35</td>
+<td>105</td>
+<td>345</td>
+<td>16</td>
+<td>2.0</td>
+<td>60</td>
+<td>700</td>
+<td>205-222</td>
+</tr>
+<tr>
+<td>Кулеврина</td>
+<td>18</td>
+<td>52</td>
+<td>156</td>
+<td>885</td>
+<td>32</td>
+<td>3.0</td>
+<td>75</td>
+<td>850</td>
+<td>224-241</td>
+</tr>
+<tr>
+<td>Кулеврина</td>
+<td>36</td>
+<td>70</td>
+<td>210</td>
+<td>2545</td>
+<td>50</td>
+<td>5.5</td>
+<td>80</td>
+<td><strong>900</strong></td>
+<td>243-261</td>
+</tr>
+</tbody>
+</table>
+<p>* <code>[код]</code> <code>PROGRAM/cannons/cannons.c:139-149</code> <code>GetCannonReloadTime()</code>: <strong>в реалистичном режиме
+время перезарядки умножается на 3</strong>; в аркадном (<code>iArcadeSails</code>) берётся базовое значение.</p>
+<p><code>[интерпретация]</code> Ключевые выводы:
+- 48-фунтовая бомбарда (CANNON_TYPE_CANNON_LBS48) — уникальная: <code>DamageMultiply = 14.0</code> (сначала присваивается 10.0,
+  затем перезаписывается на 14.0, <code>cannons_init.c:195</code> и <code>:200</code>), дальность 1600 (в 2.3 раза дальше кулеврины 36),
+  но стоит 21505 и весит 80 — вдвое дороже всех прочих на порядок.
+- Кулеврины: дальность выше при том же калибре, но время перезарядки хуже. Кулеврина 36 — лучшая
+  «дальнобойная» реальная пушка (900 дальности) с уроном 5.5.
+- Пушка 12 фунтов — лучшее соотношение урон/вес/цена на средних кораблях (2.0 урона за 11 весовых единиц).
+- <code>TradeOff = true</code> (не продаётся в обычных лавках) у пушки 36, 42, 48 и кулеврины 36 (<code>cannons_init.c:160,180,201,259</code>).
+  Также <code>NotSale = 1</code> у Cannon_36, Cannon_42, Culverine_36 (<code>initGoods.c</code> — соответствующие строки).
+- Начальная скорость снаряда вычисляется физически: <code>[код]</code> <code>cannons_init.c:1-5</code>
+  <code>SpeedV0 = sqrt(FireRange * 9.81 / sin(2*FireAngMax))</code>.
+- Углы наводки: <code>FireAngMax = 0.60</code> рад (~34°) у всех; <code>FireAngMin = -0.35</code> рад у большинства,
+  −0.45 у калибров 32, 42, 48 и кулеврины 36 (они бьют круче вниз).</p>
+<h3>3.2. Типы ядер (снарядов) <code>[код]</code> <code>PROGRAM/store/initGoods.c:6-68</code></h3>
+<table>
+<thead>
+<tr>
+<th>Снаряд</th>
+<th>Цена</th>
+<th>Вес</th>
+<th>Units</th>
+<th>SpeedV0</th>
+<th>DamageHull</th>
+<th>DamageRig (паруса)</th>
+<th>DamageCrew</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Balls (ядро)</td>
+<td>40</td>
+<td>2</td>
+<td>20</td>
+<td>1.0</td>
+<td><strong>8.0</strong></td>
+<td>0.5</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>Grapes (картечь)</td>
+<td>20</td>
+<td>1</td>
+<td>20</td>
+<td>0.6</td>
+<td>1.0</td>
+<td>2.0</td>
+<td><strong>1.5</strong></td>
+</tr>
+<tr>
+<td>Knippels (книппель)</td>
+<td>40</td>
+<td>2</td>
+<td>20</td>
+<td>0.9</td>
+<td>1.5</td>
+<td><strong>9.0</strong></td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>Bombs (бомба)</td>
+<td>60</td>
+<td>3</td>
+<td>20</td>
+<td>0.8</td>
+<td><strong>15.0</strong></td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+</tbody>
+</table>
+<p><code>[код]</code> <code>RESOURCE/INI/cannons.ini</code> — движковые множители (используются ядром engine.exe, не скриптами):
+BALLS_HULL_DAMAGE: CANNONBALL 2, BOMB 3, KNIPPEL 1, GRAPE 1;
+BALLS_CREW_DAMAGE: CANNONBALL 1, BOMB 2, KNIPPEL 1, GRAPE 3;
+BALLS_SAIL_DAMAGE: CANNONBALL 1, BOMB 1, KNIPPEL 2, GRAPE 1;
+BALLS_SPEED: CANNONBALL 40.0, BOMB 20.0, KNIPPEL 30.0, GRAPE 15.0;
+BALLS_RANGE: CANNONBALL 1.0, BOMB 0.6, KNIPPEL 0.8, GRAPE 0.6.
+Секции <code>[CANNON16] RANGE 400 RELOAD_TIME 30</code> и <code>[CANNON24] RANGE 300 RELOAD_TIME 40</code> — реликт К2, скрипты используют cannons_init.c.</p>
+<p><code>[интерпретация]</code>
+- <strong>Бомбы</strong> — почти вдвое сильнее ядер по корпусу (15 против 8), но летят только на 60% дистанции и втрое тяжелее;
+  дают шанс поджога 1 к 5 (см. ниже) — лучшая «на потопление» и самая опасная для себя (детонация пороха).
+- <strong>Книппели</strong> — 9.0 по парусам против 0.5 у ядер, т.е. <strong>в 18 раз эффективнее</strong> для обездвиживания.
+- <strong>Картечь</strong> — 1.5 по команде против 0.2 у ядер (<strong>в 7.5 раза</strong>), но 60% дальности; главное для абордажа.
+- Каждый выстрел расходует 1 снаряд + <strong>1 порох</strong> (<code>AICannon.c:36-48</code>) — без пороха стрельба невозможна.</p>
+<h3>3.3. Урон корпусу и команде: точные формулы <code>[код]</code> <code>PROGRAM/sea_ai/AIShip.c:2755-2960</code></h3>
+<pre><code>fCannonDamageMultiply = DamageMultiply пушки (по таблице 3.1)
+fDistanceDamageMultiply = Bring2Range(1.2, 0.25, 0, макс_дист, тек_дист)
+   → в упор ×1.2, на пределе дальности ×0.25 (почти впятеро слабее!)
+fHP (обычное попадание) = fDistanceDamageMultiply * fCannonDamageMultiply * DamageHull ядра
+fCrewDamage = DamageCrew ядра * fCannonDamageMultiply * (1.15 если перк CrewDamageUp)
+</code></pre>
+<p>Критический залп (<code>bSeriousBoom</code>) <code>[код]</code> <code>AIShip.c:2793-2818</code>:</p>
+<pre><code>+5%  если перк CriticalShoot (rand(19)==10)
++10% если перк CannonProfessional (rand(9)==4)
+Ядро:  шанс крита 1/86 (rand(85)==17);  шанс поджога 1/31 (rand(30)==15)
+Бомба: шанс крита 1/51 (rand(50)==10);  шанс поджога 1/6  (rand(5)==1)
+Картечь/книппель: критов НЕТ вообще
+Перк ShipDefenseProfessional у цели гасит крит с вероятностью 70% (rand(1000)&lt;700)
+При крите: урон команде ×7.0, урон корпусу = обычный*(8.0 + frnd()*4.0), т.е. ×8..×12
+Также урон пушкам ×6.0
+Если пороха на борту &gt; 25% макс. трюма (в единицах /20) и rand(1)==1 → ДЕТОНАЦИЯ всего корабля (AIShip.c:2887-2892)
+</code></pre>
+<p>Модификаторы урона корпусу <code>[код]</code> <code>AIShip.c:2312-2340</code> <code>Ship_ApplyHullHitpoints</code>:</p>
+<pre><code>fPlus  = 0.15 (HullDamageUp) или 0.3 (CannonProfessional); + 0.05 артефакт indian_8 у стрелка
+fMinus = 0.15 (BasicBattleState) / 0.25 (AdvancedBattleState) / 0.35 (ShipDefenseProfessional)
+         + 0.05 артефакт amulet_8 у цели
+итог: HP -= fHP * (1.0 + fPlus - fMinus)
+</code></pre>
+<p>Модификаторы урона команде <code>[код]</code> <code>AIShip.c:2256-2311</code> <code>Ship_ApplyCrewHitpoints</code>:</p>
+<pre><code>fMultiply = 1.0 - 0.75 * (Defence/100)        // навык Защита режет потери команды до -75%!
+* 0.8 если перк Doctor2, иначе * 0.9 если Doctor1
+* 0.95 артефакт amulet_10
+Минимум неубиваемой команды: MinCrew корабля * 0.25 (AIShip.c:2285) — команду нельзя выбить полностью пушками
+</code></pre>
+<p><code>[интерпретация]</code> Навык <strong>Defence</strong> («Защита») — самый недооценённый: при 100 он снижает потери команды
+в морском бою на 75%, ещё −20% от Doctor2 → итого потери 20% от исходных.</p>
+<h3>3.4. Урон пушкам на борту <code>[код]</code> <code>AICannon.c:248-301</code> <code>Cannon_DamageEvent</code></h3>
+<pre><code>fBallDamage *= 0.1 / fDistance   (fDistance — расстояние от ядра до пушки; MAX_CANNON_DAMAGE_DISTANCE = 3.0)
+fCurDamage += fBallDamage / hp_пушки
+перк HT4: fCurDamage /= 2
+при fCurDamage &gt;= 1.0 пушка ВЗРЫВАЕТСЯ (безвозвратно выбита до ремонта)
+артефакт talisman3 полностью защищает пушки (возврат 0.0)
+</code></pre>
+<p><code>[код]</code> <code>AICannon.c:3-4</code> крен от потери пушек одного борта: <code>MAX_HEEL_ANGLE = 0.262</code> рад (15°),
+<code>MAX_VOLLEY_HEEL_ANGLE = 0.10</code>.
+<code>[интерпретация]</code> Крупнокалиберные пушки имеют меньше HP (42-фн — 55 HP против 79 у 12-фн),
+т.е. тяжёлое вооружение выбивается быстрее. Исключение — 48-фн (80 HP) и кулеврина 36 (80 HP).</p>
+<h3>3.5. Самоподрыв пушек от плохого навыка Cannons (скрытая механика!) <code>[код]</code> <code>AIBalls.c:102-114</code></h3>
+<pre><code>fCannons = 15.0 + MOD_SKILL_ENEMY_RATE - (Cannons/100)*10
+если fCannons &gt; rand(100) и нет артефакта talisman3 → ПУШКА РВЁТСЯ У СВОИХ
+урон = (rand(4) + 2*(1.65 - Cannons/100)) * 10
+</code></pre>
+<p><code>[интерпретация]</code> При Cannons = 0 и сложности 4: <code>15+4-0 = 19</code> → <strong>19% шанс разрыва своей пушки при каждом выстреле</strong>.
+При Cannons = 100: <code>15+4-10 = 9</code> → 9%. При Cannons = 100 и сложности 2 → 7%. Артефакт <code>talisman3</code> убирает полностью.
+Форты не подвержены (проверка на <code>BaseName != "fort"</code>).</p>
+<h3>3.6. Разброс (точность) <code>[код]</code> <code>AIBalls.c:97-120</code></h3>
+<pre><code>fTempDispersionY = 15° (по горизонту), fTempDispersionX = 5° (по вертикали)
+fAccuracy = 1.2 - Accuracy/100         // при Accuracy 100 → 0.2; при 0 → 1.2
+fK = Bring2Range(0.5, 1.2, 0.2, 1.2, fAccuracy)
+Dir   = базовое + fK * 15° * (frnd()-0.5)
+SpdV0 = базовое + fAccuracy * (10*15°) * (frnd()-0.5)
+Ang   = базовое + fAccuracy * 5° * (frnd()-0.5)
+</code></pre>
+<p><code>[код]</code> <code>AIShip.c:4251-4256</code> <strong>Вид с палубы (<code>SeaDeckCamera</code>) даёт +0.15 (=+15 навыка) к Accuracy</strong> — скрытый бонус
+за стрельбу «из первого лица»! (В комментарии написано «было 0.4»).</p>
+<h3>3.7. Скорость перезарядки залпа <code>[код]</code> <code>AICannon.c:139-191</code> <code>Cannon_GetRechargeTime</code></h3>
+<pre><code>fCannonSkill = 1.0 - Cannons/300          // при Cannons=100 → 0.667 (т.е. -33%)
+fReloadTime  = ReloadTime пушки * 3 (в реализме)
+* 0.9  перк FastReload
+* 0.5  перк ImmediateReload (активированный)
+* 0.85 артефакт amulet_5
+для НЕ-игрока: fReloadTime -= MOD_SKILL_ENEMY_RATE (но не ниже 5.0) — врагам скидка!
+опыт канониров: fExp = 0.001 + (CrewExp_Cannoners * crew) / (OptCrew * CrewExpRate)
+                fReloadTime *= (1.0 + (1.0 - fExp) * 3.0)     // до ×4 при неопытной команде!
+мораль:         fReloadTime *= (1.0 + (1.0 - мораль/MORALE_NORMAL) * 0.2)
+если команда &lt;= MinCrew: fReloadTime *= 3.0
+</code></pre>
+<p><code>[интерпретация]</code> <strong>Опыт канониров важнее навыка Cannons</strong>: неопытная команда умножает перезарядку до ×4,
+тогда как навык Cannons 100 даёт лишь −33%. Малая команда (ниже минимальной) — ещё ×3.
+Форты не подчиняются этой логике вообще.</p>
+<h3>3.8. Задержка перед выстрелом <code>[код]</code> <code>AICannon.c:194-224</code> <code>Cannon_GetFireTime</code></h3>
+<pre><code>Форт: frnd() * 20.0 сек (случайная задержка, чтобы не было «пулемётного» залпа)
+Корабль: fFireTime = (1.3 - Cannons/100); fFireTime = frnd() * fFireTime * 6.0
+         * 0.5 если аркадные паруса
+         fExp = 0.05 + (CrewExp_Cannoners * crew)/(OptCrew*CrewExpRate); fFireTime *= (2.0 - fExp)
+         * (1.0 + (1.0 - мораль/MORALE_NORMAL)/5.0)
+</code></pre>
+<h3>3.9. Прицельная высота (куда летит ядро) <code>[код]</code> <code>AICannon.c:94-136</code></h3>
+<pre><code>RY = |Y * (dist / (FireRange/2)) + (frnd()-0.5) * DY/4|,  обрезка 0.8..55
+Y и DY берутся из RealShips[тип].Height.&lt;ИмяЯдра&gt; — у каждого корабля своя высота борта для каждого типа ядра
+Бомбы и картечь: Y += 0.6 (летят выше)
+Форт: Y = 40, DY = 16
+</code></pre>
+<p><code>[интерпретация]</code> Высота прицела откалибрована под половину дальности пушки: <strong>на дистанции ровно FireRange/2
+попадание наиболее точно</strong>; ближе — ядра идут ниже (в корпус/воду), дальше — выше (в паруса).
+Это ключ к «книппелями издалека по парусам, ядрами в упор по корпусу».</p>
+<h3>3.10. Форты <code>[код]</code> <code>PROGRAM/sea_ai/AIFort.c</code></h3>
+<ul>
+<li><code>MAX_FORTS = 16</code> (<code>AIFort.c:3</code>).</li>
+<li>Урон форту <code>[код]</code> <code>AIFort.c:319-333</code>:
+  <code>fDistanceMul = pow(0.11, fDistance)      // экстремально резкое падение с расстоянием!
+  fCannonDamageMultiply = DamageMultiply пушки * fDistanceMul
+  fHullDamage = DamageHull ядра * fCannonDamageMultiply * 0.4
+  fCrewDamage = DamageCrew ядра * fCannonDamageMultiply * 0.6
+  HP форта = (1 - повреждённых_пушек/всех_пушек) * Fort.HP</code>
+  <code>[интерпретация]</code> HP форта — это просто доля целых пушек. Форт «падает», когда выбита почти вся артиллерия.</li>
+<li>Порог открытия абордажа форта <code>[код]</code> <code>AIFort.c:441-449</code>:
+  <code>fkoeff = 1.05 + 0.19*(10 - MOD_SKILL_ENEMY_RATE) + 0.1
+  Тортуга: fkoeff = 1.15 - MOD_SKILL_ENEMY_RATE/100
+  абордаж открывается, если повреждённых пушек &gt;= всех_пушек / fkoeff</code>
+  <code>[интерпретация]</code> На сложности 10: <code>fkoeff = 1.05+0+0.1 = 1.15</code> → нужно выбить ~87% пушек.
+  На сложности 2: <code>fkoeff = 1.05+1.52+0.1 = 2.67</code> → достаточно ~37% пушек. <strong>Огромная разница.</strong>
+  Форт Тортуги — исключение, он всегда почти на «сложном» пороге (1.15 − 0.04 = 1.11 при сложн. 4 → 90% пушек).</li>
+<li>Античит <code>[код]</code> <code>AIFort.c:446-448</code>: при открытии абордажа форту выдаётся <code>200 + rand(100)</code> бомб и столько же пороха
+  (чтобы нельзя было расстрелять форт «пустой»).</li>
+<li>Стрельба по НЕвражескому форту <code>[код]</code> <code>AIFort.c:340-361</code>: накапливается <code>Fort.PlayerDamage</code>
+  (×0.8 если дружественный, ×0.5 если нейтральный); при достижении 1.0 нация становится враждебной.</li>
+<li>Стрельба по СВОЕМУ форту <code>[код]</code> <code>AIFort.c:368-381</code>: форт неуязвим, но игрок теряет опыт:
+  Accuracy −67, Sailing −200, Sneak −50, Fortune −50, Cannons −50.</li>
+<li>Опыт за выбитую пушку форта <code>[код]</code> <code>AIFort.c:426-437</code>: <code>iExp = 200 / число_кораблей_эскадры</code>;
+  распределяется как Accuracy +iExp/4, Sailing +iExp/10, Sneak +iExp/12, Fortune +iExp/12, Cannons +iExp/4.
+  <code>[интерпретация]</code> <strong>Ходить в одиночку выгоднее для опыта</strong> — делится на количество компаньонов.</li>
+<li>При захвате форта <code>[код]</code> <code>LAi_boarding.c:326</code>: у форта остаётся <code>10 + rand(350)</code> человек (рабы/выжившие).</li>
+</ul>
+<h3>3.11. Абордаж: расстояние, угол, скорость <code>[код]</code> <code>AIShip.c:3069-3093</code></h3>
+<pre><code>fGrapplingPerk = 1.15 (LongRangeGrappling) → 1.25 (GrapplingProfessional)
+MaxAbordageDistance = fGrapplingPerk * Bring2Range(15.0, 40.0, 0, 1, Grappling/100)
+   → при Grappling 0: 15 м; при 100: 40 м; с GrapplingProfessional: до 50 м
+MaxAbordageAngle    = Bring2Range(0.70, 0.45, 0, 1, Grappling/100)   → от 0.70 рад до 0.45 рад
+MaxAbordageSpeed    = Bring2Range(3.0, 5.0, 0, 1, Grappling/100)     → от 3.0 до 5.0
+</code></pre>
+<p><code>[интерпретация]</code> Навык Абордаж повышает дистанцию цепления в 2.7 раза, разрешает более высокую скорость,
+но <strong>сужает</strong> допустимый угол захода (0.70 → 0.45 рад). С перком GrapplingProfessional угол и скорость игнорируются вовсе.</p>
+<h3>3.12. Урон корпусам от самого факта абордажа <code>[код]</code> <code>AIAbordage.c:130-142</code></h3>
+<pre><code>fHP = 0.1 + frnd()*0.2, умножается на МЕНЬШИЙ из HP двух кораблей
+AbordageStike = fHP * (1.05 - Sneak/100)
+Ship_ApplyHullHitpoints(корабль, AbordageStike/1.5)   // и врагу, и себе
+</code></pre>
+<p><code>[интерпретация]</code> Навык <strong>Скрытность (Sneak)</strong> снижает урон при сцеплении почти до нуля (при Sneak 100 → ×0.05).</p>
+<h3>3.13. Абордаж: сколько бойцов на палубе <code>[код]</code> <code>LAi_boarding.c:340-384</code></h3>
+<pre><code>BRDLT_MAXCREW = 60 (жёсткий потолок, LAi_boarding.c:6)
+maxcrew = локаторов в локации, но не более лимита по МЕНЬШЕМУ классу двух кораблей:
+   класс 7 → 8;  6 → 10;  5 → 12;  4 → 14;  3 → 16;  2 → 22;  1 → 24
+Затем всё пропорционально масштабируется:
+   если mcrew &gt; maxcrew: rel = mcrew/maxcrew; mcrew = maxcrew; ecrew = ecrew/rel
+1 «тушка» на палубе = boarding_player_crew_per_chr = base_crew / mcrew человек команды
+</code></pre>
+<p>Распределение врага по палубам <code>[код]</code> <code>LAi_boarding.c:437-447</code>:</p>
+<pre><code>верхняя палуба: ecrew (100%), но HP воинов противника срезаны на 15%
+1-й трюм (inside_ecrew_1): 30% от ecrew, число тушек внутри ×2
+2-й трюм (inside_ecrew_2): 20% от ecrew, число тушек внутри ×2
+для форта: 30% + 30%, а на дворе только 60% от ecrew
+</code></pre>
+<h3>3.14. Абордаж: учёт оружия — критически важно <code>[код]</code> <code>characterUtilite.c:3798-3806</code></h3>
+<pre><code>GetWeaponCrew(char, crew):
+  weaponOnBoard = количество товара &quot;Weapon&quot; в трюме
+  если crew &gt; weaponOnBoard:
+      crew = weaponOnBoard + (crew - weaponOnBoard)/2
+</code></pre>
+<p><code>[интерпретация]</code> <strong>Без оружия в трюме половина команды не участвует в абордаже.</strong>
+Один ящик «Оружие» = 1 боец. Это одна из самых важных неочевидных механик:
+держать в трюме оружия столько, сколько человек в команде, — фактически удваивает абордажную силу.</p>
+<h3>3.15. Абордаж: HP бойцов <code>[код]</code> <code>GeneratorUtilite.c:362-456</code></h3>
+<pre><code>boarding_player_hp = (макс_HP_капитана / 3) * (CrewExp_Soldiers/CrewExpRate - 0.7 + мораль_норм)
+   где мораль_норм = (мораль - MORALE_NORMAL)/(MORALE_MAX - MORALE_MIN), обрезано в [-0.5; 0.5]
+   → может быть ОТРИЦАТЕЛЬНЫМ при плохом опыте солдат и низкой морали
+boarding_enemy_hp  = 0 (базово) + 4*(MOD_SKILL_ENEMY_RATE - 5)
+   → сложн.2: -12; сложн.4: -4; сложн.6: +4; сложн.8: +12; сложн.10: +20
+бонус за перевес в численности (в ранг, а не HP):
+   свой:  m_rank_bonus = 0.5 * MOD_SKILL_ENEMY_RATE * (mcrew-ecrew)/ecrew
+   враг:  e_rank_bonus = 2   * MOD_SKILL_ENEMY_RATE * (ecrew-mcrew)/mcrew
+потолки: boarding_player_hp &lt;= 1000, boarding_enemy_hp &lt;= 1500
+</code></pre>
+<p><code>[интерпретация]</code> Враг получает вчетверо больший бонус за численный перевес, чем игрок.
+Прокачка <strong>опыта солдат</strong> (CrewExp_Soldiers) — единственный способ дать своим матросам HP.</p>
+<h3>3.16. Сдача капитана в плен (полная формула) <code>[код]</code> <code>LAi_boarding.c:1366-1445</code> <code>CheckForSurrender</code></h3>
+<p>Жёсткие отказы:
+- форты не сдаются никогда;
+- если пленных больше <code>PRISONER_MAX = 20</code> (<code>characters.h:33</code>);
+- если ранг врага &gt; <code>50 - MOD_SKILL_ENEMY_RATE</code>;
+- если ранг игрока &lt; <code>ранг_врага - MOD_SKILL_ENEMY_RATE/2</code> — <strong>кроме случая, когда есть перк
+  <code>SeaDogProfessional</code> («скрытая фича-пасхалка», комментарий в коде)</strong>;
+- корабль <strong>1 класса не сдаётся в принципе</strong>.</p>
+<p>Далее сравниваются «силы»:</p>
+<pre><code>fCrewRate = 0.5 обычно;  0.2 если враг — пират;  0.9 если Ship.Mode == &quot;Trade&quot; (торговцы легко сдаются)
+mcrew = GetWeaponCrew(ГГ) ;  ecrew = команда врага
+fRep = |REPUTATION_NEUTRAL - reputation.nobility| / 50
+mskill = (Leadership + Grappling)/20 (в старой шкале /10, итого 0..1)
+eskill = (Leadership_врага + Defence_врага)/20
+mcrew *= (mcrew * CrewExp_Soldiers) / (OptCrew * CrewExpRate)
+ecrew *= (ecrew * CrewExp_Soldiers_врага) / (OptCrew_врага * CrewExpRate)
+mcrew *= (0.5 + мораль_ГГ/MORALE_MAX);   ecrew *= (0.5 + мораль_врага/MORALE_MAX)
+mcrew *= (0.2 + mskill) * (0.05 + fRep) * fCrewRate
+ecrew *= (0.2 + eskill)
+mcrew *= (1 + класс_ГГ/20) * fStep      // fStep = 1.4 если проверка на 2-й палубе
+ecrew *= (1 + класс_врага/20)
+mcrew *= (1 + (кораблей_у_ГГ - 1)/5);   ecrew *= (1 + (кораблей_врага - 1)/5)
+если mcrew &gt; ecrew → СДАЛСЯ
+</code></pre>
+<p><code>[интерпретация]</code> Ключевые рычаги: очень крайняя (положительная ИЛИ отрицательная) репутация
+<code>nobility</code> — множитель <code>(0.05 + |50 − rep|/50)</code> растёт до 1.05 при rep 0 или 100 и падает до 0.05 при rep = 50.
+<strong>Нейтральная репутация почти запрещает сдачу капитанов!</strong> Также важны: Leadership + Grappling,
+мораль, опыт солдат, число кораблей эскадры, оружие в трюме (через GetWeaponCrew).
+При заходе на вторую палубу шанс сдачи выше на 40% (fStep = 1.4).
+При сдаче мораль врага падает до 5, а игрок получает +3 морали (или <code>3 + 2*rand(разница классов)</code>, <code>LAi_boarding.c:160-168</code>).</p>
+<h3>3.17. Мушкетный залп перед абордажем <code>[код]</code> <code>LAi_boarding.c:190-253</code></h3>
+<p>Игрок (перк <code>MusketsShoot</code> у боцмана):</p>
+<pre><code>mShipClassCoeff = (класс_врага - класс_ГГ) * 0.15
+mCoeff = 0.5 + 0.1 * число_офицеров
+mDamage = mcrew*mCoeff/4 + rand(mcrew*(1-mCoeff)/4)
+mDamage *= (1 + mShipClassCoeff)
+ограничение: mDamage &lt;= ecrew * 0.75
+*0.95 если у врага amulet_11;  *1.10 если у ГГ indian_6
+артефакт indian_5 у ГГ: ecrew /= 1.1 до расчёта
+</code></pre>
+<p>Враг: <code>eDamage = ecrew*0.2 + rand(ecrew/20)</code>, тот же потолок 75%.
+<code>[интерпретация]</code> Мушкетный залп ГГ может убить до <strong>75% команды врага</strong> одним залпом.
+Каждый занятый офицерский пост добавляет 10% к базовой доле (mCoeff), и залп сильнее,
+когда корабль врага крупнее (борт выше → больше цели).</p>
+<h3>3.18. Прочие механики морского боя</h3>
+<ul>
+<li><code>[код]</code> <code>AIShip.c:2966-2969</code> Время пожара: <code>5 + 3*(10 - Repair_в_старой_шкале)</code> сек
+  → при Repair 100 всего 5 сек, при Repair 0 — 35 сек.</li>
+<li><code>[код]</code> <code>AIShip.c:3862-3880</code> Затопление при HP &lt; 10%: урон <code>HP_макс/100 * 0.08</code> каждую секунду;
+  <strong>перк <code>LightRepair</code> полностью отменяет это затопление</strong> (множитель 0).</li>
+<li><code>[код]</code> <code>AIShip.c:3892-3934</code> Шторм: урон корпусу <code>HP_макс/100 * 1.1</code> в секунду,
+  урон парусам зависит от состояния парусов: 0.15 (убраны) / 0.55 (половина) / 1.1 (полные) от <code>SP/100</code>.
+  Перк <code>StormProfessional</code> ×0.7, артефакт <code>talisman2</code> ×0.2, атрибут <code>DontHitInStorm</code> ×0 (полная защита).</li>
+<li><code>[код]</code> <code>AIShip.c:2183-2206</code> Удар о берег: <code>fHP = (1 - fSlide) * fPower * 3.0</code>; атрибут <code>AlwaysSandbankManeuver</code> отменяет.</li>
+<li><code>[код]</code> <code>AIShip.c:2223-2254</code> Таран корабля: <code>fHP = (1 - fSlide) * fPower * 10.0</code> (втрое больнее, чем берег).
+  Если врагу с HP &lt;= 14% пробили корпус тараном — нация становится враждебной (защита от «тихого» потопления).</li>
+<li><code>[код]</code> <code>_LSC_on_off.h:120</code> <code>DistanceToShipTalk = 300.0</code> — дистанция для разговора с кораблём.</li>
+<li><code>[код]</code> <code>AIShip.c:2793-2794</code> +5% крит от <code>CriticalShoot</code>, +10% от <code>CannonProfessional</code> — <strong>суммируются с базовым шансом ядра</strong>.</li>
+<li>Опыт за критический залп <code>[код]</code> <code>AIShip.c:2836-2846</code>: Accuracy +15, Fortune +15, Leadership +2, Sailing +15, Cannons +15,
+  опыт матросов +0.05, опыт канониров +0.5. За обычное попадание (<code>AIShip.c:2857-2861</code>):
+  Accuracy +2.5, Sailing +1, Cannons +1, канониры +0.01.
+  <code>[интерпретация]</code> Критический залп даёт в 6-15 раз больше опыта, а канонирам — <strong>в 50 раз больше</strong>.</li>
+</ul>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

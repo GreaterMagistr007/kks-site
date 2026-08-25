@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6. Команда: провизия, ром, крысы, болезни, мораль, бунт — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>6. Команда: провизия, ром, крысы, болезни, мораль, бунт</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>6.1. Константы <code>[код]</code> <code>PROGRAM/scripts/food.c:1-8</code>, <code>PROGRAM/characters/characters.h:5-8</code></h3>
+<table>
+<thead>
+<tr>
+<th>Константа</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FOOD_BY_CREW</td>
+<td>10.0</td>
+<td>10 матросов съедают 1 единицу провизии в день</td>
+</tr>
+<tr>
+<td>FOOD_BY_SLAVES</td>
+<td>20.0</td>
+<td>20 рабов = 1 единица провизии в день</td>
+</tr>
+<tr>
+<td>FOOD_BY_PASSENGERS</td>
+<td>10.0</td>
+<td>10 пассажиров = 1 единица в день</td>
+</tr>
+<tr>
+<td>RUM_BY_CREW</td>
+<td>60.0</td>
+<td>база расхода рома</td>
+</tr>
+<tr>
+<td>I_MIN_MORALE</td>
+<td>10</td>
+<td>минимальный порог морали (константа)</td>
+</tr>
+<tr>
+<td>MORALE_MAX / NORMAL / MIN</td>
+<td>100 / 50 / 0</td>
+<td>шкала морали</td>
+</tr>
+<tr>
+<td>MORALE_TABLE_SIZE</td>
+<td>10</td>
+<td>10 названий уровней морали</td>
+</tr>
+</tbody>
+</table>
+<h3>6.2. Расход провизии <code>[код]</code> <code>food.c:363-366</code></h3>
+<pre><code>расход_в_день = talisman6(1.0 или 0.75) * (команда + 5.1)/10 + пассажиры/10 + (рабы + 6)/20
+</code></pre>
+<p><code>[интерпретация]</code> 300 матросов = 30.5 ед. провизии в день. Артефакт <code>talisman6</code> даёт <strong>−25% расхода еды</strong>.
+Запас 1200 ед. (полная норма магазина) хватит на ~39 дней при 300 матросах.</p>
+<h3>6.3. Расход рома <code>[код]</code> <code>food.c:80-88, 306-336</code></h3>
+<pre><code>расход_в_день = talisman4(1.0 или 0.2) * (команда + 5.1)/(60 - MOD_SKILL_ENEMY_RATE*2.5)
+</code></pre>
+<p><code>[интерпретация]</code> На «лёгком» (2): делитель 55; на «сложном» (10): делитель 35 → <strong>ром расходуется на 57% быстрее</strong>.
+Артефакт <code>talisman4</code> даёт <strong>−80% расхода рома</strong> и вдобавок отменяет штраф за перегруз команды.
+При 300 матросах и сложности 4: 305.1/50 ≈ 6.1 ед. рома в день.
+<code>[код]</code> <code>food.c:329</code> Если ром есть и ситуация «1» — <strong>мораль +2 в день</strong>.
+Если рома нет — мораль не растёт (но и не падает специально).</p>
+<h3>6.4. Крысы <code>[код]</code> <code>food.c:122-153</code> <code>DailyRatsEatGoodsUpdate</code></h3>
+<pre><code>Полная защита: артефакт talisman1 («крысобог»), rat_poison (мышьяк), квест-флаг GenQuest.Ole
+Каждый день выбирается СЛУЧАЙНЫЙ товар из диапазона GOOD_FOOD..GOOD_OIL (кирпич пропускается)
+Условие порчи: запас товара &gt; 60 И rand(4) != 2  → т.е. 75% шанс порчи в день
+объём порчи = 1 + rand(запас / (10 + Repair_стар + Fortune_стар))
+перк HT2: объём/2 + 1
+квест-флаг quest.givemecat (кошка на корабле): объём*0.75 + 1   ← −25%
+За порчу даётся опыт: Repair +объём (макс 400), Fortune +объём/10
+</code></pre>
+<p><code>[интерпретация]</code> Крысы портят <strong>любой</strong> груз (не только еду), включая ценные товары.
+При Repair 100 и Fortune 100 делитель = 10+10+10 = 30 → порча всего 1/30 запаса.
+При нулевых навыках делитель 10 → до 10% запаса за раз. <strong>Крысы — источник быстрой прокачки Repair</strong>
+(до +400 опыта в день). Флаг <code>bNoEatNoRats</code> (<code>_LSC_on_off.h:44</code>) отключает и еду, и крыс полностью.
+Кошка на корабле (<code>quest.givemecat</code>) даёт −25% к порче.</p>
+<h3>6.5. Болезни (медикаменты) <code>[код]</code> <code>food.c:247-300</code></h3>
+<pre><code>Проверка раз в ~4 дня (rand(4) == 2, т.е. 25% шанс каждый день)
+заболевших = rand( min(команда/10, 30) ) + 1     → максимум 30 человек за раз
+если медикаментов &lt; 1:
+   ВСЕ заболевшие УМИРАЮТ
+   мораль -= makeint(заболевших/2)   (перк IronWill: заболевших /= 1.5 перед этим)
+   reputation.authority -= 1
+если медикаменты есть:
+   расход = заболевших (×2 при ситуации 2, ×3 при ситуации 3 генератора событий)
+   предупреждение при остатке &lt; 16
+Рабы болеют отдельно: заболевших = rand(min(рабы/10, 30)) + 1
+   без медикаментов рабы умирают; с медикаментами расход = заболевших/3
+</code></pre>
+<p><code>[интерпретация]</code> Без медикаментов потери — до <strong>30 матросов раз в 4 дня</strong> и до −15 морали.
+Медикаменты — критичный расходник; Units = 30 (одна покупка = 30 штук), цена 60 базовая × priceModify 3.0.
+Максимальный расход медикаментов ~7.5 ед./день при 300 матросах.</p>
+<h3>6.6. Мораль: что её меняет <code>[код]</code> <code>food.c</code>, <code>Crew.c</code>, <code>LAi_boarding.c</code></h3>
+<table>
+<thead>
+<tr>
+<th>Событие</th>
+<th>Изменение морали</th>
+<th>Файл:строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ром выпит и «ситуация 1»</td>
+<td><strong>+2 в день</strong></td>
+<td><code>food.c:329</code></td>
+</tr>
+<tr>
+<td>Корабельный капеллан (<code>questTemp.ShipCapellan.Yes</code>)</td>
+<td><strong>+2 в день</strong></td>
+<td><code>food.c:190</code></td>
+</tr>
+<tr>
+<td>Сдача врага в плен</td>
+<td>+3 (или <code>3 + 2*rand(разница классов)</code>, если враг крупнее)</td>
+<td><code>LAi_boarding.c:160-168</code></td>
+</tr>
+<tr>
+<td>Смерть от болезней без медикаментов</td>
+<td>−(заболевших/2), до −15</td>
+<td><code>food.c:271</code></td>
+</tr>
+<tr>
+<td>Перегруз команды (больше OptCrew)</td>
+<td>−(1 + rand(3)) в день; <code>talisman4</code> отменяет</td>
+<td><code>food.c:340-344</code></td>
+</tr>
+<tr>
+<td>Долг перед командой (<code>CrewPayment</code>)</td>
+<td>−1 в день, если <code>rand(долг) &gt; 1000</code></td>
+<td><code>food.c:348-361</code></td>
+</tr>
+<tr>
+<td>Голод (провизия кончилась)</td>
+<td>−(12 − Leadership_стар); <code>IronWill</code> делит на 2</td>
+<td><code>food.c:426-430</code></td>
+</tr>
+<tr>
+<td>Оплата (поднятие морали в интерфейсе)</td>
+<td>цена по <code>GetCharacterRaiseCrewMoraleMoney</code></td>
+<td><code>Crew.c:177-185</code></td>
+</tr>
+<tr>
+<td>У врага после сдачи</td>
+<td>мораль = 5</td>
+<td><code>LAi_boarding.c:158</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> Максимальное падение от голода: 12 при Leadership 0, всего 2 при Leadership 100
+(и 1 с перком IronWill). Порог долга: чем больше долг перед командой, тем чаще (шанс <code>1 - 1000/долг</code>)
+срабатывает −1 морали. При долге 32 000 (потолок) шанс ~97% каждый день.</p>
+<h3>6.7. Влияние морали на бой (сводка)</h3>
+<ul>
+<li><code>[код]</code> <code>AICannon.c:182</code> Перезарядка: <code>×(1.0 + (1.0 - мораль/50) * 0.2)</code> → при морали 0 <strong>+20%</strong> времени,
+  при 100 −20%.</li>
+<li><code>[код]</code> <code>AICannon.c:221</code> Задержка выстрела: <code>×(1.0 + (1.0 - мораль/50)/5)</code> → аналогично ±20%.</li>
+<li><code>[код]</code> <code>GeneratorUtilite.c:369-376</code> HP абордажных бойцов: <code>+((мораль - 50)/100)</code>, обрезано в [−0.5; +0.5],
+  умножается на треть HP капитана.</li>
+<li><code>[код]</code> <code>LAi_boarding.c:1402-1408</code> Шанс сдачи врага: обе стороны умножаются на <code>(0.5 + мораль/100)</code>.</li>
+</ul>
+<h3>6.8. Голод: последствия <code>[код]</code> <code>food.c:398-431</code></h3>
+<pre><code>Провизия кончилась:
+   у ГГ: Health −1 (влияет на все навыки!), reputation.authority −1
+   умирает команда/10 (округление 0.5)
+   рабов умирает /5
+   мораль −(12 − Leadership_стар), с IronWill /2
+</code></pre>
+<h3>6.9. Бунт <code>[код]</code> <code>food.c:434-476</code></h3>
+<p>Для корабля ГГ:</p>
+<pre><code>если мораль &lt;= MORALE_MIN (0) ИЛИ reputation.authority &lt; 5
+   И игрок НА КАРТЕ МИРА (IsEntity(&amp;worldMap))
+   И команда &gt; 0
+   И нет артефакта totem_02
+→ MunityOnShip(&quot;ShipMunity&quot;) — бунт с загрузкой палубы (Locations[&quot;Ship_deck&quot;], картинка Mutiny_512.tga)
+</code></pre>
+<p>Для компаньонов:</p>
+<pre><code>если мораль &lt;= 0 ИЛИ loyality офицера &lt;= 0
+→ корабль ВЫХОДИТ ИЗ ЭСКАДРЫ навсегда; для ПГГ он становится фантомом с
+  PGG_ChangeRelation2MainCharacter(-20) и уходит в случайный город своей нации
+Не бунтуют: ПГГ, квестовые офицеры, компаньоны-путешественники, обладатели totem_04
+</code></pre>
+<p><code>[интерпретация]</code> <strong>Артефакт <code>totem_02</code> полностью исключает бунт</strong>, <code>totem_04</code> — уход офицера/компаньона.
+Бунт возможен только на карте мира — «в море» или «в городе» он не срабатывает,
+т.е. при нулевой морали безопасно оставаться в порту.</p>
+<h3>6.10. Бунт рабов <code>[код]</code> <code>food.c:381-397</code></h3>
+<pre><code>условие: рабов &gt; (команда*1.5 + мораль)
+nMoraleDecreaseQ = 12 - Leadership_стар;  IronWill: /2
+если rand(2)==1 И nMoraleDecreaseQ &gt; rand(10) И игрок на карте мира → бунт рабов
+</code></pre>
+<p><code>[интерпретация]</code> При Leadership 100 → <code>nMoraleDecreaseQ = 2</code> → шанс <code>0.5 * 2/10 = 10%</code>;
+при Leadership 0 → <code>0.5 * (12&gt;rand(10) почти всегда) ≈ 50%</code>. Держать рабов больше, чем команда×1.5, опасно.</p>
+<h3>6.11. Лояльность офицеров <code>[код]</code> <code>food.c:198-217, 348-361</code></h3>
+<pre><code>при долге перед командой (CrewPayment) с шансом (1 - 1000/долг):
+   reputation.authority −0.1 (общий проход) и −0.2 (по каждому кораблю)
+   для каждого пассажира с атрибутом loyality: rand(5 + IronWill) == 2 → loyality −1
+   артефакт totem_04 и атрибут OfficerWantToGo.DontGo защищают
+</code></pre>
+<p><code>[интерпретация]</code> Шанс потери лояльности офицером = 1/5 (без IronWill) или 1/6 (с ним) за проверку.
+При loyality &lt;= 0 офицер-компаньон уводит корабль из эскадры.
+<code>[код]</code> <code>RPGUtilite.c:757-781</code> <code>GetLoyalityName</code> — есть текстовая шкала лояльности (10 уровней).</p>
+<h3>6.12. Неубиваемый минимум команды</h3>
+<ul>
+<li><code>[код]</code> <code>AIShip.c:2285</code> Пушками нельзя выбить команду ниже <code>MinCrew корабля * 0.25</code>
+  (в комментарии: «неубиваемые 25% команды — было 0.05»).</li>
+<li><code>[код]</code> <code>AICannon.c:184-187</code> При команде &lt;= MinCrew перезарядка ×3.</li>
+</ul>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

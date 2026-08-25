@@ -1,0 +1,1421 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12. Предметы: оружие, броня, зелья, ценности, артефакты — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>12. Предметы: оружие, броня, зелья, ценности, артефакты</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>12.1. Система качества и генерации оружия <code>[код]</code> <code>PROGRAM/ITEMS/items.h:69-86</code></h3>
+<pre><code>Качество: B_POOR = 0, B_ORDINARY = 1, B_GOOD = 2, B_EXCELLENT = 3 (+ B_UNIQUE для пистолетов)
+Целевые группы (кому выдаётся):
+  TGT_QUEST = 0    квестовое оружие
+  TGT_YANKEE = 1   рабы, бунтовщики, каторжники
+  TGT_NATIVE = 2   мезоамерика (индейцы)
+  TGT_MARGINAL = 3 маргиналы — низкоуровневые пираты, граждане, бандиты
+  TGT_SOLDIER = 4  солдаты, пираты
+  TGT_OFFICER = 5  офицерское оружие, капитаны
+  TGT_PERSIAN = 6  индо-персидские клинки
+Максимальный урон по типу:
+  FencingL_MaxAttack = 60.0    (лёгкие клинки)
+  FencingS_MaxAttack = 80.0    (средние/сабли)
+  FencingH_MaxAttack = 100.0   (тяжёлые)
+</code></pre>
+<h3>12.2. Как считается Attack клинка <code>[код]</code> <code>initItems.c:3670-3703</code></h3>
+<table>
+<thead>
+<tr>
+<th>Качество</th>
+<th>Attack</th>
+<th>rare (шанс в сундуке)</th>
+<th>minlevel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B_POOR</td>
+<td><code>MaxAttack * (42.5 + rand(15))/100</code> → 42.5-57.5%</td>
+<td>0.1 (10%)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>B_ORDINARY</td>
+<td><code>MaxAttack * (55 + rand(15))/100</code> → 55-70%</td>
+<td>0.01 (1%)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>B_GOOD</td>
+<td><code>MaxAttack * (70 + rand(15))/100</code> → 70-85%</td>
+<td>0.001 (0.1%)</td>
+<td><strong>10</strong></td>
+</tr>
+<tr>
+<td>B_EXCELLENT</td>
+<td><code>MaxAttack * (85 + rand(15))/100</code> → 85-100%</td>
+<td><strong>0.0001 (0.01%)</strong></td>
+<td><strong>15</strong></td>
+</tr>
+<tr>
+<td>B_GOOD, TGT_QUEST</td>
+<td><code>MaxAttack * 0.85</code> (фиксированно)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>B_EXCELLENT, TGT_QUEST</td>
+<td><code>MaxAttack</code> (фиксированный МАКСИМУМ!)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> <strong>Квестовые клинки отличного качества гарантированно имеют максимальный урон</strong>
+(60 / 80 / 100 по типу), тогда как обычные генерируемые — случайно 85-100%.
+<code>minlevel</code> — предмет не появится в сундуке, пока ранг ГГ ниже 10 (хорошие) или 15 (отличные).</p>
+<p>Вес и баланс <code>[код]</code> <code>initItems.c:3654-3670</code>:</p>
+<pre><code>FencingL: Weight = 2.0 + rand(1.0)  → 2.0-3.0
+FencingS: Weight = 2.4 + rand(1.2)  → 2.4-3.6
+FencingH: Weight = 3.0 + rand(1.5)  → 3.0-4.5
+Balance = rand(2.0)  → 0..2 (для «unarmed» = 1.0)
+</code></pre>
+<p><code>[интерпретация]</code> <strong>Вес и баланс каждого экземпляра клинка случайны!</strong> Один и тот же
+«Морская сабля» может иметь разные вес/баланс/урон — а они напрямую входят в формулы урона по типам удара
+(п. 2.3). Балансировать 2.0 усиливает <code>fast</code>/<code>break</code> (множитель <code>0.85 + B/6.67</code> до 1.15),
+а баланс 0 усиливает <code>force</code>/<code>feint</code> (множитель <code>1.22 - B*0.22</code> до 1.22).</p>
+<p>Цена клинка <code>[код]</code> <code>initItems.c:3705-3728</code> (при <code>isGenerablePrice</code>):</p>
+<pre><code>FencingL: 35 * (1/Curve + Lenght) * (Attack*2 - 30)
+FencingS: 25 * (Curve + Lenght)   * (Attack*2 - 40)
+FencingH: 20 * ((Curve+1)/Lenght) * (Attack*2 - 50)
+</code></pre>
+<h3>12.3. Полная таблица клинков <code>[код]</code> <code>initItems.c:101-155</code></h3>
+<p><code>Дл.</code> = Lenght, <code>Изг.</code> = Curve. Attack расчётный = <code>MaxAttack * коэффициент качества</code> (диапазон).</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Название</th>
+<th>Тип</th>
+<th>Качество</th>
+<th>Кому</th>
+<th>Дл.</th>
+<th>Изг.</th>
+<th>Attack (расчёт)</th>
+<th>Ген.</th>
+<th>Цена</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unarmed</td>
+<td>Кулаки</td>
+<td>FencingL</td>
+<td>POOR</td>
+<td>quest</td>
+<td>1.00</td>
+<td>1.00</td>
+<td><strong>15.0</strong> (фикс)</td>
+<td>нет</td>
+<td>1</td>
+</tr>
+<tr>
+<td>slave_01</td>
+<td>Гарпун</td>
+<td>FencingL</td>
+<td>POOR</td>
+<td>yankee</td>
+<td>0.70</td>
+<td>1.00</td>
+<td>25.5-34.5</td>
+<td>нет</td>
+<td>200</td>
+</tr>
+<tr>
+<td>slave_02</td>
+<td>Мачете</td>
+<td>FencingS</td>
+<td>POOR</td>
+<td>yankee</td>
+<td>0.60</td>
+<td>1.20</td>
+<td>34-46</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_01</td>
+<td>Нааб-Те</td>
+<td>FencingL</td>
+<td>ORDINARY</td>
+<td>native</td>
+<td>0.90</td>
+<td>1.05</td>
+<td>33-42</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_02</td>
+<td>Тлакомакан</td>
+<td>FencingS</td>
+<td>ORDINARY</td>
+<td>native</td>
+<td>1.05</td>
+<td>0.95</td>
+<td>44-56</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_03</td>
+<td>Стокката</td>
+<td>FencingL</td>
+<td>ORDINARY</td>
+<td>marginal</td>
+<td>1.05</td>
+<td>1.00</td>
+<td>33-42</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_04</td>
+<td>Госсемесер</td>
+<td>FencingS</td>
+<td>GOOD</td>
+<td>marginal</td>
+<td>1.00</td>
+<td>1.00</td>
+<td>56-68</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_05</td>
+<td>Катлас</td>
+<td>FencingS</td>
+<td>ORDINARY</td>
+<td>marginal</td>
+<td>1.00</td>
+<td>1.05</td>
+<td>44-56</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_06</td>
+<td>Скьявона</td>
+<td>FencingH</td>
+<td>GOOD</td>
+<td>marginal</td>
+<td>1.00</td>
+<td>1.00</td>
+<td>70-85</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_07</td>
+<td>Эсток</td>
+<td>FencingH</td>
+<td>ORDINARY</td>
+<td>marginal</td>
+<td>1.00</td>
+<td>1.00</td>
+<td>55-70</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_08</td>
+<td>Бильбо</td>
+<td>FencingL</td>
+<td>ORDINARY</td>
+<td>soldier</td>
+<td>1.10</td>
+<td>1.10</td>
+<td>33-42</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_09</td>
+<td>Карцолета</td>
+<td>FencingL</td>
+<td>ORDINARY</td>
+<td>soldier</td>
+<td>0.95</td>
+<td>1.00</td>
+<td>33-42</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_10</td>
+<td>Корд</td>
+<td>FencingS</td>
+<td>GOOD</td>
+<td>soldier</td>
+<td>0.90</td>
+<td>1.05</td>
+<td>56-68</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_11</td>
+<td>Абордажный тесак</td>
+<td>FencingS</td>
+<td>ORDINARY</td>
+<td>soldier</td>
+<td>0.85</td>
+<td>1.00</td>
+<td>44-56</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_12</td>
+<td>Полусабля</td>
+<td>FencingS</td>
+<td>ORDINARY</td>
+<td>soldier</td>
+<td>0.90</td>
+<td>1.10</td>
+<td>44-56</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_13</td>
+<td>Офицерский палаш</td>
+<td>FencingH</td>
+<td>GOOD</td>
+<td>soldier</td>
+<td>0.95</td>
+<td>1.05</td>
+<td>70-85</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_14</td>
+<td>Валлонская шпага</td>
+<td>FencingH</td>
+<td>ORDINARY</td>
+<td>soldier</td>
+<td>1.05</td>
+<td>1.00</td>
+<td>55-70</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_15</td>
+<td>Маринера</td>
+<td>FencingL</td>
+<td>GOOD</td>
+<td>officer</td>
+<td>0.90</td>
+<td>1.05</td>
+<td>42-51</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_16</td>
+<td>Смоллсворд</td>
+<td>FencingL</td>
+<td>GOOD</td>
+<td>officer</td>
+<td>0.95</td>
+<td>1.00</td>
+<td>42-51</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_17</td>
+<td>Бретта</td>
+<td>FencingL</td>
+<td><strong>EXCELLENT</strong></td>
+<td>officer</td>
+<td>1.00</td>
+<td>1.00</td>
+<td><strong>51-60</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_18</td>
+<td>Паппенхаймер</td>
+<td>FencingL</td>
+<td><strong>EXCELLENT</strong></td>
+<td>officer</td>
+<td>1.05</td>
+<td>1.05</td>
+<td>51-60</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_19</td>
+<td>Морская сабля</td>
+<td>FencingS</td>
+<td><strong>EXCELLENT</strong></td>
+<td>officer</td>
+<td>1.00</td>
+<td>1.05</td>
+<td><strong>68-80</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_20</td>
+<td>Мадонна</td>
+<td>FencingS</td>
+<td><strong>EXCELLENT</strong></td>
+<td>officer</td>
+<td>0.90</td>
+<td>1.15</td>
+<td>68-80</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_21</td>
+<td>Клейбэг</td>
+<td>FencingH</td>
+<td><strong>EXCELLENT</strong></td>
+<td>officer</td>
+<td>0.95</td>
+<td>1.00</td>
+<td><strong>85-100</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_22</td>
+<td>Гнев Пророка</td>
+<td>FencingL</td>
+<td>GOOD</td>
+<td>persian</td>
+<td>1.00</td>
+<td>1.10</td>
+<td>42-51</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_23</td>
+<td>Скимитар</td>
+<td>FencingS</td>
+<td>GOOD</td>
+<td>persian</td>
+<td>1.05</td>
+<td>1.10</td>
+<td>56-68</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_24</td>
+<td>Кханда</td>
+<td>FencingH</td>
+<td><strong>EXCELLENT</strong></td>
+<td>persian</td>
+<td>0.90</td>
+<td>1.15</td>
+<td>85-100</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>shamshir</td>
+<td>Шамшир</td>
+<td>FencingS</td>
+<td>GOOD</td>
+<td>persian</td>
+<td>1.10</td>
+<td>1.05</td>
+<td>56-68</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_25</td>
+<td>Моргана</td>
+<td>FencingL</td>
+<td>EXCELLENT</td>
+<td><strong>quest</strong></td>
+<td>1.05</td>
+<td>1.10</td>
+<td><strong>60 (макс)</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_26</td>
+<td>Асоледа</td>
+<td>FencingL</td>
+<td>EXCELLENT</td>
+<td><strong>quest</strong></td>
+<td>1.15</td>
+<td>1.00</td>
+<td><strong>60 (макс)</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_27</td>
+<td>Саксенфедер</td>
+<td>FencingL</td>
+<td>GOOD</td>
+<td>quest</td>
+<td>1.05</td>
+<td>1.00</td>
+<td>51 (0.85·60)</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_28</td>
+<td>Катана</td>
+<td>FencingS</td>
+<td>EXCELLENT</td>
+<td><strong>quest</strong></td>
+<td>1.00</td>
+<td>1.10</td>
+<td><strong>80 (макс)</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_29</td>
+<td>Сторта</td>
+<td>FencingS</td>
+<td>EXCELLENT</td>
+<td><strong>quest</strong></td>
+<td>1.05</td>
+<td>1.10</td>
+<td><strong>80 (макс)</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_30</td>
+<td>Офицерский катлас</td>
+<td>FencingS</td>
+<td>GOOD</td>
+<td>quest</td>
+<td>0.95</td>
+<td>1.15</td>
+<td>68 (0.85·80)</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_31</td>
+<td>Нарвал</td>
+<td>FencingH</td>
+<td>EXCELLENT</td>
+<td><strong>quest</strong></td>
+<td>1.05</td>
+<td>1.05</td>
+<td><strong>100 (макс)</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_32</td>
+<td>Танат</td>
+<td>FencingH</td>
+<td>EXCELLENT</td>
+<td><strong>quest</strong></td>
+<td>1.00</td>
+<td>1.10</td>
+<td><strong>100 (макс)</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_33</td>
+<td>Меч Стража</td>
+<td>FencingH</td>
+<td>EXCELLENT</td>
+<td>quest</td>
+<td>1.00</td>
+<td>1.10</td>
+<td><strong>100 (макс)</strong></td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>blade_34/35/36</td>
+<td>Резервные клинки 1/2/3</td>
+<td>L/S/H</td>
+<td>EXCELLENT</td>
+<td>quest</td>
+<td>0.95</td>
+<td>1.15</td>
+<td>60/80/100</td>
+<td>нет</td>
+<td>8000</td>
+</tr>
+<tr>
+<td>topor_01</td>
+<td>Макуауитль</td>
+<td>FencingH</td>
+<td>GOOD</td>
+<td>native</td>
+<td>0.85</td>
+<td>1.10</td>
+<td>70-85</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>topor_02</td>
+<td>Бартакс</td>
+<td>FencingH</td>
+<td>ORDINARY</td>
+<td>marginal</td>
+<td>0.95</td>
+<td>1.15</td>
+<td>55-70</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>topor_03</td>
+<td>Годендаг</td>
+<td>FencingH</td>
+<td>ORDINARY</td>
+<td>marginal</td>
+<td>0.85</td>
+<td>1.15</td>
+<td>55-70</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>topor_04</td>
+<td>Секира</td>
+<td>FencingH</td>
+<td>GOOD</td>
+<td>quest</td>
+<td>0.90</td>
+<td>1.15</td>
+<td>85 (0.85·100)</td>
+<td>15</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>topor_05</td>
+<td>Томагавк</td>
+<td>FencingH</td>
+<td>POOR</td>
+<td>yankee</td>
+<td>0.70</td>
+<td>1.10</td>
+<td>42-57</td>
+<td>10</td>
+<td>ген.</td>
+</tr>
+<tr>
+<td>topor_06</td>
+<td>Топор викинга</td>
+<td>FencingH</td>
+<td>GOOD</td>
+<td>quest</td>
+<td>0.95</td>
+<td>1.15</td>
+<td>85</td>
+<td>нет</td>
+<td><strong>6000</strong> (+FencingH +5)</td>
+</tr>
+<tr>
+<td>knife_01</td>
+<td>Дага «Коготь Вождя»</td>
+<td>FencingL</td>
+<td>POOR</td>
+<td>quest</td>
+<td>0.50</td>
+<td>1.00</td>
+<td>25.5-34.5</td>
+<td>нет</td>
+<td><strong>1000</strong> (+FencingL +5, <strong>×3 урона нежити, ×4 монстрам Ксочитама</strong>)</td>
+</tr>
+<tr>
+<td>q_blade_10</td>
+<td>Корд (квест-дубль)</td>
+<td>FencingS</td>
+<td>GOOD</td>
+<td>quest</td>
+<td>0.90</td>
+<td>1.05</td>
+<td>68</td>
+<td>нет</td>
+<td>5000 (+FencingS +10)</td>
+</tr>
+<tr>
+<td>q_blade_13</td>
+<td>Офицерский палаш (дубль)</td>
+<td>FencingH</td>
+<td>GOOD</td>
+<td>quest</td>
+<td>0.95</td>
+<td>1.05</td>
+<td>85</td>
+<td>нет</td>
+<td>5400 (+FencingH +10)</td>
+</tr>
+<tr>
+<td>q_blade_16</td>
+<td>Смоллсворд (дубль)</td>
+<td>FencingL</td>
+<td>GOOD</td>
+<td>quest</td>
+<td>0.95</td>
+<td>1.00</td>
+<td>51</td>
+<td>нет</td>
+<td>5800 (+FencingL +10)</td>
+</tr>
+<tr>
+<td>q_blade_18</td>
+<td>Паппенхаймер (дубль)</td>
+<td>FencingL</td>
+<td>EXCELLENT</td>
+<td>quest</td>
+<td>1.05</td>
+<td>1.05</td>
+<td><strong>60</strong></td>
+<td>нет</td>
+<td>7500 (+FencingL <strong>+12</strong>)</td>
+</tr>
+<tr>
+<td>q_blade_19</td>
+<td>Морская сабля (дубль)</td>
+<td>FencingS</td>
+<td>EXCELLENT</td>
+<td>quest</td>
+<td>1.00</td>
+<td>1.05</td>
+<td><strong>80</strong></td>
+<td>нет</td>
+<td>7700 (+FencingS <strong>+12</strong>)</td>
+</tr>
+<tr>
+<td>q_blade_21</td>
+<td>Клейбэг (дубль)</td>
+<td>FencingH</td>
+<td>EXCELLENT</td>
+<td>quest</td>
+<td>0.95</td>
+<td>1.00</td>
+<td><strong>100</strong></td>
+<td>нет</td>
+<td>7900 (+FencingH <strong>+12</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> <strong>Лучшие клинки в игре:</strong>
+- Абсолютный урон: любой EXCELLENT FencingH квестовый — <strong>Нарвал, Танат, Меч Стража</strong> (100 фикс.),
+  и <code>q_blade_21</code> (Клейбэг-дубль) — 100 урона <strong>плюс +12 к навыку FencingH</strong>.
+- Лучшие «дубликаты»: <code>q_blade_18/19/21</code> — гарантированный максимальный урон + <strong>+12 к соответствующему навыку</strong>.
+- Лучшая покупная альтернатива: Клейбэг (blade_21, FencingH EXCELLENT, 85-100) и Кханда (blade_24, там же).
+- Для «FencingH break»: нужны короткие и изогнутые — <strong>Кханда (0.90/1.15)</strong> даёт <code>C/L = 1.28</code>
+  против Клейбэга (0.95/1.00) <code>= 1.05</code>. То есть <strong>Кханда лучше для пробивающих ударов</strong>.
+- Для «FencingL force»: нужны длинные и малоизогнутые — <strong>Асоледа (1.15/1.00)</strong> даёт <code>L/C = 1.15</code>, лучшая.
+- Для «FencingS fast»: нужны длинные и изогнутые — <strong>Сторта (1.05/1.10)</strong> даёт <code>L*C = 1.155</code>, лучшая.
+- Дага «Коготь Вождя» (knife_01) — единственное оружие против «Стража» (<code>GuardMask</code>) и монстров
+  Ксочитама (<code>×4</code>), а прочее оружие против них <code>/4</code> или 0 урона.
+- Кулаки (unarmed) — фиксированные 15 урона, баланс 1.0.</p>
+<h3>12.4. Огнестрельное оружие — полная таблица <code>[код]</code> <code>initItems.c:161-181</code></h3>
+<p><code>[код]</code> <code>initItems.c:3775-3776</code> По умолчанию у любого ствола <code>ChargeSpeed = 10.0</code> и <code>accuracy = 50.0</code>.
+| ID | Название | Урон min-max | Вес | Заряды | Качество | Цена | rare | minlvl |
+|---|---|---|---|---|---|---|---|---|
+| pistol1 | Строевой пистолет | 20-100 | 3.0 | 1 | POOR | 800 | <strong>0.1</strong> | 1 |
+| pistol2 | 3-ствольный дробовик | 30-120 | 4.5 | <strong>3</strong> | ORDINARY | 4 100 | 0.0001 | 1 |
+| pistol3 | Тромбон | 50-175 | 4.0 | 1 | ORDINARY | 1 200 | 0.0001 | 1 |
+| pistol4 | 4-ствольный пистолет | 40-140 | 6.0 | <strong>4</strong> | EXCELLENT | 4 800 | 0.0001 | 1 |
+| pistol5 | Бретерский пистолет | 45-170 | <strong>2.4</strong> | 1 | EXCELLENT | 2 500 | 0.0001 | 1 |
+| pistol6 | Двуствольный пистолет | 35-130 | 3.5 | 2 | EXCELLENT | 3 600 | 0.0001 | 1 |
+| <strong>pistol7</strong> | <strong>Револьвер Кольта</strong> | <strong>80-300</strong> | 2.5 | <strong>5</strong> | UNIQUE | <strong>25 000</strong> | 0.0001 | 1 |
+| pistol8 | Бландербуз | 50-175 | 5.5 | 1 | UNIQUE | 20 000 | 0.0001 | 1 |
+| pistol9 | Двузарядный пистолет Шарля | 50-160 | 3.2 | 2 | UNIQUE | 5 200 | 0.0001 | 1 |
+| pistol10/11 | Резервные пистоли 1/2 | 50-160 | 3.2 | 1/2 | UNIQUE | 5 200 | 0.0001 | 1 |
+| mushket1 | Фитильный мушкет | 120-220 | 17.5 | 1 | GOOD | 3 500 | 0.0001 | 1 |
+| mushket2 | Флотский карабин | 135-235 | 14.0 | 1 | GOOD | 7 500 | 0.0001 | 1 |
+| mushket3 | Аркебуза | 35-65 | 10.5 | 1 | EXCELLENT | 2 200 | 0.0001 | 1 |
+| grape_mushket | Склопетта (мортирка) | 100-200 | 9.0 | 1 | UNIQUE | 5 500 | 0.0001 | 1 |
+| <strong>mushket5</strong> | <strong>Винтовальный штуцер</strong> | <strong>200-300</strong> | 12.0 | 1 | UNIQUE | 17 000 | 0.0001 | 1 |
+| mushket6 | Башенный мушкетон | 35-60 | 12.5 | <strong>5</strong> | UNIQUE | <strong>35 000</strong> | 0.0001 | 1 |
+| mushket2x2 | Охотничий штуцер | <strong>180-280</strong> | 15.0 | <strong>2</strong> | UNIQUE | 12 000 | 0.0001 | 1 |
+| howdah | Гауда | 45-160 | 5.0 | 2 | EXCELLENT | 20 000 | 0.0001 | 1 |</p>
+<p><code>[интерпретация]</code>
+- <strong>Револьвер Кольта (pistol7) — лучший пистолет игры</strong>: 80-300 урона, 5 зарядов, всего 2.5 веса.
+- <strong>Винтовальный штуцер (mushket5) — максимальный одиночный урон 200-300.</strong>
+- <strong>Охотничий штуцер (mushket2x2)</strong> — 180-280 урона ×2 заряда = лучший «суммарный залп» из мушкетов.
+- Башенный мушкетон (mushket6) — 5 зарядов, но урон всего 35-60 (по факту хуже пистолета 1); стоит 35 000.
+- Аркебуза (mushket3) — самый слабый мушкет (35-65), но дешёвый и EXCELLENT-качества (нужен только перк Gunman).
+- Единственный ствол с высоким rare = <strong>pistol1 (0.1 = 10%)</strong> — все остальные почти не выпадают (0.01%).
+- Многоствольное/многозарядное (заряды &gt; 1) требует перка <strong>GunProfessional</strong> (<code>AbilityDescribe.txt:95-96</code>);
+  аркебузы, мортирки, одноствольные мушкеты — перка <strong>Gunman</strong>.</p>
+<h3>12.5. Кирасы и костюмы <code>[код]</code> <code>initItems.c:189-206</code></h3>
+<p><code>Защ.ХО</code> = <code>B_CirassLevel</code> (доля снижения урона от клинков), <code>Защ.ПМ</code> = <code>G_CirassLevel</code> (от пуль),
+<code>Крит</code> = шанс, что крит по вам сработает (0.0 = крит невозможен).</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Название</th>
+<th>Цена</th>
+<th>Вес</th>
+<th>rare</th>
+<th>minlvl</th>
+<th>Одежда?</th>
+<th>Защ.ХО</th>
+<th>Защ.ПМ</th>
+<th>Крит</th>
+<th>SPECIAL-штраф</th>
+<th>Навыки</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cirass1</td>
+<td>Траншейный доспех</td>
+<td>15 000</td>
+<td><strong>40</strong></td>
+<td>0.01</td>
+<td>1</td>
+<td>нет</td>
+<td><strong>0.35</strong></td>
+<td><strong>0.35</strong></td>
+<td>0.2</td>
+<td>E −1, A −2</td>
+<td>Sneak −5</td>
+</tr>
+<tr>
+<td>cirass2</td>
+<td>Рейтарская кираса</td>
+<td>19 000</td>
+<td>30</td>
+<td>0.01</td>
+<td>5</td>
+<td>нет</td>
+<td>0.25</td>
+<td>0.25</td>
+<td>0.3</td>
+<td>E −1, A −1</td>
+<td>Sneak −10</td>
+</tr>
+<tr>
+<td>cirass3</td>
+<td>Парадная кираса</td>
+<td>22 000</td>
+<td>15</td>
+<td>0.01</td>
+<td>11</td>
+<td>нет</td>
+<td>0.20</td>
+<td>0.20</td>
+<td>0.5</td>
+<td>A −1</td>
+<td>Lead +5, Sneak −15</td>
+</tr>
+<tr>
+<td>cirass4</td>
+<td>Миланский панцирь</td>
+<td>30 000</td>
+<td>18</td>
+<td>0.01</td>
+<td>20</td>
+<td>нет</td>
+<td>0.30</td>
+<td>0.30</td>
+<td><strong>0.0</strong></td>
+<td>E −1</td>
+<td>Lead +10, Sneak −20</td>
+</tr>
+<tr>
+<td>underwater</td>
+<td>Водолазное снаряжение</td>
+<td><strong>300 000</strong></td>
+<td>70</td>
+<td>0.0001</td>
+<td>20</td>
+<td>да</td>
+<td><strong>0.60</strong></td>
+<td>0.35</td>
+<td><strong>0.0</strong></td>
+<td>P −2, E −2, A −1</td>
+<td>Lead −20, Sneak −100, Fenc −15, Pistol −50</td>
+</tr>
+<tr>
+<td>suit1</td>
+<td>Французский офиц. мундир</td>
+<td>150 000</td>
+<td>7</td>
+<td>0.0001</td>
+<td>20</td>
+<td>да</td>
+<td>0.10</td>
+<td>0.00</td>
+<td>0.8</td>
+<td>A −1</td>
+<td><strong>Lead +15</strong>, Sneak −15</td>
+</tr>
+<tr>
+<td>suit2</td>
+<td>Английский офиц. мундир</td>
+<td>150 000</td>
+<td>7</td>
+<td>0.0001</td>
+<td>20</td>
+<td>да</td>
+<td>0.10</td>
+<td>0.00</td>
+<td>0.5*</td>
+<td>A −1</td>
+<td>Lead +15, Sneak −15</td>
+</tr>
+<tr>
+<td>suit3</td>
+<td>Испанский офиц. мундир</td>
+<td>150 000</td>
+<td>7</td>
+<td>0.0001</td>
+<td>20</td>
+<td>да</td>
+<td>0.10</td>
+<td>0.00</td>
+<td>0.5*</td>
+<td>A −1</td>
+<td>Lead +15, Sneak −15</td>
+</tr>
+<tr>
+<td>suit4</td>
+<td>Костюм Лампорта (Калеуче)</td>
+<td><strong>8 000</strong></td>
+<td>6</td>
+<td>0.0001</td>
+<td>1</td>
+<td>нет</td>
+<td>0.15</td>
+<td>0.10</td>
+<td>0.5</td>
+<td>P −1</td>
+<td>Lead −25, <strong>Sneak +30</strong></td>
+</tr>
+<tr>
+<td>cirass5</td>
+<td>Кожаный корсет</td>
+<td>7 000</td>
+<td><strong>3</strong></td>
+<td>0.01</td>
+<td>1</td>
+<td>нет</td>
+<td>0.05</td>
+<td>0.00</td>
+<td>1.0</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>cirass6</td>
+<td>Жилет бретера</td>
+<td>8 000</td>
+<td>6</td>
+<td>0.01</td>
+<td>10</td>
+<td>нет</td>
+<td>0.10</td>
+<td>0.00</td>
+<td>0.8</td>
+<td>P −1</td>
+<td>Lead −5, Sneak −5</td>
+</tr>
+<tr>
+<td>cirass7</td>
+<td>Бригант</td>
+<td>9 000</td>
+<td>12</td>
+<td>0.01</td>
+<td>10</td>
+<td>нет</td>
+<td>0.15</td>
+<td>0.15</td>
+<td>0.7</td>
+<td>A −1, P −1</td>
+<td>Lead −10, Sneak −10</td>
+</tr>
+<tr>
+<td>cirass8</td>
+<td>Плетёный доспех</td>
+<td>10 000</td>
+<td>8</td>
+<td>0.01</td>
+<td>20</td>
+<td>нет</td>
+<td>0.20</td>
+<td>0.10</td>
+<td>0.0</td>
+<td>P −1</td>
+<td>Lead −15, <strong>Sneak +15</strong></td>
+</tr>
+</tbody>
+</table>
+<p>* Значение Critical в <code>InitStdSuit</code> для suit2/suit3 = 0.5 (в <code>initItems.c:199-200</code>), а в
+<code>LAi_fightparams.c:851-871</code> явно прописан только <code>suit1: 0.8</code> и <code>suit4: 0.5</code> — для suit2/suit3 в этом switch
+записи нет, т.е. <strong>у английского и испанского мундиров крит гасится всегда (fCritical остаётся 0.0)</strong>.
+<code>[интерпретация]</code> Это, по-видимому, недокументированный баг/бонус: <strong>английский и испанский мундиры
+делают вас неуязвимым к критическим ударам</strong>, при этом французский — нет (0.8).</p>
+<p><code>[интерпретация]</code> Итоги по броне:
+- <strong>Лучшая защита от клинков — водолазное снаряжение (0.60)</strong>, но −100 Sneak и −50 Pistol делают его непригодным для боя.
+- <strong>Лучшая боевая броня — Миланский панцирь (cirass4)</strong>: 0.30/0.30, крит невозможен (0.0),
+  +10 Leadership, всего −1 Endurance, вес 18. Требует ранг 20.
+- Траншейный доспех (cirass1) даёт больше защиты (0.35/0.35), но крит проходит с шансом 20%,
+  A −2, вес 40 — очень тяжёлый.
+- <strong>Плетёный доспех (cirass8)</strong> — единственная броня с положительным Sneak (+15) и нулевым критом,
+  0.20/0.10, вес 8, цена всего 10 000. Лучший выбор для скрытной игры.
+- <strong>Костюм Лампорта (suit4)</strong> — Sneak +30 (максимум в игре) при цене 8 000 и minlevel 1.
+- Кожаный корсет (cirass5) — самый легкий (3), но не защищает от критов (1.0) и от пуль (0.00).
+- Офицерские мундиры: +15 Leadership при защите всего 0.10, но minlevel 20 и цена 150 000.</p>
+<h3>12.6. Зелья и лечение <code>[код]</code> <code>initItems.c:2612-2840</code></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Название</th>
+<th>HP</th>
+<th>Скорость выпивания</th>
+<th>Антидот</th>
+<th>Penalty</th>
+<th>Вес</th>
+<th>Цена</th>
+<th>rare</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>potion1</td>
+<td>(малое зелье)</td>
+<td><strong>40</strong></td>
+<td>по умолч. (5/сек)</td>
+<td>нет</td>
+<td>0.1</td>
+<td>0.8</td>
+<td>100</td>
+<td><strong>0.3</strong></td>
+</tr>
+<tr>
+<td>potion2</td>
+<td>(большое зелье)</td>
+<td><strong>150</strong></td>
+<td>8</td>
+<td>нет</td>
+<td>0.3</td>
+<td>1.0</td>
+<td>500</td>
+<td>0.005</td>
+</tr>
+<tr>
+<td>potion3</td>
+<td>Антидот</td>
+<td>—</td>
+<td>—</td>
+<td><strong>да</strong></td>
+<td>0.2</td>
+<td>0.4</td>
+<td>200</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>potion4</td>
+<td>Бальзам</td>
+<td><strong>130</strong></td>
+<td>8</td>
+<td><strong>да</strong></td>
+<td>0.4</td>
+<td>0.4</td>
+<td>900</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>potionrum</td>
+<td>Ром (крепкое)</td>
+<td>50</td>
+<td>по умолч.</td>
+<td><strong>да</strong></td>
+<td>—</td>
+<td>2.0</td>
+<td>150</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td>potionwine</td>
+<td>Вино</td>
+<td><strong>175</strong></td>
+<td>7</td>
+<td>нет</td>
+<td>—</td>
+<td>1.0</td>
+<td>500</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td>potion5</td>
+<td>(слабое)</td>
+<td>25</td>
+<td>по умолч.</td>
+<td>нет</td>
+<td>—</td>
+<td>0.4</td>
+<td>30</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>potion6</td>
+<td>(спец.)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>0.2</td>
+<td>3 000</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>potion7</td>
+<td>(спец., SPECIAL_ITEM)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>0.2</td>
+<td>8 000</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>Ultimate_potion</td>
+<td>Абсолютное зелье</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>2.0</td>
+<td>15 000</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>berserker_potion</td>
+<td>Зелье берсерка (для перка Rush)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>1.0</td>
+<td>5 000</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>mangarosapower и др.</td>
+<td>Зелья Мангаросы</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code>
+- <strong>Вино (potionwine) — лучшее лечение по количеству HP (175)</strong> и вдвое дешевле бальзама,
+  при этом даёт опьянение (<code>drunk = 15</code>, <code>drunk.time = 8000</code>), которое меняет навыки
+  (<code>RPGUtilite.c:1234-1237</code> — <code>chr_ai.drunk.skill.&lt;навык&gt;</code>).
+- <strong>Ром (potionrum)</strong> — 50 HP + антидот + <code>drunk = 51</code>, <code>drunk.time = 5600</code> (сильное опьянение).
+- <code>potion.penalty</code> (0.1 / 0.3 / 0.2 / 0.4) — «штраф» за использование, накапливается;
+  бальзам самый эффективный, но с максимальным штрафом.
+- <code>potion.health.speed</code> — скорость «выпивания» (для сравнения <code>LAI_DEFAULT_DLTBLTHP = 5</code> HP/сек):
+  potion2 и potion4 льют по 8 HP/сек, вино — 7. То есть большое зелье восстанавливает 150 HP примерно за 19 секунд.
+- Зелье берсерка (<code>berserker_potion</code>) — обязательный расходник для клавиши <strong>F</strong> (перк Rush: ×3 урона, ×0.5 получаемого урона).
+- Алхимия: рецепты <code>recipe_potion2</code> (7 000), <code>recipe_potion3</code> (5 000), <code>recipe_berserker_potion</code> (12 000)
+  (<code>initItems.c:2903-2905</code>). Все три зелья имеют <code>multiobject.alchemy = true</code>.
+- <code>[код]</code> <code>initItems.c:2280</code> <code>rat_poison</code> («мышьяк») — тип <code>ITEM_OBEREG</code>, цена <code>450 + rand(150)</code>,
+  время действия 60, для казначея; <strong>полный аналог «крысобога» <code>talisman1</code></strong> (отменяет порчу груза крысами).</p>
+<h3>12.7. Ценности (jewelry) <code>[код]</code> <code>initItems.c:2936-2958</code></h3>
+<p><code>InitStdItem(индекс, id, модель, текстура, картинка, rare, minlevel, цена, ?, вес, TradeType)</code>
+| ID | Название | Цена | Вес | rare |
+|---|---|---|---|---|
+| jewelry1 | Аметист | 400 | 0.1 | 0.10 |
+| jewelry2 | Алмаз | <strong>700</strong> | 0.1 | 0.05 |
+| jewelry3 | Рубин | 550 | 0.1 | 0.10 |
+| jewelry4 | Изумруд | 500 | 0.1 | 0.10 |
+| jewelry5 | Золотой самородок | 250 | 0.5 | 0.05 |
+| jewelry6 | Серебряный самородок | 150 | 0.4 | 0.10 |
+| jewelry7 | <strong>Голубой янтарь</strong> | <strong>1 500</strong> | 0.1 | 0.0001 |
+| jewelry8 | Янтарь | 450 | 0.1 | 0.0001 |
+| jewelry9 | Морион | 200 | 0.1 | 0.0001 |
+| jewelry10 | Платиновый самородок | 220 | 0.1 | 0.0001 |
+| jewelry11 | <strong>Осколок метеорита</strong> | <strong>1 500</strong> | 1.1 | 0.0001 |
+| jewelry12 | Медный самородок | 150 | 0.3 | 0.0001 |
+| jewelry13 | Железный самородок | 150 | 0.5 | 0.0001 |
+| jewelry14 | Огненный опал | 450 | 0.1 | 0.0001 |
+| jewelry15 | Аквамарин | 230 | 0.1 | 0.0001 |
+| jewelry16 | Опал | 350 | 0.1 | 0.0001 |
+| jewelry17 | Гиацинт | 300 | 0.1 | 0.001 |
+| jewelry18 | Хризопраз | 200 | 0.1 | 0.001 |
+| jewelry19 | Коралл | 200 | 0.1 | 0.001 |
+| jewelry20 | Бирюза | 400 | 0.1 | 0.001 |
+| jewelry21 | Лазурит | 180 | 0.1 | 0.001 |
+| jewelry22 | Нефрит | 250 | 0.1 | 0.001 |
+| jewelry23 | Хризоберилл | 200 | 0.1 | 0.001 |
+| jewelry24, 25... | (без цены, вес 50/60) | 0 | 0.2 | 0.0001 |</p>
+<p><code>[интерпретация]</code> <strong>Лучшая цена/вес: голубой янтарь (jewelry7) — 15 000 за единицу веса</strong> (1500/0.1),
+затем алмаз (7 000), рубин (5 500), изумруд (5 000), аметист/бирюза (4 000).
+Осколок метеорита (jewelry11) стоит столько же, но весит 1.1 — в 11 раз хуже по плотности стоимости.
+Самородки (золото 250/0.5 = 500, серебро 150/0.4 = 375) — заметно хуже камней.</p>
+<h3>12.8. Тотемы (мультикомпонентные артефакты) <code>[код]</code> <code>initItems.c:208-221</code></h3>
+<p><code>InitStdAmulet(..., Price = rand(5000)+10000, Weight = 0.5, Rare = 0.001, MinLevel = 1, Time, ITEM_TOTEM, ...)</code>
+| ID | Название | Time (дни?) | Тип офицера | Эффект (из кода) |
+|---|---|---|---|---|
+| totem_01 | Луженая глотка | 30 | — | (см. описания в <code>ItemsDescribe.txt</code>) |
+| totem_02 | Спиногрыз | <strong>90</strong> | boatswain | <strong>Полностью исключает бунт на корабле</strong> (<code>food.c:441,462</code>) |
+| totem_03 | Бальзам Купидона | 30 | — | — |
+| totem_04 | Клеврет | <strong>90</strong> | — | <strong>Офицер/компаньон не уходит из эскадры и не теряет лояльность</strong> (<code>food.c:213,357,466</code>) |
+| totem_05 | Железный пуп | <strong>360</strong> | — | <strong>Стан после удара невозможен</strong> (<code>LAi_fightparams.c:1343</code>) |
+| totem_06 | Гонтер | <strong>120</strong> | — | <strong>Отменяет −20 ко всем навыкам за перегруз</strong> (<code>RPGUtilite.c:1266</code>) |
+| totem_07 | Менестрель | 45 | — | — |
+| totem_08 | Повелитель огня | 45 | cannoner | <strong>Опыт канониров растёт вдвое</strong> (<code>Crew.c:194</code>) |
+| totem_09 | Аргузин | 45 | boatswain | <strong>Опыт матросов растёт вдвое</strong> (<code>Crew.c:197</code>) |
+| totem_10 | Творец вдов | 45 | fighter | <strong>Опыт солдат растёт вдвое</strong> (<code>Crew.c:200</code>) |
+| totem_11 | Упырь | 45 | — | <strong>Крадёт 10% энергии врага за удар</strong> (<code>LAi_fightparams.c:252</code>) |
+| totem_12 | Сын ягуара | <strong>90</strong> | — | <strong>Accuracy ×2 НОЧЬЮ; точность выстрела ×2 ночью</strong> (<code>RPGUtilite.c:1260</code>, <code>LAi_fightparams.c:551</code>) |
+| totem_13 | Джокер | 45 | — | — |</p>
+<p><code>[интерпретация]</code> Тотемы — временные (Time дней), но три из них (<code>totem_08/09/10</code>) <strong>удваивают
+прокачку опыта команды</strong> — самый сильный эффект в игре для боевой готовности корабля.
+<code>totem_12</code> («Сын ягуара») даёт двойную Accuracy ночью — а это и точность залпа, и точность выстрела из пистолета.</p>
+<h3>12.9. Талисманы (по коду <code>InitStdTalisman</code>, <code>initItems.c:3782-3814</code>)</h3>
+<p>Все талисманы: <code>price = Price + 10000</code>, <code>rare = 0.0001</code>, <code>minlevel = 1</code>, <code>unique = true</code>.
+Найденные эффекты в коде:
+| ID | Эффект |
+|---|---|
+| talisman1 | «Крысобог» — крысы не портят груз (<code>food.c:124</code>) |
+| talisman2 | Урон от шторма и торнадо ×0.2 (<code>AIShip.c:3899, 3960</code>) |
+| talisman3 | <strong>Пушки неуязвимы</strong> (<code>AICannon.c:269</code>) и <strong>нет самоподрыва пушек</strong> (<code>AIBalls.c:109</code>) |
+| talisman4 | Расход рома ×0.2; отменяет штраф морали за перегруз команды (<code>food.c:83, 308, 340</code>) |
+| talisman6 | Расход провизии ×0.75 (<code>food.c:31, 66, 363</code>) |
+| talisman8 | Полная защита от отравления (<code>LAi_fightparams.c:911</code>) |</p>
+<h3>12.10. Ключевые артефакты (сводка эффектов из кода)</h3>
+<table>
+<thead>
+<tr>
+<th>Артефакт</th>
+<th>Эффект</th>
+<th>Источник</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>indian_1</td>
+<td>Урон пистолета +15; точность врага по вам ×1.10</td>
+<td><code>LAi_fightparams.c:666, 549</code></td>
+</tr>
+<tr>
+<td>indian_2</td>
+<td>Точность выстрела ×1.15; урон пистолетом по вам ×1.1</td>
+<td><code>LAi_fightparams.c:548, 667</code></td>
+</tr>
+<tr>
+<td>indian_3</td>
+<td>Шанс крита ×1.15</td>
+<td><code>LAi_fightparams.c:735</code></td>
+</tr>
+<tr>
+<td>indian_4</td>
+<td>Урон break ×1.25 (клинок и мушкет)</td>
+<td><code>LAi_fightparams.c:185, 351</code></td>
+</tr>
+<tr>
+<td>indian_5</td>
+<td>В мушкетном залпе команда врага /1.1</td>
+<td><code>LAi_boarding.c:211</code></td>
+</tr>
+<tr>
+<td>indian_6</td>
+<td>Мушкетный залп ×1.10</td>
+<td><code>LAi_boarding.c:222</code></td>
+</tr>
+<tr>
+<td>indian_7</td>
+<td>Макс. энергия <code>+1500/энергия</code>; лимит веса ×0.9</td>
+<td><code>RPGUtilite.c:64, 1621</code></td>
+</tr>
+<tr>
+<td>indian_8</td>
+<td>Урон корпусу +5%</td>
+<td><code>AIShip.c:2325</code></td>
+</tr>
+<tr>
+<td>indian_9</td>
+<td>Accuracy ×1.10</td>
+<td><code>RPGUtilite.c:1243</code></td>
+</tr>
+<tr>
+<td>indian_10</td>
+<td>Ваши удары отравляют врага (шанс 15%)</td>
+<td><code>LAi_utils.c:1147</code></td>
+</tr>
+<tr>
+<td>indian_11</td>
+<td>Раскрытие фальшивого флага ×1.15 в вашу пользу</td>
+<td><code>AIShip.c:1916</code></td>
+</tr>
+<tr>
+<td>indian_poison</td>
+<td>Яд таино: 15 HP мгновенно + смерть при HP&lt;15</td>
+<td><code>QuestsUtilite.c:6308</code></td>
+</tr>
+<tr>
+<td>amulet_1</td>
+<td>Точность вашего выстрела ×0.90; урон пистолетом по вам −15</td>
+<td><code>LAi_fightparams.c:550, 668</code></td>
+</tr>
+<tr>
+<td>amulet_2</td>
+<td>Точность врага по вам ×0.85; ваш урон пистолетом ×0.9</td>
+<td><code>LAi_fightparams.c:551, 669</code></td>
+</tr>
+<tr>
+<td>amulet_3</td>
+<td>Шанс крита по вам ×0.85; ваш break ×0.90</td>
+<td><code>LAi_fightparams.c:737, 193</code></td>
+</tr>
+<tr>
+<td>amulet_4</td>
+<td>Ваш шанс крита ×0.90; break по вам ×0.85</td>
+<td><code>LAi_fightparams.c:738, 189</code></td>
+</tr>
+<tr>
+<td>amulet_5</td>
+<td>Перезарядка пушек ×0.85, но маневренность ×0.9</td>
+<td><code>AICannon.c:155</code>, <code>ShipsUtilites.c:900</code></td>
+</tr>
+<tr>
+<td>amulet_6</td>
+<td>Здоровье +1/день, порог потери maxHP ×1.15, но Sneak ×0.50</td>
+<td><code>RPGUtilite.c:2812, 2830, 1250</code></td>
+</tr>
+<tr>
+<td>amulet_7</td>
+<td>Fortune ×0.50</td>
+<td><code>RPGUtilite.c:1249</code></td>
+</tr>
+<tr>
+<td>amulet_8</td>
+<td>Урон кораблю −5%</td>
+<td><code>AIShip.c:2334</code></td>
+</tr>
+<tr>
+<td>amulet_10</td>
+<td>Потери команды ×0.95</td>
+<td><code>AIShip.c:2273</code></td>
+</tr>
+<tr>
+<td>amulet_11</td>
+<td>Мушкетный залп по вам ×0.95</td>
+<td><code>LAi_boarding.c:221</code></td>
+</tr>
+<tr>
+<td>obereg_3</td>
+<td>Лимит веса ×1.15</td>
+<td><code>RPGUtilite.c:1620</code></td>
+</tr>
+<tr>
+<td>obereg_4</td>
+<td>Sneak ×1.15</td>
+<td><code>RPGUtilite.c:1247</code></td>
+</tr>
+<tr>
+<td>obereg_5</td>
+<td>Fortune ×1.15</td>
+<td><code>RPGUtilite.c:1248</code></td>
+</tr>
+<tr>
+<td>obereg_6</td>
+<td>Leadership ×1.15</td>
+<td><code>RPGUtilite.c:1249</code></td>
+</tr>
+<tr>
+<td>obereg_7</td>
+<td>Sailing +10 (при экипировке)</td>
+<td><code>RPGUtilite.c:1218</code></td>
+</tr>
+<tr>
+<td>obereg_8</td>
+<td>Commerce ×1.15</td>
+<td><code>RPGUtilite.c:1250</code></td>
+</tr>
+<tr>
+<td>obereg_9</td>
+<td>Базовая скорость корабля ×1.15</td>
+<td><code>ShipsUtilites.c:776</code></td>
+</tr>
+<tr>
+<td>obereg_10</td>
+<td>Маневренность ×1.15</td>
+<td><code>ShipsUtilites.c:898</code></td>
+</tr>
+<tr>
+<td>obereg_11</td>
+<td>Ход против ветра ×1.15 (макс 1.985)</td>
+<td><code>ShipsUtilites.c:833-838</code></td>
+</tr>
+<tr>
+<td>kaleuche_amulet2</td>
+<td>FencingL/S/H и Pistol <strong>+25 каждый</strong></td>
+<td><code>RPGUtilite.c:1141-1152</code></td>
+</tr>
+<tr>
+<td>kaleuche_amulet3</td>
+<td>Получаемый урон ×0.75, полная защита от яда</td>
+<td><code>LAi_fightparams.c:886, 1122</code>, <code>LAi_utils.c:1146</code></td>
+</tr>
+<tr>
+<td>KhaelRoa_item</td>
+<td>Урон пистолетом ×10</td>
+<td><code>LAi_fightparams.c:672</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> <strong>Самые мощные артефакты:</strong> <code>kaleuche_amulet2</code> (+25 ко всем четырём боевым навыкам —
+эквивалент 25 уровней навыка каждый), <code>kaleuche_amulet3</code> (−25% всего получаемого урона + иммунитет к яду),
+<code>talisman3</code> (пушки неуязвимы и не рвутся), <code>totem_08/09/10</code> (двойной опыт команды).
+Обереги 9/10/11 вместе дают кораблю +15% скорости, +15% маневренности и +15% хода против ветра.</p>
+<h3>12.11. Прочие числовые особенности предметов</h3>
+<ul>
+<li><code>[код]</code> <code>_LSC_on_off.h:115</code> + <code>RPGUtilite.c:1611-1629</code> Лимит веса и −20 к навыкам за перегруз (см. п. 1.8).</li>
+<li><code>[код]</code> <code>RPGUtilite.c:1596</code> Атлас карт (<code>MapsAtlas</code>) <strong>не учитывается в весе</strong> — единственное исключение.</li>
+<li><code>[код]</code> <code>initItems.c:3623-3728</code> Все генерируемые клинки создаются с уникальными случайными
+  Weight/Balance/Attack при <code>Generation.qty</code> штук в пуле.</li>
+<li><code>[код]</code> <code>itemLogic.c:910-913</code> Предметы <code>quality &gt;= B_EXCELLENT</code> в сундуках не появляются.</li>
+<li><code>[код]</code> <code>initItems.c:3745</code> <code>blade.TradeType = ITEM_TRADE_AMMUNITION</code> — клинки продаются в оружейных лавках.</li>
+</ul>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

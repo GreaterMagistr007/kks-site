@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тюремные дела (тюремный клад и малява) — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="on">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="">
+<h1>Тюремные дела (тюремный клад и малява)</h1>
+<p class="sub">Генераторные (тюрьма)</p>
+<a class="back" href="../quests.html">← все квесты</a>
+<p><span class="tag generator">генераторное задание</span></p>
+<table><tr><th>Где начинается</th><td>любая тюрьма</td></tr><tr><th>У кого</th><td>призонбосс, заключённый</td></tr><tr><th>Триггер</th><td>разговор с призонбоссом (может отказать, может пропустить за дублоны, можно прорваться с боем), затем через решётку с заключённым</td></tr><tr><th>Линия</th><td>Генераторные (тюрьма)</td></tr><tr><th>В скриптах игры</th><td><code>GivePrisonFree / GivePrisonFree_Over / Malyava</code></td></tr></table>
+<h3>Требования</h3><ul><li>дублоны на проход и залог</li><li>либо сила, чтобы перебить охрану тюрьмы</li></ul>
+<h3>Таймеры</h3><table><tr><th>Что</th><th>Срок</th><th>Если просрочить</th></tr><tr><td>GivePrisonFree_Over</td><td><b>2 дня</b></td><td>провал квеста [код]</td></tr><tr><td>DeliverToBander_over</td><td><b>2 дня</b></td><td>провал доставки малявы [код]</td></tr></table><h3>Порядок действий</h3><ol><li>Поговорить с призонбоссом: он может отказать, пропустить за сумму в дублонах или придётся прорываться с боем.</li><li>Через решётку поговорить с заключённым — доступны два квеста.</li><li>«Тюремный клад»: внести залог призонбоссу (может отказать — тогда отбивать с боем, после чего солдаты в поселении и форт при выходе в море становятся враждебными).</li><li>Варианты награды за клад: сокровища делятся поровну с зеком; недорогой клад плюс амулет; клад уже выкопали до вас; половинка карты сокровищ; боевая амуниция зека.</li><li>«Доставка малявы сообщникам»: сообщники в любом доме, в задних комнатах верфи, магазина или у ростовщика, при наличии второго этажа — могут быть там.</li><li>Варианты по маляве: попытаются убить и ограбить, вознаграждение, наводка на торговые корабли с определённым товаром, наводка на курьерский корабль с драгоценностями, липовая наводка.</li></ol><h3>Награды</h3><ul><li>половина клада с сокровищами</li><li>амулет</li><li>половинка карты сокровищ</li><li>боевая амуниция зека</li><li>вознаграждение и наводки за маляву</li></ul>
+<h3>Развилки</h3><div class="warnbox"><b>Внести залог</b><br>мирный вариант, отношения не портятся</div><div class="warnbox"><b>Отбить с боем</b><br>солдаты поселения и форт становятся враждебными</div><h3>Предупреждения</h3><div class="warnbox"><ul><li>отбитый с боем зек делает поселение и форт враждебными</li><li>маляву могут использовать, чтобы убить и ограбить ГГ</li><li>наводка может оказаться липовой</li></ul></div><h3>Города квеста</h3><a class="tag" href="../towns.html">любой город</a><h3>Действующие лица</h3><span class="tag">призонбосс</span><span class="tag">заключённый</span><span class="tag">сообщники</span><h3>Предметы</h3><span class="tag">Malyava</span><span class="tag">карта сокровищ</span><span class="tag">амулет</span><p class="src">Источники: 06-scripts-analysis.md, 12-harbour-sidequests.md</p>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

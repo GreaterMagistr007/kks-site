@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дело чести — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="on">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="">
+<h1>Дело чести</h1>
+<p class="sub">Генераторные (дворяне, дуэльный генератор)</p>
+<a class="back" href="../quests.html">← все квесты</a>
+<p><span class="tag side">побочный</span></p>
+<table><tr><th>Где начинается</th><td>любой город</td></tr><tr><th>У кого</th><td>жительница, отец, солдат в таверне</td></tr><tr><th>Триггер</th><td>три варианта завязки: жалоба на офицера-домогателя, просьба отца заколоть обидчика сына, ссора солдата с «первой шпагой гарнизона»</td></tr><tr><th>Линия</th><td>Генераторные (дворяне, дуэльный генератор)</td></tr><tr><th>В скриптах игры</th><td><code>AffairOfHonor / AffairOfHonor_TimeIsLeft</code></td></tr></table>
+<h3>Требования</h3><ul><li>навык фехтования</li><li>броня и лечилки — секунданты могут напасть</li></ul>
+<h3>Таймеры</h3><table><tr><th>Что</th><th>Срок</th><th>Если просрочить</th></tr><tr><td>дуэль на маяке (AffairOfHonor_TimeIsLeft)</td><td><b>через 2 часа (в коде 3 часа / 2 дня)</b></td><td>дуэль не состоится [код]</td></tr></table><h3>Порядок действий</h3><ol><li>Сюжет 1: жительница жалуется на офицера-домогателя, тот подходит сам — дуэль через 2 часа на маяке; он приходит с двумя секундантами, которые могут попытаться отомстить.</li><li>Сюжет 2: отец просит заколоть человека, вызвавшего его сына; обидчика искать в таверне или борделе и вызвать на дуэль через 2 часа на маяке.</li><li>Сюжет 3: солдат в таверне поссорился с «первой шпагой гарнизона» — обойти все дома поселения, найти дом любовницы обидчика, спровоцировать его и вызвать на дуэль через 2 часа на маяке.</li><li>В сюжете 3 убитый оказывается ординарцем коменданта: секунданты советуют не показываться в городе.</li><li>Если корабль не в порту — выйти на сутки на глобалку и вернуться за наградой; если корабль в порту — ночью пробраться в таверну, забрать дублоны и бежать из порта.</li></ol><h3>Награды</h3><ul><li>Честь (сюжет 1)</li><li>горсть золотых дублонов (сюжет 2)</li><li>дублоны (сюжет 3)</li><li>Харизма, Везение и плюсы во всё оружие</li></ul>
+<h3>Развилки</h3><div class="warnbox"><b>Сюжет 1 — офицер-домогатель</b><br>благодарность и Честь</div><div class="warnbox"><b>Сюжет 2 — обидчик сына</b><br>горсть золотых дублонов</div><div class="warnbox"><b>Сюжет 3 — «первая шпага гарнизона»</b><br>дублоны, но город становится опасен</div><h3>Предупреждения</h3><div class="warnbox"><ul><li>в сюжете 3 после дуэли город опасен — забирать награду ночью или после суток в море</li><li>секунданты офицера могут напасть</li></ul></div><h3>Города квеста</h3><a class="tag" href="../towns.html">любой город</a><h3>Действующие лица</h3><span class="tag">жительница</span><span class="tag">офицер-домогатель</span><span class="tag">отец</span><span class="tag">солдат</span><span class="tag">«первая шпага гарнизона»</span><span class="tag">любовница обидчика</span><p class="src">Источники: 06-scripts-analysis.md, 12-harbour-sidequests.md</p>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

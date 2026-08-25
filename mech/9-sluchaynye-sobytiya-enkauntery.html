@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>9. Случайные события (энкаунтеры) — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>9. Случайные события (энкаунтеры)</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>9.1. Морские энкаунтеры: полная таблица <code>[код]</code> <code>PROGRAM/Encounters/encounters.h</code>, <code>Encounters_init.c</code></h3>
+<p><code>MAX_ENCOUNTER_TYPES = 27</code>. По умолчанию у каждого типа <code>Chance = 100</code>, <code>MinRank = 1</code>, <code>MaxRank = 1000</code>.
+Выбор типа: <code>iChance = rand(250)</code> (в некоторых местах <code>rand(200)</code>), тип проходит,
+если <code>iChance &lt;= Chance</code> (<code>Encounters.c:34,42,67,75,100,108,133,141</code>).
+<code>[интерпретация]</code> Значит <strong>фактическая вероятность типа = Chance/250</strong> (или /200), т.е. <code>Chance = 100</code> → 40%,
+<code>Chance = 25</code> → 10%, <code>Chance = 45</code> → 18%.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Тип</th>
+<th>Категория</th>
+<th>MinRank</th>
+<th>Chance</th>
+<th>Торговых кораблей</th>
+<th>Военных</th>
+<th>Класс торг.</th>
+<th>Класс воен.</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>MERCHANT_SMALL «каботажник»</td>
+<td>TRADE</td>
+<td>1</td>
+<td>100</td>
+<td>1-2</td>
+<td>0</td>
+<td>5-6</td>
+<td>—</td>
+<td>47</td>
+</tr>
+<tr>
+<td>1</td>
+<td>MERCHANT_MEDIUM «негоциант»</td>
+<td>TRADE</td>
+<td>1</td>
+<td>100</td>
+<td>2-4</td>
+<td>0</td>
+<td>4-6</td>
+<td>—</td>
+<td>62</td>
+</tr>
+<tr>
+<td>2</td>
+<td>MERCHANT_LARGE «кумпанство»</td>
+<td>TRADE</td>
+<td>1</td>
+<td>100</td>
+<td>3-5</td>
+<td>0</td>
+<td>3-5</td>
+<td>—</td>
+<td>77</td>
+</tr>
+<tr>
+<td>3</td>
+<td>MERCHANT_GUARD_SMALL</td>
+<td>TRADE</td>
+<td>1</td>
+<td>100</td>
+<td>1-3</td>
+<td>1</td>
+<td>4-5</td>
+<td>4-5</td>
+<td>92</td>
+</tr>
+<tr>
+<td>4</td>
+<td>MERCHANT_GUARD_MEDIUM</td>
+<td>TRADE</td>
+<td>1</td>
+<td>100</td>
+<td>2-3</td>
+<td>1-2</td>
+<td>4-5</td>
+<td>3-5</td>
+<td>108</td>
+</tr>
+<tr>
+<td>5</td>
+<td>MERCHANT_GUARD_LARGE</td>
+<td>TRADE</td>
+<td><strong>5</strong></td>
+<td>100</td>
+<td>3-5</td>
+<td>1-2</td>
+<td>3-4</td>
+<td>2-4</td>
+<td>124</td>
+</tr>
+<tr>
+<td>6</td>
+<td>ESCORT_SMALL</td>
+<td>TRADE</td>
+<td>1</td>
+<td>100</td>
+<td>2-3</td>
+<td>1-2</td>
+<td>3-4</td>
+<td>—</td>
+<td>140</td>
+</tr>
+<tr>
+<td>7</td>
+<td>ESCORT_MEDIUM</td>
+<td>TRADE</td>
+<td>—</td>
+<td>100</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>~156</td>
+</tr>
+<tr>
+<td>8</td>
+<td>ESCORT_LARGE</td>
+<td>TRADE</td>
+<td><strong>4</strong></td>
+<td>100</td>
+<td>3-5</td>
+<td>2-4</td>
+<td>3-4</td>
+<td>2-3</td>
+<td>172</td>
+</tr>
+<tr>
+<td>9</td>
+<td>PATROL_SMALL «патруль»</td>
+<td>WAR</td>
+<td>1</td>
+<td>100</td>
+<td>0</td>
+<td>1-3</td>
+<td>—</td>
+<td>4-5</td>
+<td>190</td>
+</tr>
+<tr>
+<td>10</td>
+<td>PATROL_MEDIUM</td>
+<td>WAR</td>
+<td><strong>5</strong></td>
+<td>100</td>
+<td>0</td>
+<td>2-4</td>
+<td>—</td>
+<td>3-5</td>
+<td>204</td>
+</tr>
+<tr>
+<td>11</td>
+<td>PATROL_LARGE</td>
+<td>WAR</td>
+<td><strong>7</strong></td>
+<td>100</td>
+<td>0</td>
+<td>3-5</td>
+<td>—</td>
+<td>2-4</td>
+<td>218</td>
+</tr>
+<tr>
+<td>12</td>
+<td>PIRATE_SMALL «контрабандисты»</td>
+<td>WAR</td>
+<td>1</td>
+<td>100</td>
+<td>0</td>
+<td>1-2</td>
+<td>—</td>
+<td>5-6</td>
+<td>232</td>
+</tr>
+<tr>
+<td>13</td>
+<td>PIRATE_MEDIUM «прибрежные крысы»</td>
+<td>WAR</td>
+<td><strong>3</strong></td>
+<td>100</td>
+<td>0</td>
+<td>1-4</td>
+<td>—</td>
+<td>4-6</td>
+<td>249</td>
+</tr>
+<tr>
+<td>14</td>
+<td>PIRATE_LARGE «рейдер»</td>
+<td>WAR</td>
+<td><strong>4</strong></td>
+<td>100</td>
+<td>0</td>
+<td>2-6</td>
+<td>—</td>
+<td>2-6</td>
+<td>266</td>
+</tr>
+<tr>
+<td>15</td>
+<td>PIRATE_SCOUNDREL «отморозок»</td>
+<td>WAR</td>
+<td><strong>5</strong></td>
+<td>100</td>
+<td>0</td>
+<td>1-3</td>
+<td>—</td>
+<td>2-3</td>
+<td>283</td>
+</tr>
+<tr>
+<td>16</td>
+<td>SQUADRON «поход»</td>
+<td>WAR</td>
+<td><strong>4</strong></td>
+<td>100</td>
+<td>0</td>
+<td>2-3</td>
+<td>—</td>
+<td>2-4</td>
+<td>300</td>
+</tr>
+<tr>
+<td>17</td>
+<td>FLEET «приватир»</td>
+<td>WAR</td>
+<td><strong>6</strong></td>
+<td>100</td>
+<td>0</td>
+<td>3-5</td>
+<td>—</td>
+<td>2-4</td>
+<td>314</td>
+</tr>
+<tr>
+<td>18</td>
+<td>ARMADA (карательная эскадра)</td>
+<td>WAR</td>
+<td><strong>9</strong></td>
+<td><strong>30</strong></td>
+<td>0</td>
+<td><strong>3-9</strong></td>
+<td>—</td>
+<td>2-4</td>
+<td>328</td>
+</tr>
+<tr>
+<td>19</td>
+<td>CROWN_ARMADA (коронная эскадра)</td>
+<td>WAR</td>
+<td><strong>9</strong></td>
+<td><strong>25</strong></td>
+<td>0</td>
+<td>3-5</td>
+<td>—</td>
+<td>2-3</td>
+<td>343</td>
+</tr>
+<tr>
+<td>20</td>
+<td>PUNITIVE_SQUADRON</td>
+<td>WAR</td>
+<td><strong>7</strong></td>
+<td><strong>30</strong></td>
+<td>0</td>
+<td>2-4</td>
+<td>—</td>
+<td>2-3</td>
+<td>359</td>
+</tr>
+<tr>
+<td>21</td>
+<td>WAR_PRIVATEER</td>
+<td>WAR</td>
+<td><strong>4</strong></td>
+<td><strong>45</strong></td>
+<td>0</td>
+<td>1-2</td>
+<td>—</td>
+<td>3-4</td>
+<td>374</td>
+</tr>
+<tr>
+<td>22</td>
+<td>MERCHANT_CROWN (коронный торговец)</td>
+<td>TRADE</td>
+<td><strong>4</strong></td>
+<td><strong>25</strong></td>
+<td>1-3</td>
+<td>1-3</td>
+<td>2-3</td>
+<td>2-3</td>
+<td>389</td>
+</tr>
+<tr>
+<td>23</td>
+<td>MERCHANT_EXPEDITION (экспедиция)</td>
+<td>TRADE</td>
+<td><strong>4</strong></td>
+<td><strong>55</strong></td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>2-3</td>
+<td>406</td>
+</tr>
+<tr>
+<td>24</td>
+<td>ALONE</td>
+<td>—</td>
+<td>—</td>
+<td><strong>0, Skip=true</strong></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>40</td>
+</tr>
+<tr>
+<td>25</td>
+<td>BARREL (бочонок)</td>
+<td>SPECIAL</td>
+<td>1</td>
+<td><strong>45</strong></td>
+<td>0</td>
+<td>0</td>
+<td>—</td>
+<td>—</td>
+<td>423</td>
+</tr>
+<tr>
+<td>26</td>
+<td>BOAT (кораблекрушенец)</td>
+<td>SPECIAL</td>
+<td>1</td>
+<td><strong>25</strong></td>
+<td>0</td>
+<td>0</td>
+<td>—</td>
+<td>—</td>
+<td>435</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code>
+- Пираты (кроме <code>PIRATE_SMALL</code>) исключены из большинства торговых типов (<code>Enc_ExcludeNation(rEnc, PIRATE)</code>).
+- <strong>Самые опасные встречи привязаны к ранrу</strong>: ARMADA и CROWN_ARMADA только с ранга 9, PATROL_LARGE с 7,
+  PUNITIVE_SQUADRON с 7. Играя на низких рангах, крупные эскадры вы не увидите.
+- Реальное число кораблей: <code>ShipsMin + rand(ShipsMax - ShipsMin)</code> (<code>encounters_map.c:211-212</code>),
+  т.е. фактически от Min до Max−1 (стандартная особенность <code>rand</code> в Storm).
+- <code>[код]</code> <code>encounters_map.c:486</code> <code>iIsTrade = rand(3)</code> — распределение торговых/военных встреч.
+- <code>[код]</code> <code>encounters_map.c:349</code> квестовые энкаунтеры: <code>rand(99) &lt; rQEncounter.Rand</code>.
+- Перк <code>SailingProfessional</code> — «в 75% случаев можно пропустить встречу с обычными кораблями»
+  (<code>AbilityDescribe.txt:281</code>, реализация <code>worldmap_events.c:185</code>).
+- Перк <code>SeaDogProfessional</code> («Гроза Морей») исключает атаку вражескими эскадрами, <strong>но не работает
+  на кораблях малых классов</strong>.</p>
+<h3>9.2. Сухопутные энкаунтеры <code>[код]</code> <code>PROGRAM/Loc_ai/LAi_monsters.c:271-1103</code> <code>LAi_CreateEncounters</code></h3>
+<p>Условия генерации (все должны быть выполнены):</p>
+<pre><code>bLandEncountersGen == true  (_LSC_on_off.h:54, по умолчанию true)
+!bDisableLandEncounters     (_LSC_on_off.h:28, по умолчанию false — «запрет всех случаек на суше,
+                             офицеры и клады тоже»)
+локация имеет locators.encdetector
+CheckNPCQuestDate(location, &quot;Enc_date&quot;) — не чаще одного раза в игровой день на локацию
+нет атрибута DisableEncounters, fastreload, ItzaLand, onUninhabitedIsland-исключений
+нет флага GenQuest.Enc2Pause (одноразовая пауза)
+нация ближайшего города не PIRATE и не -1
+в бухте (seashore) с контрабандистами (модель &quot;smg&quot;) энкаунтеры НЕ ставятся
+</code></pre>
+<p>Выбор варианта <code>[код]</code> <code>LAi_monsters.c:339-348</code>:</p>
+<pre><code>на необитаемых островах / deadlocked: если seashore → iRand = rand(1) + 7 (варианты 7 или 8), иначе iRand = 1
+в обитаемых землях: iRand = rand(6)  → варианты 0..5
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>iRand</th>
+<th>Событие</th>
+<th>Доп. условие/шанс</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Банда рейдеров (грабители)</td>
+<td><code>rand(10) &gt; 6</code> → отказ, т.е. <strong>шанс 70%</strong>; не на seashore/mayak/questisland/необитаемых; исключены Curacao_jungle_03 и Hispaniola_Jungle_02</td>
+<td>351</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Банда индейцев</td>
+<td>—</td>
+<td>446</td>
+</tr>
+<tr>
+<td>2</td>
+<td>«Спасаем девку в пампасах»</td>
+<td>—</td>
+<td>575</td>
+</tr>
+<tr>
+<td>3</td>
+<td>(доп. вариант)</td>
+<td>—</td>
+<td>725</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Военный патруль</td>
+<td>—</td>
+<td>744</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Каторжане</td>
+<td><code>rand(15) &gt; 3</code> → отказ, т.е. <strong>шанс ~27%</strong>; не при <code>GenQuest.Convict</code>; не на seashore/mayak/необитаемых; не в Панаме; ранг каторжан <code>2 + rand(3)</code></td>
+<td>814</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Праздношатающиеся индейцы</td>
+<td><code>rand(10) &gt; 6</code> → отказ (<strong>шанс 70%</strong>); не при <code>GenQuest.JusticeOnSale</code></td>
+<td>887</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Пираты на необитаемом (пришли с моря)</td>
+<td><code>rand(4) == 1</code> → <strong>25%</strong>; только на необитаемом, не deadlocked, <code>reload_cur_island_index &gt; -1</code></td>
+<td>971</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Пираты в точке высадки</td>
+<td><code>rand(4) == 1</code> → <strong>25%</strong>; <code>pchar.location == pchar.location.from_sea</code></td>
+<td>1036</td>
+</tr>
+</tbody>
+</table>
+<p>Ранг противников <code>[код]</code> <code>LAi_monsters.c:359-365, 896-902</code>:</p>
+<pre><code>если ранг ГГ &lt;= 6:  iRank = ранг ГГ
+если ранг ГГ &gt; 20:  iRank = ранг ГГ + MOD_SKILL_ENEMY_RATE * 2.5 / число_врагов
+иначе (7..20):      iRank = ранг ГГ + MOD_SKILL_ENEMY_RATE * 1.6 / число_врагов
+Число врагов = число локаторов в группе − rand(2), минимум 1
+</code></pre>
+<p><code>[интерпретация]</code> <strong>Противники всегда подстроены под ваш ранг</strong> — прокачка не облегчает наземные встречи.
+На сложности 10 и ранге &gt; 20 бонус к рангу врагов: <code>25/num</code> (при 4 врагах +6 к рангу каждому).</p>
+<h3>9.3. Пещерные энкаунтеры <code>[код]</code> <code>LAi_monsters.c:1105-1343</code> <code>LAi_CreateCaveEncounters</code></h3>
+<pre><code>только для локаций с type == &quot;cave&quot;
+не чаще 1 раза в игровой день (атрибут enc)
+исключены: Ksochitam_*, mine_*, Bermudes_Cavern, FortFrance_Dungeon
+шанс: drand(12) &gt; 5 → отказ, т.е. вероятность события ~50%
+ранг противников: iRank = 8 + ранг_ГГ + MOD_SKILL_ENEMY_RATE/2
+вариант: rand(4) → 0..4 (фактически 0..3, случай 4 достигается редко)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Вариант</th>
+<th>Содержание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Бандиты (4 человека, модели citiz_41..50)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Карибы (индейцы)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Мирный индеец</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>4 скелета с лутом</strong> (модели skel1..skel3, нация PIRATE, <code>SaveItemsForDead</code>, <code>DontClearDead</code>)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Заполнение сундука в пещере (см. ниже)</td>
+</tr>
+</tbody>
+</table>
+<p>Содержимое пещерного сундука <code>[код]</code> <code>LAi_monsters.c:1315-1338</code>:</p>
+<pre><code>sJew = jewelry(12..22);  sGem = jewelry(1..5);  sMin = mineral(13..25)
+sItm = один из indian_1..11 / amulet_1..11 / obereg_1..11 (drand(2) выбирает группу)
+10%: gold_dublon x drand(100)
+10%: chest x drand(1)
+10%: jewelry7 x drand(3)
+10%: jewelry5 x drand(100)
+10%+10%: jewelry6 x drand(200)  (два независимых броска)
+40% (drand(10) &gt; 5): случайный минерал x1
+14% (drand(7)==0): АРТЕФАКТ (indian/amulet/obereg) x1
+14% (drand(7)==1): sJew x drand(20)
+14% (drand(7)==2): sGem x drand(30)
+</code></pre>
+<p><code>[интерпретация]</code> Пещеры — лучший источник артефактов после кладов: <strong>14% шанс артефакта
+на каждый сгенерированный пещерный сундук</strong>, при том что событие происходит примерно раз в день
+с вероятностью 50% в каждой пещере (и вариант «сундук» — 1 из 5).
+Ранг скелетов <code>8 + ранг_ГГ + MOD/2</code> — они всегда сильнее ГГ.</p>
+<h3>9.4. Прочие генераторы на локациях <code>[код]</code> <code>LAi_monsters.c</code></h3>
+<ul>
+<li><code>LAi_CreateFlowers</code> (строка 122) — генерация травы/растений.</li>
+<li><code>LAi_CreateQuestFlowers</code> (149) — рассада квестовой травки (Мангароса).</li>
+<li><strong><code>LAi_CreateShoreChest</code> (166): выброшенные на берег сундуки — шанс <code>drand(100) &lt; 5</code> = 5%</strong>
+  на локациях <code>type == "seashore"</code>. Модель <code>chest_1</code> или <code>chest_2</code>, содержимое через <code>FillShorechestBox(loc, num, drand(5))</code>.
+  Сундук <strong>исчезает через 2 игровых дня</strong> (<code>GetNpcQuestPastDayParam(location, "chest_date") &gt; 2</code>).</li>
+<li><code>LAi_CreateDolly</code> (225) — телепортационные статуи (предметы <code>dolly0</code>..<code>dolly5</code>).</li>
+<li><code>LAi_CreateParticles</code> (1345) — партиклы окружения.</li>
+<li><code>[код]</code> <code>_LSC_on_off.h:52</code> <code>bMonstersGen = false</code> — <strong>генерация монстров по умолчанию ВЫКЛЮЧЕНА</strong>.</li>
+<li><code>[код]</code> <code>locations/init/Ksochitam.c:74,195,317,476</code> число скелетов в локациях Ксочитама:
+  <code>10 + MOD/2</code>, <code>9 + MOD/2</code>, <code>4 + MOD/2</code>, <code>10 + MOD</code> → на сложности 10: 15, 14, 9, 20 монстров.</li>
+</ul>
+<h3>9.5. Животные и окружение <code>[код]</code> <code>PROGRAM/animals.c</code></h3>
+<p>Чисто декоративные объекты, боевого значения нет:
+- чайки (<code>MSG_ANIMALS_SEAGULLS_SHOW</code>) — только днём, не в дождь, не в шторм, при <code>environment.weather == true</code>;
+- бабочки — только в локациях <code>type == "jungle"</code>, днём, не в дождь/шторм;
+- косяки рыб (<code>MSG_ANIMALS_FISHSCHOOLS_SHOW</code>) — только в море.
+<code>[интерпретация]</code> Наличие/отсутствие чаек и бабочек — визуальный индикатор погоды и времени суток.</p>
+<h3>9.6. Погонная логика фантомов <code>[код]</code> <code>AIShip.c:4266-4272</code></h3>
+<pre><code>если GetNpcQuestPastTimeParam(rCharacter, &quot;Add2SeaTime&quot;) &gt; 55 (≈2 дня для фантома)
+   → Ship_SetTaskRunaway(...) — корабль начинает убегать от ГГ
+</code></pre>
+<p><code>[интерпретация]</code> Любой сгенерированный корабль через ~2 суток погони начинает убегать, а не атаковать.
+Пересчёт временных навыков (<code>TmpSkillRecall</code>) — раз в <code>25 + rand(49)</code> кадров/вызовов.</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

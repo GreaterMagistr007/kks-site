@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Предложение пирата — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="on">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="">
+<h1>Предложение пирата</h1>
+<p class="sub">Системные (случайные встречи)</p>
+<a class="back" href="../quests.html">← все квесты</a>
+<p><span class="tag generator">генераторное задание</span></p>
+<table><tr><th>Где начинается</th><td>глобальная и боевая карта</td></tr><tr><th>У кого</th><td>пиратский капитан</td></tr><tr><th>Триггер</th><td>случайная встреча в море: пират предлагает сделку вместо боя</td></tr><tr><th>Линия</th><td>Системные (случайные встречи)</td></tr><tr><th>В скриптах игры</th><td><code>Gen_PGGQuest1 / PGGQuest1_Time2Fight</code></td></tr></table>
+<h3>Требования</h3><ul><li>корабль и команда</li><li>готовность к бою при отказе</li></ul>
+<h3>Таймеры</h3><table><tr><th>Что</th><th>Срок</th><th>Если просрочить</th></tr><tr><td>PGGQuest1_Time2Fight</td><td><b>2 дня (таймер считается от GetHour()) [код]</b></td><td>бой начинается сам</td></tr><tr><td>PGGQuest1_RemoveShip_Timer</td><td><b>от GetHour() [код]</b></td><td>корабль пирата исчезает</td></tr></table><h3>Порядок действий</h3><ol><li>Встретить в море пиратского капитана, который предлагает сделку вместо боя.</li><li>Развилка: принять предложение (совместное дело, делёж добычи) либо отказаться и драться.</li><li>Если приняли — выполнить условленное в срок (2 дня).</li><li>После сделки корабль пирата исчезает по таймеру.</li><li>Запись Gen_PGGQuest1 в дневнике насчитывает 19 этапов — вариантов развития много [код].</li></ol><h3>Награды</h3><ul><li>доля добычи по сделке</li><li>трофей при отказе и победе</li></ul>
+<h3>Развилки</h3><div class="warnbox"><b>Принять предложение</b><br>доля добычи, но связь с пиратами</div><div class="warnbox"><b>Отказаться</b><br>бой и возможный трофей</div><h3>Предупреждения</h3><div class="warnbox"><ul><li>при просрочке пират сам начинает бой</li></ul></div><h3>Города квеста</h3><a class="tag" href="../towns.html">открытое море</a><h3>Действующие лица</h3><span class="tag">пиратский капитан</span><p class="src">Источники: 06-scripts-analysis.md, 12-harbour-sidequests.md</p>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

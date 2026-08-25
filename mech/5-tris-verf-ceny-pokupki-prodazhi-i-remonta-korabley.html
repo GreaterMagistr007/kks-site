@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5-трис. Верфь: цены покупки, продажи и ремонта кораблей — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>5-трис. Верфь: цены покупки, продажи и ремонта кораблей</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><p><code>[код]</code> <code>PROGRAM/scripts/ShipsUtilites.c:8-9, 1239-1315</code>, <code>PROGRAM/interface/repair.c</code>, <code>characterUtilite.c:719-745</code></p>
+<h3>Константы</h3>
+<table>
+<thead>
+<tr>
+<th>Константа</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SAIL_COST_PERCENT</code></td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>HULL_COST_PERCENT</code></td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+<h3>Формулы</h3>
+<pre><code>Базовая цена = ShipCostRate верфи * Price корабля             (ShipsUtilites.c:1244)
+
+Ремонт парусов: коэф = 3.0 + MOD_SKILL_ENEMY_RATE/10  (×3 если Tuning.GhostShip)
+   scost = коэф * (базовая_цена * 10 + 99)/100
+   стоимость = (scost * процент_ремонта + 99)/100
+
+Ремонт корпуса: коэф = 3.0 + MOD_SKILL_ENEMY_RATE/10  (×3 если GhostShip)
+   scost = коэф * (базовая_цена * 20 + 99)/100
+   стоимость = (scost * процент_ремонта + 99)/100
+
+ПОКУПКА корабля (ShipsUtilites.c:1291):
+   (базовая_цена + базовая_цена/(Commerce_стар*10)) * (7 - класс)
+   Commerce_стар += 4 с AdvancedCommerce, += 2 с BasicCommerce
+
+ПРОДАЖА корабля (ShipsUtilites.c:1248-1277):
+   price = базовая_цена
+         − 1.5 * стоимость_ремонта_парусов(текущее повреждение)
+         − 1.5 * стоимость_ремонта_корпуса(текущее повреждение)
+         − price/(Commerce_стар*10.5)
+   если корабль краденый (Stolen): price /= 3
+   минимум 100 песо
+</code></pre>
+<p><code>[интерпретация]</code>
+265. <strong>Покупка умножается на <code>(7 − класс)</code></strong>: линкор класса 1 стоит ×6 базовой цены, тартана класса 6 — ×1.
+     Английский Манowar (базовая 151 100) на верфи обойдётся примерно в <strong>906 600 песо</strong>!
+266. <strong>Ремонт корпуса стоит вдвое дороже ремонта парусов</strong> (HULL_COST_PERCENT 20 против SAIL 10).
+267. Полный ремонт корпуса «с нуля» ≈ <code>(3 + MOD/10) * базовая_цена * 0.2</code> ≈ <strong>64-66% базовой цены корабля</strong>
+     на сложности 4. Дешевле купить новый корабль, чем ремонтировать сильно повреждённый крупный.
+268. <strong>Корабли-призраки (<code>Tuning.GhostShip</code>) ремонтируются в 3 раза дороже.</strong>
+269. При продаже с вас вычитают <strong>1.5× стоимость ремонта</strong> — продавать битый корабль крайне невыгодно;
+     сначала отремонтируйте (стоимость ремонта ×1.0), потом продавайте.
+270. <strong>Краденый корабль (<code>Stolen</code>) продаётся за 1/3 цены.</strong>
+271. Навык Commerce влияет на цену покупки как <code>+цена/(Commerce*10)</code> — при Commerce 100 это всего +1%,
+     при Commerce 10 (старая шкала 1) — целых +10%. Перк <code>AdvancedCommerce</code> даёт эффект как +40 навыка.
+272. Продажа корабля даёт опыт Commerce = <code>цена/1600</code>, покупка = <code>цена/700</code>
+     (<code>shipyard.c:1015, 1126</code>) — <strong>покупка прокачивает торговлю вдвое эффективнее продажи</strong>.</p>
+<h3>Материалы для ремонта своими силами (перк Carpenter/SelfRepair)</h3>
+<p><code>[код]</code> <code>characterUtilite.c:719-745</code>:</p>
+<pre><code>Парусина на 1% ремонта парусов (GetSailSPP)  = 8 − класс_корабля
+Доски на 1% ремонта корпуса (GetHullPPP)     = max(8 − класс_корабля, HP_корабля/700)
+Перк Builder: ×0.75 (расход −25%)
+Артефакт obereg_2 (парусина): ×0.85;  obereg_1 (доски): ×0.85
+Мачта: доски = число_упавших_мачт * (доски на 5% корпуса)
+       парусина = как ремонт парусов на (100 − текущий максимум парусов)%
+</code></pre>
+<p><code>[интерпретация]</code>
+273. <strong>Расход материалов сильнее всего зависит от класса корабля:</strong> класс 6 (тартана) — 2 единицы
+     на процент, класс 1 (линкор) — 7 единиц. Но для корпуса берётся ещё <code>HP/700</code>, поэтому у
+     Английского Манowar (10 800 HP) это <code>10800/700 = 15.4</code> доски на процент → <strong>полный ремонт
+     корпуса с нуля требует ~1540 досок</strong> (вес 3 каждая = 4620 весовых единиц, что превышает трюм!).
+274. <strong>Перк <code>Builder</code> (−25%) и оберег <code>obereg_1</code>/<code>obereg_2</code> (−15%) вместе дают −36% расхода</strong> материалов.
+275. Время работ <code>[код]</code> <code>repair.c:243-287</code>:
+     <code>totaltime = часы_корпуса/3 + часы_парусов/5 + часы_мачт</code>, затем
+     <code>× (1.75 − команда/OptCrew)</code>. <strong>Полная команда сокращает время ремонта на 43%</strong>
+     (множитель 0.75 против 1.75 при полупустом экипаже).</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

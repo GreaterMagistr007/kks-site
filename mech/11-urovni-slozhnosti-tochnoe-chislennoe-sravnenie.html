@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11. Уровни сложности — точное численное сравнение — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>11. Уровни сложности — точное численное сравнение</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><p><code>[код]</code> <code>_LSC_on_off.h:106-108</code>:</p>
+<blockquote>
+<p><code>1- easy; 2; 3; 4; 5-medium; 6; 7; 8; 9; 10 - hard (please, do not set more 10 or less 1 it mays crash game)</code>
+<code>// для ККС - уровни сложности 2 - легкий, 4, 6, 8 - средние, 10 - сложный</code></p>
+</blockquote>
+<p><code>[код]</code> <code>interface/utilite.c:779-788</code> — при загрузке настроек значение вне 1..10 сбрасывается в 4,
+и <strong>нечётные значения тоже сбрасываются в 4</strong> (<code>if(MOD_SKILL_ENEMY_RATE%2 == 1) MOD_SKILL_ENEMY_RATE = 4</code>).
+То есть реально доступны только <strong>2, 4, 6, 8, 10</strong>.</p>
+<h3>11.1. Сводная таблица влияния MOD_SKILL_ENEMY_RATE</h3>
+<table>
+<thead>
+<tr>
+<th>Механика</th>
+<th>Формула</th>
+<th>2 (лёгкий)</th>
+<th>4</th>
+<th>6</th>
+<th>8</th>
+<th>10 (сложный)</th>
+<th>Источник</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Порог роста навыков <code>MOD_EXP_RATE</code></td>
+<td><code>(5+M) + (5+M)*M/1.6667</code>, мин 10</td>
+<td><strong>15</strong></td>
+<td>30</td>
+<td>50</td>
+<td>75</td>
+<td><strong>105</strong></td>
+<td><code>selectCharacter.c:580</code>, <code>RPGUtilite.c:3458</code></td>
+</tr>
+<tr>
+<td>Урон игроку в наземном бою</td>
+<td><code>×(4+M)/10</code> при M&lt;5, иначе ×1</td>
+<td><strong>×0.6</strong></td>
+<td>×0.8</td>
+<td>×1.0</td>
+<td>×1.0</td>
+<td>×1.0</td>
+<td><code>LAi_fightparams.c:52-55, 394, 622</code></td>
+</tr>
+<tr>
+<td>Лимит переносимого веса</td>
+<td><code>70 + S*(E + 12 − M)</code></td>
+<td>+S·(E+10)</td>
+<td>+S·(E+8)</td>
+<td>+S·(E+6)</td>
+<td>+S·(E+4)</td>
+<td>+S·(E+2)</td>
+<td><code>RPGUtilite.c:1617</code></td>
+</tr>
+<tr>
+<td>HP врага в абордаже</td>
+<td><code>+4*(M − 5)</code></td>
+<td><strong>−12</strong></td>
+<td>−4</td>
+<td>+4</td>
+<td>+12</td>
+<td><strong>+20</strong></td>
+<td><code>GeneratorUtilite.c:458</code></td>
+</tr>
+<tr>
+<td>Бонус ранга себе за перевес</td>
+<td><code>0.5*M*(m−e)/e</code></td>
+<td>×1</td>
+<td>×2</td>
+<td>×3</td>
+<td>×4</td>
+<td>×5</td>
+<td><code>GeneratorUtilite.c:420</code></td>
+</tr>
+<tr>
+<td>Бонус ранга врагу за перевес</td>
+<td><code>2*M*(e−m)/m</code></td>
+<td>×4</td>
+<td>×8</td>
+<td>×12</td>
+<td>×16</td>
+<td>×20</td>
+<td><code>GeneratorUtilite.c:440</code></td>
+</tr>
+<tr>
+<td>Доля добычи ГГ (вес)</td>
+<td><code>200 + (10−M)*200</code></td>
+<td><strong>1800</strong></td>
+<td>1400</td>
+<td>1000</td>
+<td>600</td>
+<td><strong>400</strong></td>
+<td><code>Crew.c:405</code></td>
+</tr>
+<tr>
+<td>Доля губернатора (%)</td>
+<td><code>10 + M</code></td>
+<td>12%</td>
+<td>14%</td>
+<td>16%</td>
+<td>18%</td>
+<td>20%</td>
+<td><code>Crew.c:472</code></td>
+</tr>
+<tr>
+<td>Налоговая ставка колоний</td>
+<td><code>= M</code></td>
+<td>2</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+<td><code>Colonies_init.c:45</code></td>
+</tr>
+<tr>
+<td>Наёмники в городах</td>
+<td><code>... ; ×3 при M=2, ×2 при M=4</code></td>
+<td><strong>×3</strong></td>
+<td>×2</td>
+<td>×1</td>
+<td>×1</td>
+<td>×1</td>
+<td><code>Crew.c:271-272</code></td>
+</tr>
+<tr>
+<td>Макс. численность команды</td>
+<td><code>L*(55 + 10*(5−M) + L*15) + ...</code></td>
+<td>+30</td>
+<td>+10</td>
+<td>−10</td>
+<td>−30</td>
+<td>−50</td>
+<td><code>Crew.c:343</code></td>
+</tr>
+<tr>
+<td>Жалованье экипажа</td>
+<td><code>(0.5 + M/5)*200*...</code></td>
+<td>×0.9</td>
+<td>×1.3</td>
+<td>×1.7</td>
+<td>×2.1</td>
+<td>×2.5</td>
+<td><code>Crew.c:113</code></td>
+</tr>
+<tr>
+<td>Цена наёмника в таверне</td>
+<td><code>(0.5 + M/5)*50*...</code></td>
+<td>×0.9</td>
+<td>×1.3</td>
+<td>×1.7</td>
+<td>×2.1</td>
+<td>×2.5</td>
+<td><code>Crew.c:335</code></td>
+</tr>
+<tr>
+<td>Плата офицеру</td>
+<td><code>M*4*Σнавыков</code></td>
+<td>×8</td>
+<td>×16</td>
+<td>×24</td>
+<td>×32</td>
+<td>×40</td>
+<td><code>Crew.c:87</code></td>
+</tr>
+<tr>
+<td><code>CrewExpRate</code> (норма опыта команды)</td>
+<td><code>50 + M</code></td>
+<td>52</td>
+<td>54</td>
+<td>56</td>
+<td>58</td>
+<td>60</td>
+<td><code>Crew.c:220</code></td>
+</tr>
+<tr>
+<td>Расход рома в день</td>
+<td><code>(crew+5.1)/(60 − M*2.5)</code></td>
+<td>/55</td>
+<td>/50</td>
+<td>/45</td>
+<td>/40</td>
+<td><strong>/35</strong></td>
+<td><code>food.c:83, 308</code></td>
+</tr>
+<tr>
+<td>Перезарядка пушек у ВРАГА</td>
+<td><code>ReloadTime − M</code> (мин 5)</td>
+<td>−2</td>
+<td>−4</td>
+<td>−6</td>
+<td>−8</td>
+<td><strong>−10</strong></td>
+<td><code>AICannon.c:165</code></td>
+</tr>
+<tr>
+<td>Шанс самоподрыва своей пушки</td>
+<td><code>(15 + M − Cannons/10)%</code></td>
+<td>17−C</td>
+<td>19−C</td>
+<td>21−C</td>
+<td>23−C</td>
+<td>25−C</td>
+<td><code>AIBalls.c:105</code></td>
+</tr>
+<tr>
+<td>Порог абордажа форта (доля выбитых пушек)</td>
+<td><code>1/(1.05 + 0.19*(10−M) + 0.1)</code></td>
+<td>~37%</td>
+<td>~50%</td>
+<td>~63%</td>
+<td>~76%</td>
+<td><strong>~87%</strong></td>
+<td><code>AIFort.c:441-449</code></td>
+</tr>
+<tr>
+<td>Пенальти к ремонту корпуса</td>
+<td><code>1.0 + M/4</code></td>
+<td>×1.5</td>
+<td>×2.0</td>
+<td>×2.5</td>
+<td>×3.0</td>
+<td><strong>×3.5</strong></td>
+<td><code>AIShip.c:2354</code></td>
+</tr>
+<tr>
+<td>Макс. ранг сдающегося капитана</td>
+<td><code>50 − M</code></td>
+<td>48</td>
+<td>46</td>
+<td>44</td>
+<td>42</td>
+<td>40</td>
+<td><code>LAi_boarding.c:1372</code></td>
+</tr>
+<tr>
+<td>Допустимое отставание в ранге для сдачи</td>
+<td><code>M/2</code></td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td><code>LAi_boarding.c:1376</code></td>
+</tr>
+<tr>
+<td>Цена патента</td>
+<td><code>LicType*(3000 + M*500)</code></td>
+<td>×4000</td>
+<td>×5000</td>
+<td>×6000</td>
+<td>×7000</td>
+<td>×8000</td>
+<td><code>RelationAgent_dialog.c:209</code></td>
+</tr>
+<tr>
+<td>Цена патента на город</td>
+<td><code>350000 − L*100 + (5000+rand(1000))*rank*M</code></td>
+<td>×2</td>
+<td>×4</td>
+<td>×6</td>
+<td>×8</td>
+<td>×10</td>
+<td><code>RelationAgent_dialog.c:298</code></td>
+</tr>
+<tr>
+<td>Цена пушек в лавке</td>
+<td><code>cModify = 3.0 + M/5</code></td>
+<td>×3.4</td>
+<td>×3.8</td>
+<td>×4.2</td>
+<td>×4.6</td>
+<td>×5.0</td>
+<td><code>storeutilite.c:161</code></td>
+</tr>
+<tr>
+<td>Цена пушек у контрабандистов</td>
+<td><code>cModify = 2.0 − M/20</code></td>
+<td>×1.9</td>
+<td>×1.8</td>
+<td>×1.7</td>
+<td>×1.6</td>
+<td>×1.5</td>
+<td><code>smuggling.c:484,508</code></td>
+</tr>
+<tr>
+<td>Дрейф репутации к нейтралу</td>
+<td><code>+M/50 / −M/25</code> в день</td>
+<td>±0.04/0.08</td>
+<td>±0.08/0.16</td>
+<td>±0.12/0.24</td>
+<td>±0.16/0.32</td>
+<td>±0.2/0.4</td>
+<td><code>characterUtilite.c:3102-3116</code></td>
+</tr>
+<tr>
+<td>Урон от событий персонажу</td>
+<td><code>15 + M</code></td>
+<td>17</td>
+<td>19</td>
+<td>21</td>
+<td>23</td>
+<td>25</td>
+<td><code>characters_events.c:135,205</code></td>
+</tr>
+<tr>
+<td>Скелеты Ксочитама</td>
+<td><code>10 + M/2</code> и <code>10 + M</code></td>
+<td>11 / 12</td>
+<td>12 / 14</td>
+<td>13 / 16</td>
+<td>14 / 18</td>
+<td>15 / 20</td>
+<td><code>Ksochitam.c:74,476</code></td>
+</tr>
+<tr>
+<td>HP монстров/рейдеров</td>
+<td><code>40 + rank*(1 + M/40)*5</code></td>
+<td>×1.05</td>
+<td>×1.1</td>
+<td>×1.15</td>
+<td>×1.2</td>
+<td>×1.25</td>
+<td><code>GeneratorUtilite.c:347-350</code></td>
+</tr>
+<tr>
+<td>Ранг противника в бане</td>
+<td><code>rank + M*1.6/num</code> (или <code>*2.5</code> при rank&gt;20)</td>
+<td>+3.2/num</td>
+<td>+6.4/num</td>
+<td>+9.6/num</td>
+<td>+12.8/num</td>
+<td>+16/num</td>
+<td><code>LAi_monsters.c:361-364</code></td>
+</tr>
+<tr>
+<td>Ранг противников в пещерах</td>
+<td><code>8 + rank + M/2</code></td>
+<td>+9</td>
+<td>+10</td>
+<td>+11</td>
+<td>+12</td>
+<td>+13</td>
+<td><code>LAi_monsters.c:1127</code></td>
+</tr>
+<tr>
+<td>Ранг NPC</td>
+<td><code>rank*(1 + M/40)</code></td>
+<td>×1.05</td>
+<td>×1.10</td>
+<td>×1.15</td>
+<td>×1.20</td>
+<td>×1.25</td>
+<td><code>GeneratorUtilite.c:347</code></td>
+</tr>
+<tr>
+<td>ComplexBonus к навыкам NPC</td>
+<td><code>(M−5)*1.5</code> (при условиях с bNewCodeOn)</td>
+<td>−4.5</td>
+<td>−1.5</td>
+<td>+1.5</td>
+<td>+4.5</td>
+<td>+7.5</td>
+<td><code>GeneratorUtilite.c:104</code></td>
+</tr>
+<tr>
+<td>Вес атаки fast/force/round у NPC</td>
+<td><code>×(0.8 + 0.1*M)</code></td>
+<td>×1.0</td>
+<td>×1.2</td>
+<td>×1.4</td>
+<td>×1.6</td>
+<td>×1.8</td>
+<td><code>LAi_fightparams.c:1189-1209</code></td>
+</tr>
+<tr>
+<td>Вес атаки break/feint у NPC</td>
+<td><code>×(0.6 + 0.1*M)</code></td>
+<td>×0.8</td>
+<td>×1.0</td>
+<td>×1.2</td>
+<td>×1.4</td>
+<td>×1.6</td>
+<td><code>LAi_fightparams.c:1220-1230</code></td>
+</tr>
+<tr>
+<td>Вес блока у NPC</td>
+<td><code>×(0.5 + 0.05*M)</code></td>
+<td>×0.6</td>
+<td>×0.7</td>
+<td>×0.8</td>
+<td>×0.9</td>
+<td>×1.0</td>
+<td><code>LAi_fightparams.c:1258</code></td>
+</tr>
+<tr>
+<td>Вес парирования у NPC</td>
+<td><code>×(0.6 + 0.1*M)</code></td>
+<td>×0.8</td>
+<td>×1.0</td>
+<td>×1.2</td>
+<td>×1.4</td>
+<td>×1.6</td>
+<td><code>LAi_fightparams.c:1269</code></td>
+</tr>
+<tr>
+<td>Активность стрельбы врага</td>
+<td><code>+0.1*M/10</code> (или <code>+0.4*M/10</code> для SuperShooter)</td>
+<td>+0.02</td>
+<td>+0.04</td>
+<td>+0.06</td>
+<td>+0.08</td>
+<td>+0.10</td>
+<td><code>LAi_fightparams.c:1301-1305</code></td>
+</tr>
+<tr>
+<td>Маневренность при малой скорости (NPC)</td>
+<td><code>1 − (0.87 − M*0.01)*(...)</code></td>
+<td>×0.85</td>
+<td>×0.83</td>
+<td>×0.81</td>
+<td>×0.79</td>
+<td>×0.77</td>
+<td><code>AIShip.c:3806</code></td>
+</tr>
+<tr>
+<td>SPECIAL/навыки от здоровья ГГ</td>
+<td>работает только при <code>M &gt; 1</code></td>
+<td>вкл</td>
+<td>вкл</td>
+<td>вкл</td>
+<td>вкл</td>
+<td>вкл</td>
+<td><code>RPGUtilite.c:236, 1193</code></td>
+</tr>
+<tr>
+<td>Штраф маневренности от скорости у ГГ</td>
+<td>работает только при <code>M &gt; 2</code></td>
+<td><strong>выкл</strong></td>
+<td>вкл</td>
+<td>вкл</td>
+<td>вкл</td>
+<td>вкл</td>
+<td><code>AIShip.c:3785</code></td>
+</tr>
+<tr>
+<td>Сдача капитана при <code>SeaDogProfessional</code></td>
+<td>пасхалка</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><code>LAi_boarding.c:1374</code></td>
+</tr>
+</tbody>
+</table>
+<h3>11.2. Что доступно/недоступно на конкретных сложностях</h3>
+<ul>
+<li><code>[код]</code> <code>perks_init.c:217-226</code> Перк <strong><code>InstantRepair</code> («Ремонт в бою») существует только при <code>MOD_SKILL_ENEMY_RATE &lt; 5</code></strong>,
+  т.е. <strong>только на сложностях 2 и 4</strong>. На 6/8/10 его нет в списке вообще.</li>
+<li><code>[код]</code> <code>selectCharacter.c:302-330</code> На сложности <strong>10</strong> принудительно: перезарядка пистолета без сабли
+  (<code>CHECK_PISTOL</code>) <strong>отключается</strong>, раздел добычи (<code>CHECK_PARTITION</code>) <strong>включается</strong>, оба чекбокса блокируются.</li>
+<li><code>[код]</code> <code>AIShip.c:3785</code> Штраф маневренности от текущей скорости <strong>не применяется к ГГ при сложности 2</strong>
+  («халява и юнга — послабление» в комментарии).</li>
+<li><code>[код]</code> <code>LAi_fightparams.c:52-55</code> <strong>Игрок получает лишь 60% урона на сложности 2 и 80% на 4</strong>;
+  с 6 и выше — полный урон.</li>
+<li><code>[код]</code> <code>dialogs/russian/Quest/Sharlie/Guardoftruth.c:1306</code> при <code>MOD_SKILL_ENEMY_RATE &lt; 5</code> квестовая проверка
+  на смерть наёмников упрощается.</li>
+<li><code>[код]</code> <code>dialogs/russian/Quest/LineMiniQuests/FMQ_Tortuga.c:485-488</code> число дуэлянтов на Тортуге:
+  <code>MOD_SKILL_ENEMY_RATE/4</code> (при сложности 2 — 0, т.е. дуэль не генерируется).</li>
+<li><code>[код]</code> <code>scripts/MerchantOnMap.c:282-284</code> при <code>MOD_SKILL_ENEMY_RATE &gt; 5</code>:
+  <code>killMax = 3 + (10 − MOD)/2</code> → 5 на сложности 6, 4 на 8, 3 на 10.</li>
+<li><code>[код]</code> <code>scripts/colony.c:205-209</code> Гарнизон форта: <code>Crew.Quantity * (1 + MOD/10)</code>
+  → на сложности 10 гарнизон <strong>вдвое больше</strong>, чем базовый.</li>
+<li><code>[код]</code> <code>quests/reaction_functions.c:30633</code> при <code>MOD_SKILL_ENEMY_RATE == 4 или 10</code> в квестовой награде
+  выдаётся другой тип пушек.</li>
+</ul>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

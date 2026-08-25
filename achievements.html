@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Достижения Steam — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="assets/icon-192.png"><link rel="apple-touch-icon" href="assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="index.html" class="">Главная</a><a href="guide.html" class="">Прохождение</a><a href="quests.html" class="">Квесты</a><a href="towns.html" class="">Города</a><a href="trade.html" class="">Торговля</a><a href="tips.html" class="">Фишки</a><a href="maps.html" class="">Карты</a><a href="timers.html" class="">Таймеры</a><a href="mechanics.html" class="">Механика</a><a href="achievements.html" class="on">Достижения</a><a href="search.html" class="">Поиск</a></nav>
+  <form class="qs" action="search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>Достижения Steam</h1>
+<p class="sub">80 достижений с условиями из кода</p>
+<p>Список достижений, извлечённый из кода игры: точные условия выдачи, включая пороги счётчиков. Взаимоисключающие достижения помечены в тексте — за одно прохождение все 76 получить нельзя.</p><p>Механика: <code>Achievment_SetStat(ref chref, int achievNum, int _add)</code>. Работает только для ГГ (<code>sti(_chref.index) != GetMainCharacterIndex()</code> → выход, <code>:2029</code>) и только при <code>bSteamAchievements &amp;&amp; GetSteamEnabled()</code> (<code>:2031</code>). Флаг <code>bSteamAchievements = true</code> — <code>PROGRAM/_LSC_on_off.h:66</code> (комментарий: «для внутренних тестов устанавливать в false»). Прогресс пишется в статистику Steam (<code>SetStat</code> + <code>StoreStats()</code>), ачивка выдаётся при достижении порога. Ежедневный пересчёт — <code>AchievmentsDayUpdateStart()</code> в <code>scripts/time_events.c:120</code>.</p>
+<h3>9.1. Полный список (найдено 76 определений; номера 74–78 отсутствуют)</h3>
+<table>
+<thead>
+<tr>
+<th>№</th>
+<th>Название</th>
+<th>Условие</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Боевое крещение</td>
+<td>первая морская победа</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Абордажник</td>
+<td>250 абордажей</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Морской волк</td>
+<td>500 уничтоженных кораблей</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Джентльмен удачи</td>
+<td>полностью уничтожен Золотой Флот</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Легендарный</td>
+<td>уровень ≥ 40</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Покрытый шрамами</td>
+<td>потрачено здоровья ≥ 10000</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Алхимик</td>
+<td>200 актов алхимии</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Кладоискатель</td>
+<td>100 вырытых кладов</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Врунгель</td>
+<td>победа в регате</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Home sweet home</td>
+<td>обладатель своего дома</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Баловень судьбы</td>
+<td>удача = 100%</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Фехтовальщик</td>
+<td>лёгкое оружие = 100%</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Гусар</td>
+<td>среднее оружие = 100%</td>
+</tr>
+<tr>
+<td>14</td>
+<td>(Драгун)</td>
+<td>тяжёлое оружие = 100%</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Шпион</td>
+<td>скрытность = 100%</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Крепкий орешек</td>
+<td>защита = 100%</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Адмирал</td>
+<td>навигация = 100%</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Негоциант</td>
+<td>торговля = 100%</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Джедай</td>
+<td>максимальная репутация (<code>nobility &gt; 95</code>, <code>RPGUtilite.c:1947</code>)</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Ситх</td>
+<td>минимальная репутация (<code>nobility &lt; 5</code>, <code>RPGUtilite.c:1950</code>)</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Душегуб</td>
+<td>9999 погибших матросов</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Ветеран</td>
+<td>разгромить ≥ 15 фортов</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Ветреный</td>
+<td>посетить бордель 100 раз</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Постоялец</td>
+<td>заночевать в таверне ≥ 50 раз</td>
+</tr>
+<tr>
+<td>25</td>
+<td>Азартный игрок</td>
+<td>выигрыш в карты/кости ≥ 500</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Транжира</td>
+<td>проигрыш в карты/кости ≥ 500</td>
+</tr>
+<tr>
+<td>27</td>
+<td>Снайпер</td>
+<td>500 убийств из пистолета</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Скряга</td>
+<td>капитал ≥ 10 000 000</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Доброе сердце</td>
+<td>взять в команду ≥ 100 кораблекрушенцев</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Флотоводец</td>
+<td>собрать максимальную эскадру</td>
+</tr>
+<tr>
+<td>31</td>
+<td>Контрабандист</td>
+<td>≥ 50 удачных сделок с контрабандистами</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Болезненный</td>
+<td>уронить здоровье до минимума</td>
+</tr>
+<tr>
+<td>33</td>
+<td>Коллекционер</td>
+<td>коллекция из 100 сокровищ</td>
+</tr>
+<tr>
+<td>34</td>
+<td>Гибель врагам</td>
+<td>500 убитых военных</td>
+</tr>
+<tr>
+<td>35</td>
+<td>Безжалостный</td>
+<td>500 убитых гражданских</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Конкистадор</td>
+<td>250 убитых индейцев</td>
+</tr>
+<tr>
+<td>37</td>
+<td>Экзорцист</td>
+<td>≥ 100 убитой нечисти</td>
+</tr>
+<tr>
+<td>38</td>
+<td>Красная книга</td>
+<td>≥ 35 убитых крабов</td>
+</tr>
+<tr>
+<td>39</td>
+<td>Торговец</td>
+<td>заработать торговлей 10 000 000</td>
+</tr>
+<tr>
+<td>40</td>
+<td>Исследователь</td>
+<td>исследовать ≥ 50 данжей</td>
+</tr>
+<tr>
+<td>41</td>
+<td>Щедрый</td>
+<td>раздать милостыню 200 раз</td>
+</tr>
+<tr>
+<td>42</td>
+<td>(Ростовщик)</td>
+<td>вклады у ростовщиков на 5 000 000 песо</td>
+</tr>
+<tr>
+<td>43</td>
+<td>Работорговец</td>
+<td>продажа ≥ 5000 рабов</td>
+</tr>
+<tr>
+<td>44</td>
+<td><strong>Ветер перемен</strong></td>
+<td><strong>прохождение за Голландию</strong></td>
+</tr>
+<tr>
+<td>45</td>
+<td><strong>На службе Империи</strong></td>
+<td><strong>прохождение за Англию</strong></td>
+</tr>
+<tr>
+<td>46</td>
+<td><strong>Не зная страха</strong></td>
+<td><strong>прохождение «Против всех»</strong></td>
+</tr>
+<tr>
+<td>47</td>
+<td><strong>Простодушный</strong></td>
+<td><strong>провальный финал</strong></td>
+</tr>
+<tr>
+<td>48</td>
+<td><strong>Усердный</strong></td>
+<td><strong>настоящий финал</strong></td>
+</tr>
+<tr>
+<td>49</td>
+<td><strong>Морской дьявол</strong></td>
+<td><strong>стать капитаном Калеуче</strong> (DLC 1)</td>
+</tr>
+<tr>
+<td>50</td>
+<td>Морской разбойник</td>
+<td>утопить ≥ 100 кораблей под пиратским флагом</td>
+</tr>
+<tr>
+<td>51</td>
+<td><strong>Урок усвоен</strong></td>
+<td><strong>пройдена линейка ФМК</strong> (DLC 2)</td>
+</tr>
+<tr>
+<td>52</td>
+<td>Законник</td>
+<td>≥ 250 убитых бандитов</td>
+</tr>
+<tr>
+<td>53</td>
+<td>Гроза Архипелага</td>
+<td>≥ 500 убитых пиратов</td>
+</tr>
+<tr>
+<td>54</td>
+<td>Путешественник</td>
+<td>посетить все колонии (таверны)</td>
+</tr>
+<tr>
+<td>55</td>
+<td>Команда профессионалов</td>
+<td>нанять офицеров на все должности</td>
+</tr>
+<tr>
+<td>56</td>
+<td><strong>Герой нации</strong></td>
+<td>спецачива <strong>DLC 4</strong></td>
+</tr>
+<tr>
+<td>57</td>
+<td><strong>На скользком пути</strong></td>
+<td>спецачива <strong>DLC 3</strong></td>
+</tr>
+<tr>
+<td>58</td>
+<td><strong>Под черным флагом</strong></td>
+<td>спецачива <strong>DLC 3</strong></td>
+</tr>
+<tr>
+<td>59</td>
+<td>Ловильщик</td>
+<td>50 поднятых бочонков (энкаунтер на глобальной карте)</td>
+</tr>
+<tr>
+<td>60</td>
+<td>Благодушный</td>
+<td>20 спасённых капитанов (энкаунтер на глобальной карте)</td>
+</tr>
+<tr>
+<td>61</td>
+<td>Минер</td>
+<td>200 сброшенных/установленных в бою мин</td>
+</tr>
+<tr>
+<td>62</td>
+<td>Травник</td>
+<td>три приготовленных зелья из Мангаросы</td>
+</tr>
+<tr>
+<td>63</td>
+<td>Выгодный клиент</td>
+<td>ремонт на всех верфях архипелага</td>
+</tr>
+<tr>
+<td>64</td>
+<td>Умелец</td>
+<td>5 самостоятельных ремонтов в бухте</td>
+</tr>
+<tr>
+<td>65</td>
+<td>Антиквар</td>
+<td>возвращение Фадею его персидской коллекции</td>
+</tr>
+<tr>
+<td>66</td>
+<td>Конструктор</td>
+<td>апгрейд корабля</td>
+</tr>
+<tr>
+<td>67</td>
+<td>Арендатор</td>
+<td>аренда склада</td>
+</tr>
+<tr>
+<td>68</td>
+<td>Тюлень</td>
+<td>5 купленных фальшивых карт кладов</td>
+</tr>
+<tr>
+<td>69</td>
+<td>Духовная защита</td>
+<td>«найм» монаха-капеллана</td>
+</tr>
+<tr>
+<td>70</td>
+<td>Сизый нос</td>
+<td>победа в конкурсе «Пей до дна» (квест <code>LSC_Drink</code>)</td>
+</tr>
+<tr>
+<td>71</td>
+<td><strong>Карибский отравитель</strong></td>
+<td>спецачива <strong>DLC 3</strong></td>
+</tr>
+<tr>
+<td>72</td>
+<td>Опытный</td>
+<td>500 часов в игре</td>
+</tr>
+<tr>
+<td>73</td>
+<td>Матерый</td>
+<td>1000 часов в игре</td>
+</tr>
+<tr>
+<td>79</td>
+<td><strong>Герой нации</strong></td>
+<td>спецачива <strong>DLC 4</strong> (дубль № 56)</td>
+</tr>
+<tr>
+<td>80</td>
+<td><strong>Долго и счастливо (Мэри)</strong></td>
+<td><strong>DLC 5, ветка Мэри</strong></td>
+</tr>
+<tr>
+<td>81</td>
+<td><strong>Долго и счастливо (Элен)</strong></td>
+<td><strong>DLC 5, ветка Элен</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Ачивки № <strong>80</strong> и <strong>81</strong> — прямое подтверждение <strong>взаимоисключающих финалов</strong> DLC 5 (Мэри из линии LSC vs Элен из линии Saga).
+Ачивки № <strong>44/45/46</strong> — три взаимоисключающих финала главной линии; № <strong>47/48</strong> — «провальный» и «настоящий» финал.</p>
+<h3>9.2. Играбельные персонажи [КОД] — <code>CCS_SetNewMainCharacter()</code>, <code>PROGRAM/characters/RPGUtilite.c:3273</code></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Персонаж</th>
+<th>HeroType</th>
+<th>Нация</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Шарль де Мор</strong> (FaceId 201)</td>
+<td><code>HeroType_1</code></td>
+<td>FRANCE</td>
+<td><code>:3278</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Диего де Монтойя (FaceId 203)</td>
+<td><code>HeroType_1</code></td>
+<td>SPAIN</td>
+<td><code>:3299</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Вильям Патерсон (FaceId 202)</td>
+<td><code>HeroType_3</code></td>
+<td>ENGLAND</td>
+<td><code>:3318</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Диего Эспиноза (FaceId 214)</td>
+<td>—</td>
+<td>—</td>
+<td><code>:3338</code></td>
+</tr>
+</tbody>
+</table>
+<p>В ККС фактически играбелен только <strong>Шарль де Мор</strong>: <code>PROGRAM/_LSC_on_off.h</code> — <code>startHeroType = 1</code>, <code>MaxHeroQty = 1</code> («максимальное кол-во ГГ»), <code>MaxPGGQty = 10</code> («максимальное кол-во ПГГ (+2 оставшихся ГГ)»). У вариантов 2 и 3 в коде стоят закомментированные <code>// return;</code> — заготовки под других героев. Описание Шарля: «Сын французского дворянина, гуляка и ловелас, явился на Карибы, чтобы найти без вести пропавшего брата…» (<code>:3291</code>).</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script></body></html>

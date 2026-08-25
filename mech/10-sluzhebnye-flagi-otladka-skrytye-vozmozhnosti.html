@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10. Служебные флаги, отладка, скрытые возможности — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>10. Служебные флаги, отладка, скрытые возможности</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>10.1. Полный разбор <code>PROGRAM/_LSC_on_off.h</code></h3>
+<table>
+<thead>
+<tr>
+<th>Строка</th>
+<th>Флаг</th>
+<th>Значение по умолч.</th>
+<th>Что делает <code>[код]</code> + <code>[интерпретация]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15</td>
+<td><code>MOD_BETTATESTMODE</code></td>
+<td><code>"Off"</code></td>
+<td>Режим сборки: <code>On</code> = DEV (все отладочные клавиши F4/F5/F7/F10/F11 работают), <code>Test</code> = TST (только F11 и вывод ID), <code>Off</code> = релиз. При <code>Off</code> нажатия F5/F7 просто пишут в статистику <code>Cheats.F5</code> / <code>Cheats.F7</code> (<code>seadogs.c:1594,1610</code>)</td>
+</tr>
+<tr>
+<td>28</td>
+<td><code>bDisableLandEncounters</code></td>
+<td>false</td>
+<td>Полный запрет случайных встреч на суше, <strong>включая генерацию офицеров и кладов</strong></td>
+</tr>
+<tr>
+<td>30</td>
+<td><code>bDisableCharacterMenu</code></td>
+<td>false</td>
+<td>Запрет открытия F2 (меню персонажа)</td>
+</tr>
+<tr>
+<td>32</td>
+<td><code>bPlayerIsCheater</code></td>
+<td>false</td>
+<td>Флаг «игрок читер» («на перспективу, патчем»)</td>
+</tr>
+<tr>
+<td>34</td>
+<td><code>bBettaTestMode</code></td>
+<td>false</td>
+<td>«Режим супер читов». Влияет: открывает лучшую карту без предмета Map_Best (<code>seadogs.c:1216</code>), снимает ограничение скорости времени −2 (<code>seadogs.c:1096</code>), включает подробные логи, разблокирует кости/алхимию</td>
+</tr>
+<tr>
+<td>36</td>
+<td><code>bQuestLogShow</code></td>
+<td>false</td>
+<td>Лог реакций квестов</td>
+</tr>
+<tr>
+<td>38</td>
+<td><code>bExpLogShow</code></td>
+<td>false</td>
+<td><strong>Лог начисления опыта в навыки</strong> (<code>RPGUtilite.c:1461-1464</code>)</td>
+</tr>
+<tr>
+<td>40</td>
+<td><code>TestRansackCaptain</code></td>
+<td>false</td>
+<td>Отладка: <strong>капитаны сдаются ВСЕГДА</strong> (<code>LAi_boarding.c:153</code>)</td>
+</tr>
+<tr>
+<td>42</td>
+<td><code>bLocatorShow</code></td>
+<td>false</td>
+<td>Показ локаторов на локациях</td>
+</tr>
+<tr>
+<td>44</td>
+<td><code>bNoEatNoRats</code></td>
+<td>false</td>
+<td><strong>Не жрать, нет крыс</strong> — полностью отключает расход еды/рома/медикаментов и порчу крысами (<code>food.c:191</code>)</td>
+</tr>
+<tr>
+<td>46</td>
+<td><code>bWorldAlivePause</code></td>
+<td><strong>true</strong></td>
+<td>«Живой мир на паузе»: губернатор не переезжает от времени, нации не объявляют войну/мир, эскадры не берут город себе, город нельзя взять себе даже с патентом. <strong>В релизе 1.7.3 глобальная динамика выключена</strong></td>
+</tr>
+<tr>
+<td>48</td>
+<td><code>bPauseContrabandMetro</code></td>
+<td>false</td>
+<td>Пауза «метро» контрабанды</td>
+</tr>
+<tr>
+<td>50</td>
+<td><code>bPGGLogShow</code></td>
+<td>false</td>
+<td>Лог по ПГГ (прочим главным героям)</td>
+</tr>
+<tr>
+<td>52</td>
+<td><code>bMonstersGen</code></td>
+<td><strong>false</strong></td>
+<td>Генерация монстров <strong>выключена</strong></td>
+</tr>
+<tr>
+<td>54</td>
+<td><code>bLandEncountersGen</code></td>
+<td>true</td>
+<td>Генерация сухопутных энкаунтеров включена (сбрасывается в true после каждого прерывания)</td>
+</tr>
+<tr>
+<td>56</td>
+<td><code>bMainCharacterInBox</code></td>
+<td>false</td>
+<td>ГГ в сундуке (квестовый флаг)</td>
+</tr>
+<tr>
+<td>58</td>
+<td><code>bMainCharacterInFire</code></td>
+<td>false</td>
+<td>ГГ в огне (квестовый флаг)</td>
+</tr>
+<tr>
+<td>60</td>
+<td><code>bMainMenu</code></td>
+<td>false</td>
+<td>Признак главного меню</td>
+</tr>
+<tr>
+<td>62</td>
+<td><code>startGameWeather</code></td>
+<td>false</td>
+<td>Загрузка погоды в начале игры</td>
+</tr>
+<tr>
+<td>64</td>
+<td><code>bDrawBars</code></td>
+<td>true</td>
+<td>Отображение полосок HP у кораблей в море и врагов на суше</td>
+</tr>
+<tr>
+<td>66</td>
+<td><code>bSteamAchievements</code></td>
+<td>true</td>
+<td>Отправка достижений в Steam</td>
+</tr>
+<tr>
+<td>68</td>
+<td><code>bAddonContent</code></td>
+<td>true</td>
+<td>Дополнительный контент (DLC/аддон) включён</td>
+</tr>
+<tr>
+<td>71</td>
+<td><code>bGlobalVar1</code></td>
+<td>false</td>
+<td>«Альтернативный модификатор» belamour; в коде используется как <strong>блокировка ряда действий</strong>: если true, не работают F (Rush), обыск трупов (клавиша 1), автозакупка (Y) (<code>seadogs.c:1502,1516,1567</code>)</td>
+</tr>
+<tr>
+<td>78</td>
+<td><code>iGlobalVar1</code></td>
+<td><code>BI_COMPARE_HEIGHT = 900</code></td>
+<td>Базовая высота HUD</td>
+</tr>
+<tr>
+<td>84</td>
+<td><code>iScriptVersion</code></td>
+<td>54128</td>
+<td>Версия скриптов</td>
+</tr>
+<tr>
+<td>87</td>
+<td><code>bRains</code></td>
+<td>true</td>
+<td>Дожди и шторма</td>
+</tr>
+<tr>
+<td>89</td>
+<td><code>bRechargePistolOnLine</code></td>
+<td>true</td>
+<td><strong>Пистолеты перезаряжаются без убирания сабли</strong></td>
+</tr>
+<tr>
+<td>91</td>
+<td><code>bNewCodeOn</code></td>
+<td>false</td>
+<td>«Упрощение абордажа»/«упрощение невозможного». В <code>GeneratorUtilite.c:95-105</code>: при <code>MOD_SKILL_ENEMY_RATE &gt; 5 &amp;&amp; bNewCodeOn</code> или <code>&lt;= 5 &amp;&amp; !bNewCodeOn</code> NPC получают <code>ComplexBonus = (MOD-5)*1.5</code> к среднему уровню навыков</td>
+</tr>
+<tr>
+<td>93</td>
+<td><code>bHardcoreGame</code></td>
+<td>false</td>
+<td><strong>Нет сохранений, кроме церкви</strong></td>
+</tr>
+<tr>
+<td>97</td>
+<td><code>bSeaBattleSave</code></td>
+<td>true</td>
+<td>Разрешено сохранение в море в боевом режиме</td>
+</tr>
+<tr>
+<td>99</td>
+<td><code>bPartitionSet</code></td>
+<td>true</td>
+<td>Раздел добычи включён</td>
+</tr>
+<tr>
+<td>104</td>
+<td><code>MOD_EXP_RATE</code></td>
+<td>10 (база)</td>
+<td>Множитель порогов роста навыков (перезаписывается при создании ГГ, см. п. 1.4)</td>
+</tr>
+<tr>
+<td>108</td>
+<td><code>MOD_SKILL_ENEMY_RATE</code></td>
+<td>4</td>
+<td>Уровень сложности 2/4/6/8/10</td>
+</tr>
+<tr>
+<td>112-113</td>
+<td><code>MOD_DEAD_CLEAR</code> / <code>MOD_DEAD_CLEAR_TIME</code></td>
+<td>"On" / 100</td>
+<td>Трупы исчезают через 100 секунд</td>
+</tr>
+<tr>
+<td>115</td>
+<td><code>CHAR_ITEMS_WEIGHT</code></td>
+<td>70</td>
+<td>Базовый лимит переносимого веса</td>
+</tr>
+<tr>
+<td>117</td>
+<td><code>InstantRepairRATE</code></td>
+<td>65.0</td>
+<td>Максимальный ремонт корпуса перком InstantRepair (65%)</td>
+</tr>
+<tr>
+<td>120</td>
+<td><code>DistanceToShipTalk</code></td>
+<td>300.0</td>
+<td>Дистанция для разговора с кораблём в море</td>
+</tr>
+<tr>
+<td>122-124</td>
+<td><code>ShipyardMoneyInit/Max/Add</code></td>
+<td>190000 / 900000 / 2000 (<strong>закомментированы</strong>)</td>
+<td>Деньги верфей — механика отключена (<code>food.c:166</code> вызов <code>DailyShipyardMoneyUpdate</code> тоже закомментирован)</td>
+</tr>
+<tr>
+<td>127</td>
+<td><code>startHeroType</code></td>
+<td>1</td>
+<td>Стартовый тип героя</td>
+</tr>
+<tr>
+<td>128</td>
+<td><code>MaxHeroQty</code></td>
+<td>1</td>
+<td>Максимум главных героев</td>
+</tr>
+<tr>
+<td>129</td>
+<td><code>MaxPGGQty</code></td>
+<td>10</td>
+<td>Максимум ПГГ (+2 оставшихся ГГ)</td>
+</tr>
+<tr>
+<td>135-137</td>
+<td><code>STARTGAME_YEAR/MONTH/DAY</code></td>
+<td>1654 / 10 / 1</td>
+<td><strong>Дата начала игры: 1 октября 1654 года</strong></td>
+</tr>
+<tr>
+<td>140-141</td>
+<td><code>FUNY_SHIP_NAME</code> / <code>KEY_ENG_LINE</code></td>
+<td>«Кукурузина» / <code>uFRklw7Ghww19ywWQ</code></td>
+<td><strong>Пасхалка Кукурузина</strong>: если назвать корабль «Кукурузина», срабатывает скрытая реакция</td>
+</tr>
+<tr>
+<td>145</td>
+<td><code>chrDisableReloadToLocation</code></td>
+<td>false</td>
+<td>Запрет перехода между локациями</td>
+</tr>
+<tr>
+<td>147-149</td>
+<td><code>bIsFortAtIsland</code>, <code>fFort_x/z</code>, <code>iFortNation</code>, <code>iFortCommander</code></td>
+<td>—</td>
+<td>Служебные данные о форте для AI кораблей</td>
+</tr>
+<tr>
+<td>151</td>
+<td><code>ItemsForLocators_start/end</code></td>
+<td>—</td>
+<td>Диапазон предметов для локаторов</td>
+</tr>
+</tbody>
+</table>
+<h3>10.2. <code>PROGRAM/_settings_.h</code> — моды из «Build»-наследия</h3>
+<table>
+<thead>
+<tr>
+<th>Строка</th>
+<th>Настройка</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td><code>DIRECTSAIL</code></td>
+<td>0</td>
+<td>Прямое плавание между островами без карты мира — <strong>выключено</strong></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>CREW_ON_DECK</code></td>
+<td>0</td>
+<td>Матросы на палубе в виде от первого лица — выключено</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>CAMERA_SWING_AT_DOORS</code></td>
+<td>0</td>
+<td>Камера не отъезжает у дверей (0 = OFF; в оригинале 1)</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>SORT_PRICELIST</code></td>
+<td>1</td>
+<td><strong>Сортировка прайс-листа торговой книги по кругу от Гаваны до Белиза — включена</strong></td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>ENHANCED_SAILING_MODE</code></td>
+<td>0</td>
+<td>Косые паруса быстрее при боковом ветре — выключено</td>
+</tr>
+<tr>
+<td>25</td>
+<td><code>ROTATE_SKY</code></td>
+<td>0</td>
+<td>Вращение неба выключено (для мода высокого разрешения неба)</td>
+</tr>
+<tr>
+<td>29</td>
+<td><code>SEA_CAM_PERSP</code></td>
+<td><strong>0.25</strong></td>
+<td>Перспектива морской камеры (0.0 — дефолт игры)</td>
+</tr>
+<tr>
+<td>32</td>
+<td><code>DYNAMIC_LIGHTS</code></td>
+<td>0</td>
+<td>Динамическое освещение выключено</td>
+</tr>
+</tbody>
+</table>
+<h3>10.3. <code>engine.ini</code> (файл движка, в корне игры) — интересные параметры</h3>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>full_screen</code></td>
+<td>1</td>
+<td>Полный экран</td>
+</tr>
+<tr>
+<td><code>screen_x</code> / <code>screen_y</code></td>
+<td>1920 / 1080</td>
+<td>Разрешение</td>
+</tr>
+<tr>
+<td><code>NearClipPlane</code> / <code>FarClipPlane</code></td>
+<td>0.115 / <strong>8000.0</strong></td>
+<td>Дальность отрисовки</td>
+</tr>
+<tr>
+<td><code>vsync</code></td>
+<td>1</td>
+<td>Вертикальная синхронизация</td>
+</tr>
+<tr>
+<td><code>msaa</code></td>
+<td>0</td>
+<td>Сглаживание выключено</td>
+</tr>
+<tr>
+<td><code>PostProcess</code></td>
+<td>0</td>
+<td>Постобработка выключена</td>
+</tr>
+<tr>
+<td><code>texture_degradation</code></td>
+<td>0</td>
+<td>Деградация текстур выключена</td>
+</tr>
+<tr>
+<td><code>show_fps</code></td>
+<td>1</td>
+<td>Показ FPS включён</td>
+</tr>
+<tr>
+<td><code>debugwindow</code></td>
+<td>0</td>
+<td>Окно отладки движка <strong>выключено</strong></td>
+</tr>
+<tr>
+<td><code>[script] debuginfo</code></td>
+<td>1</td>
+<td>Отладочная информация скриптов включена</td>
+</tr>
+<tr>
+<td><code>[script] runtimelog</code></td>
+<td>1</td>
+<td>Лог времени выполнения включён</td>
+</tr>
+<tr>
+<td><code>[controls] ondebugkeys</code></td>
+<td><strong>0</strong></td>
+<td><strong>Отладочные клавиши движка ВЫКЛЮЧЕНЫ</strong></td>
+</tr>
+<tr>
+<td><code>[sea] seadebug</code> / <code>foamenable</code></td>
+<td>0 / 0</td>
+<td>Отладка моря и пена выключены</td>
+</tr>
+<tr>
+<td><code>[Network] MasterServerAddr</code></td>
+<td>192.168.1.37:29029</td>
+<td>Реликт сетевой игры (не работает)</td>
+</tr>
+<tr>
+<td><code>HyperThreading</code> / <code>EnableSSE</code></td>
+<td>1 / 1</td>
+<td>Оптимизации процессора</td>
+</tr>
+<tr>
+<td><code>run</code></td>
+<td><code>seadogs.c</code></td>
+<td>Точка входа скриптов</td>
+</tr>
+<tr>
+<td><code>[ProgressImage]</code></td>
+<td>RelativePosX 0.78, Y 0.05, Width/Height 0.18, 8×8 кадров</td>
+<td>Индикатор загрузки</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> Чтобы включить отладочные клавиши движка, нужно поставить <code>ondebugkeys = 1</code> в <code>[controls]</code>
+<strong>и пересобрать <code>MOD_BETTATESTMODE</code> в <code>"On"</code></strong> в <code>_LSC_on_off.h</code> — иначе скрипты сами блокируют
+обработчики F4/F5/F7/F10/F11. (Описание, не рекомендация к изменению файлов.)</p>
+<h3>10.4. Отладочные клавиши <code>[код]</code> <code>PROGRAM/controls/init_pc.c</code>, <code>PROGRAM/seadogs.c</code>, <code>PROGRAM/Debuger.c</code></h3>
+<table>
+<thead>
+<tr>
+<th>Клавиша</th>
+<th>Внутреннее имя</th>
+<th>Требование</th>
+<th>Что делает</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F12</strong></td>
+<td><code>BOAL_Control2</code></td>
+<td><strong>работает всегда</strong></td>
+<td><code>ActiveF12Control()</code> (<code>Debuger.c:92-171</code>): выводит имя, ранг, HP/maxHP ближайшего видимого персонажа в радиусе 15 и открывает его экран персонажа. При <code>bBettaTestMode</code> дополнительно: ID, индекс, LifeDay, City, экипированный клинок/пистолет, модель, faceId, тип AI, группа/локатор, cirassId, FencingType, нация, пол, темплейт</td>
+</tr>
+<tr>
+<td>F11</td>
+<td><code>BOAL_Control</code></td>
+<td><code>MOD_BETTATESTMODE == "On"</code> или <code>"Test"</code></td>
+<td><code>LaunchDebuderMenu()</code> — окно отладчика</td>
+</tr>
+<tr>
+<td>F10</td>
+<td><code>BOAL_SetCamera</code></td>
+<td><code>"On"</code></td>
+<td><code>ActiveF10Control()</code> — в 1.7.3 почти всё закомментировано (был дамп слухов <code>Rumour[]</code>)</td>
+</tr>
+<tr>
+<td>F7</td>
+<td><code>BOAL_ControF7</code></td>
+<td><code>"On"</code></td>
+<td><code>ActiveF7Control()</code> — <strong>убивает ближайшего персонажа</strong> в радиусе 25 (кроме бессмертных/квестовых). Иначе (релиз) — счётчик <code>Cheats.F7</code></td>
+</tr>
+<tr>
+<td>F5</td>
+<td><code>BOAL_ControF5</code></td>
+<td><code>"On"</code></td>
+<td><code>ActiveF5Control()</code> — <strong>дамп всех атрибутов ближайшего персонажа</strong> (радиус 15) и его огнестрельного оружия в лог. Иначе — счётчик <code>Cheats.F5</code></td>
+</tr>
+<tr>
+<td>F4</td>
+<td><code>TeleportActive</code></td>
+<td><code>"On"</code></td>
+<td><code>ActiveF4Control()</code> — <strong>генерирует крысу</strong> (<code>Rat_GenerateRat()</code>), лог «Сгенерили крысу!»</td>
+</tr>
+<tr>
+<td>F9</td>
+<td><code>BOAL_Control3</code></td>
+<td><code>"On"</code></td>
+<td>Закомментировано (<code>//LaunchBoalDebugScreenSecond()</code>), привязка тоже закомментирована в <code>init_pc.c:22</code></td>
+</tr>
+<tr>
+<td>INSERT</td>
+<td><code>BOAL_ControlDebug</code></td>
+<td><code>"On"</code></td>
+<td><code>ActiveINSERTControl()</code> — тело функции полностью закомментировано (были телепорты между локациями)</td>
+</tr>
+<tr>
+<td><strong>F</strong></td>
+<td><code>BOAL_ActivateRush</code></td>
+<td>всегда, но нужен предмет <code>berserker_potion</code> и не <code>bGlobalVar1</code></td>
+<td>Активирует скрытый перк <code>Rush</code> («Тинктура Ометочтли»): урон ×3.0, получаемый урон ×0.5, 12 сек, откат 60 сек</td>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td><code>BOAL_DeadSearch</code></td>
+<td>всегда, на суше</td>
+<td>Обыск ближайшего трупа (<code>Dead_FindCloseBody()</code> + <code>Dead_OpenBoxProcedure()</code>)</td>
+</tr>
+<tr>
+<td><strong>Y</strong></td>
+<td><code>Say</code></td>
+<td>на суше, есть казначей, включена автозакупка</td>
+<td><code>LaunchTransferGoodsScreen()</code> — интерфейс автозакупки товаров</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> В релизной сборке 1.7.3 <strong>F12 — единственная рабочая «читерская» клавиша</strong>:
+она показывает точный HP и ранг любого NPC в радиусе 15 метров, что бесценно перед боем.
+Нажатия F5 и F7 пишутся в статистику как попытки читерства.
+Клавиша <code>1</code> для обыска трупов и <code>F</code> для Тинктуры Ометочтли — не отладочные, а рабочие геймплейные,
+но их легко не заметить.</p>
+<h3>10.5. Прочие служебные функции в <code>PROGRAM/Debuger.c</code></h3>
+<ul>
+<li><code>TestColonyCommanders()</code> (<code>Debuger.c:172-202</code>) — проверка мэров и командиров фортов всех колоний, дамп в лог.</li>
+<li><code>TestGoodsLiquidity()</code> (<code>Debuger.c:203-241</code>) — рейтинг товаров по <code>Cost/Weight</code>, дамп в компил-лог.</li>
+</ul>
+<h3>10.6. Ограничение скорости времени <code>[код]</code> <code>seadogs.c:1094-1097</code></h3>
+<pre><code>if (!bBettaTestMode &amp;&amp; TimeScaleCounter &lt; -2) TimeScaleCounter = -2;
+</code></pre>
+<p><code>[интерпретация]</code> В релизе замедление времени ограничено (запрет 0.25× скорости, как сказано в комментарии);
+только в бета-режиме доступны более низкие значения.
+<code>[код]</code> <code>seadogs.c:1098-1100</code> при <code>bDisableMapEnter</code> ускорение ограничено 20.</p>
+<h3>10.7. Автосохранения и hardcore</h3>
+<ul>
+<li><code>[код]</code> <code>seadogs.c:1836</code> Сохранение блокируется в режиме боя, если <code>MOD_SKILL_ENEMY_RATE &gt; 1</code>
+  (т.е. на всех уровнях сложности, кроме гипотетического 1).</li>
+<li><code>[код]</code> <code>seadogs.c:1838</code> Сохранение в море блокируется, если <code>bDisableMapEnter &amp;&amp; !CheckBattleSeaSaveEnabled()</code>.</li>
+<li><code>[код]</code> <code>seadogs.c:1828</code> Сохранение запрещено в подводной локации, при абордаже, в процессе абордажа, при смерти ГГ.</li>
+<li><code>[код]</code> <code>seadogs.c:1845</code> Сохранение на палубе (<code>Ship_deck</code>, <code>Deck_Near_Ship</code>) считается «глюкавым» и отдельно обрабатывается.</li>
+<li><code>[код]</code> <code>AIAbordage.c:171-178</code> При включённом <code>EnabledAutoSaveMode</code> перед абордажем делается автосейв.</li>
+</ul>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

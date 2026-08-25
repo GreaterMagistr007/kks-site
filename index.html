@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Корсары: Каждому Своё — справочник — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="assets/icon-192.png"><link rel="apple-touch-icon" href="assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="index.html" class="on">Главная</a><a href="guide.html" class="">Прохождение</a><a href="quests.html" class="">Квесты</a><a href="towns.html" class="">Города</a><a href="trade.html" class="">Торговля</a><a href="tips.html" class="">Фишки</a><a href="maps.html" class="">Карты</a><a href="timers.html" class="">Таймеры</a><a href="mechanics.html" class="">Механика</a><a href="achievements.html" class="">Достижения</a><a href="search.html" class="">Поиск</a></nav>
+  <form class="qs" action="search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="">
+<h1>Корсары: Каждому Своё — справочник</h1>
+
+<p class="sub">Справочник по игре «Корсары: Каждому Своё» (Sea Dogs: To Each His Own), версия <b>1.7.3 x64</b>, все пять DLC.
+Данные собраны из скриптов установленной игры, Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары» и corsairslegacy.com.</p>
+<div class="cards"><a class="card" href="guide.html"><h3>Прохождение</h3><p>Маршрут одного прохождения: 18 этапов от пролога Сен-Пьера до свадебного DLC, с развилками и чек-листами.</p></a><a class="card" href="quests.html"><h3>Квесты</h3><p>126 квестов и заданий: где начинается, требования, таймеры, шаги, награды, предупреждения.</p></a><a class="card" href="towns.html"><h3>Города и острова</h3><p>30 городов: что дёшево купить, что дорого продать, контрабанда, гроты, карты.</p></a><a class="card" href="trade.html"><h3>Торговля</h3><p>Механика цен из кода игры, матрица спроса, маршруты, контрабанда, особые случаи.</p></a><a class="card" href="trade-towns.html"><h3>Товары по городам</h3><p>Полные таблицы: 30 городов × 47 позиций с ценами покупки и продажи, обратный указатель.</p></a><a class="card" href="tips.html"><h3>Фишки и нюансы</h3><p>3137 пунктов по 20 темам: прокачка, бой, абордаж, корабли, экономика, читы.</p></a><a class="card" href="maps.html"><h3>Карты</h3><p>138 карт: архипелаг, острова, города, гроты и подземелья.</p></a><a class="card" href="timers.html"><h3>Таймеры</h3><p>301 сроков и точки невозврата — что ломает прохождение.</p></a><a class="card" href="mechanics.html"><h3>Механика и числа</h3><p>19 разделов из скриптов игры: перки, формулы прокачки, корабли, пушки, экономика, репутация.</p></a><a class="card" href="achievements.html"><h3>Достижения</h3><p>80 достижений Steam с точными условиями из кода.</p></a><a class="card" href="search.html"><h3>Поиск</h3><p>Единый поиск по квестам, городам, товарам, картам и фишкам.</p></a></div>
+<h2>Три вещи, которые надо знать до старта</h2>
+<div class="warnbox"><b>1. Пройти абсолютно всё за одно прохождение невозможно.</b> В коде зашиты три взаимоисключающие развилки:
+ветка «Голландского гамбита» (<code>holl_win</code> / <code>eng_win</code> / <code>self_win</code>), спутница (Элен <b>или</b> Мэри)
+и финальный выбор «остаться на Карибах / вернуться во Францию». Второе и третье решают, будет ли доступно DLC «Долго и счастливо».</div>
+<div class="warnbox"><b>2. Ветка за Англию стоит куска DLC «Калеуче».</b> При <code>eng_win</code> в коде не выставляется флаг
+<code>Caleuche.Skul</code>, и нефритовый череп с полным прохождением линии становится недостижим — хотя большинство гайдов
+советуют именно Англию, ради постоянного канонира Чарли Книпеля.</div>
+<div class="warnbox"><b>3. «Гамбит» не стартует просто так.</b> Сначала нужно поговорить с братом про «работу на сильных мира сего» —
+без этой реплики Гастон молчит. Это разгадка массовых жалоб «квест не выдают».</div>
+<h2>С чего начать</h2>
+<ol>
+<li>Прочитать <a href="guide.html">этап 0 и этап 1</a> прохождения — там настройки, выбор персонажа и жёсткий 3-дневный таймер верфи.</li>
+<li>Просмотреть <a href="tips.html">топ-30 фишек</a> — они экономят десятки часов (цена прокачки по сложностям, Интеллект, товар «Оружие» для абордажа).</li>
+<li>Держать под рукой <a href="timers.html">таблицу таймеров</a> и <a href="towns.html">торговый профиль городов</a>.</li>
+</ol>
+<p class="sub" id="kks-offline" hidden></p>
+<script>
+(function () {
+  const el = document.querySelector('#kks-offline');
+  if (!el || !navigator.serviceWorker) return;
+  el.hidden = false;
+  el.textContent = 'Оффлайн-копия: подготовка…';
+  navigator.serviceWorker.addEventListener('message', e => {
+    const d = e.data;
+    if (!d || d.type !== 'kks-cache') return;
+    el.textContent = d.done >= d.total
+      ? 'Оффлайн-копия готова: ' + d.total + ' файлов. Интернет больше не нужен.'
+      : 'Оффлайн-копия загружается: ' + d.done + ' из ' + d.total + ' файлов — можно продолжать читать.';
+  });
+  navigator.serviceWorker.ready.then(r => r.active && r.active.postMessage('kks-status'));
+})();
+</script></main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script></body></html>

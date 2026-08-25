@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Что не вошло — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="on">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>Что не вошло</h1>
+
+<a class="back" href="../tips.html">← все разделы фишек</a><ul>
+<li>Полные табличные выкладки: таблица всех товаров с ценами, полная таблица ТТХ всех кораблей,
+  полная таблица клинков и огнестрела, таблица случайного лута <code>RandItems[52]</code>, таблица производства
+  по островам. Это данные, а не фишки; они остались в <code>14-engine-numbers.md</code> и <code>TRADE.md</code>. Здесь дан
+  смысловой вывод из них и точечно — числа по ключевым и лучшим в классе позициям.</li>
+<li>Пошаговые прохождения квестов и сюжетные развилки — предмет <code>GUIDE.md</code> и отчётов
+  <code>01-main-story.md</code>, <code>03-side-quests.md</code>, <code>08-ecliptic-walkthrough.md</code>, <code>10-harbour-quests.md</code>,
+  <code>12-harbour-sidequests.md</code>.</li>
+<li>Форумные пункты без факта: обсуждение вкусов, споры о версиях модов без описания механики,
+  жалобы на баги без способа обхода, ссылки на посты, благодарности.</li>
+<li>Пункты, у которых в исходных отчётах стояла только пометка «требует проверки / неизвестно /
+  надо посмотреть в 1.7.3» и не было ни числа, ни описанной механики.</li>
+<li>Пункты с пометкой <code>[одно мнение]</code> или <code>[спорно]</code>, в которых при этом нет ни одного конкретного
+  числа: 374 таких пункта отброшено автоматически как наименее полезные.</li>
+<li>Механики, относящиеся только к другим играм линейки (Возвращение Легенды, Корсары: Изгой,
+  Caribbean Legend) и не подтверждённые для общего движка. То, что подтверждено для движка
+  Storm 2.8, оставлено с пометкой <code>[из ГПК]</code>.</li>
+<li>Дубли: пункты, повторяющие уже сказанное другими словами, сведены в один; при сборке автоматически
+  отброшено ещё 32 повтора между отчётами и между тематическими разделами.</li>
+<li>Не разобрано и в самих исходных отчётах: эффекты тотемов <code>totem_01</code>, <code>totem_03</code>, <code>totem_07</code>,
+  <code>totem_13</code> и части талисманов (в коде не найдены), высоты борта по типам ядер для всех кораблей,
+  параметры <code>SpeedDependWeight</code>/<code>TurnDependWeight</code>/<code>SubSeaDependWeight</code> по всем кораблям, построчный
+  лут береговых сундуков и скелетов, полный список рецептов алхимии, вероятности шторма и торнадо по
+  сезонам, условия всех 73 достижений, награды и таймеры каждого генерируемого квеста, механика
+  появления прочих главных героев, отдельная логика сдачи корабля в море (не абордажной).</li>
+</ul>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

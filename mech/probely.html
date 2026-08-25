@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пробелы — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>Пробелы</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><ol>
+<li><strong>Текстовые описания предметов</strong> (<code>ItemsDescribe.txt</code>) не разбирались — эффекты тотемов
+   <code>totem_01</code>, <code>totem_03</code>, <code>totem_07</code>, <code>totem_13</code> и части талисманов (<code>talisman5</code>, <code>talisman7</code>, <code>talisman9</code>+)
+   в коде не найдены; вероятно, реализованы в квестовых скриптах или отсутствуют.</li>
+<li><strong>Полные таблицы <code>Trade</code>-типов по каждому острову</strong> (что где EXPORT/IMPORT/AGGRESSIVE/CONTRABAND)
+   лежат в <code>PROGRAM/islands/islands_init.c</code> — этот файл не анализировался.
+   Без него нельзя выписать «что где производится и потребляется» конкретно по городам;
+   в отчёте дана только механика формирования цен и запасов.</li>
+<li><strong>Высоты борта по типам ядер</strong> (<code>Height.Balls/Bombs/Grapes/Knippels.Y/DY</code> для каждого корабля)
+   не выписаны для всех кораблей — только базовые значения из общего цикла инициализации
+   (<code>ships_init.c:26-29</code>: Bombs Y 3.0/DY 1.0, Grapes 4.0/1.0, Knippels 25.0/15.0, Balls 3.0/1.0).</li>
+<li><strong>Параметры <code>SpeedDependWeight</code>, <code>TurnDependWeight</code>, <code>SubSeaDependWeight</code>, <code>WindAgainstSpeed</code></strong>
+   выписаны не для всех кораблей (в таблице п. 4 приведён только <code>WindAgainstSpeed</code>).</li>
+<li><strong>Индексы <code>RandItems[52]</code></strong> (какие именно предметы участвуют в случайном луте и их <code>rare</code>)
+   не выписаны — нужен разбор <code>initItems.c</code> в части <code>InitRandItems</code>.</li>
+<li><strong><code>FillShorechestBox</code></strong> (содержимое береговых сундуков) и <code>CaveEnc_FillSkeleton</code> (лут скелетов)
+   не разобраны построчно.</li>
+<li><strong>Механика алхимии</strong> (<code>interface/alchemy.c</code>) — только упомянуты рецепты; полный список
+   компонентов и результатов не выписан.</li>
+<li><strong>Погода и штормы</strong> (<code>PROGRAM/weather/</code>) — вероятности возникновения шторма/торнадо/дождя
+   и их привязка к сезонам не анализировались.</li>
+<li><strong>Достижения (73 штуки)</strong> — <code>MAX_ACHIEVMENTS = 73</code>, <code>Achievment_GetID</code> — условия получения
+   каждого не выписаны.</li>
+<li><strong>Генератор квестов</strong> (<code>GenQuests.c</code>, 5000+ строк) — извлечены только изменения репутации;
+    награды, таймеры и условия отдельных генерируемых квестов не разбирались (по разграничению
+    задач это зона другого агента, но экономические параметры генеративных заданий частично
+    остались непокрытыми).</li>
+<li><strong><code>PROGRAM/scripts/PsHero.c</code> (ПГГ, прочие главные герои)</strong> — механика их появления,
+    отношений и <code>PGG_ChangeRelation2MainCharacter</code> разобрана только фрагментарно.</li>
+<li><strong><code>МОД_SKILL_ENEMY_RATE</code> в <code>quests/reaction_functions.c</code></strong> (строки 21504, 29896, 30633) —
+    точное влияние на квестовые награды не выписано полностью.</li>
+<li><strong><code>Ship_CheckSurrendered</code></strong> (<code>AIShip.c:1116</code>) — отдельная логика сдачи корабля в море
+    (не абордажная) не разбиралась.</li>
+<li><strong>Механика ремонта в верфи</strong> (<code>interface/repair.c</code>, <code>shipyard.c</code>) — цены на ремонт корпуса,
+    парусов, мачт и апгрейды корпуса не выписаны.</li>
+<li><strong>Апгрейды корабля</strong> (<code>ship.upgrades.*</code>) — упоминаются в <code>AICannon.c:280</code> (закомментировано);
+    действующая система улучшений в 1.7.3 не проверена.</li>
+</ol>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5-бис. Что где производится и потребляется — таблица по островам — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>5-бис. Что где производится и потребляется — таблица по островам</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><p><code>[код]</code> <code>PROGRAM/islands/islands_init.c</code> (строка = место объявления острова).
+- <strong>EXPORT</strong> — товар производится, <code>tradeModify = 0.80</code> (<strong>дешевле всего покупать здесь</strong>), стартовый запас <code>Norm*0.9</code>.
+- <strong>IMPORT</strong> — товар потребляется, <code>tradeModify = 1.20</code> (<strong>дороже, выгодно продавать</strong>), запас <code>Norm*0.4</code>.
+- <strong>AGGRESSIVE</strong> — острый дефицит, <code>tradeModify = 1.40</code> (<strong>максимально выгодно продавать</strong>), запас <code>Norm*0.1</code>.
+- <strong>CONTRABAND</strong> — только через контрабандистов, запас <code>Norm*0.1</code>.
+- Прочие товары (не перечисленные) — NORMAL, <code>tradeModify = 1.00</code>, запас <code>Norm*0.75</code>.
+- <code>RndPriceModify</code> (±до 15%) разыгрывается <strong>один раз на весь остров</strong> и одинаков для всех его городов.</p>
+<table>
+<thead>
+<tr>
+<th>Остров (стр.)</th>
+<th>EXPORT (дешёвая покупка)</th>
+<th>IMPORT (выгодная продажа)</th>
+<th>AGGRESSIVE (макс. цена)</th>
+<th>CONTRABAND</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Barbados</strong> (30) — Бриджтаун</td>
+<td>Кирпич, Фрукты, Какао, Сахар, Ром</td>
+<td>Пшеница, Оружие, Медикаменты, Вино, Эль</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Порох</td>
+</tr>
+<tr>
+<td><strong>Jamaica</strong> (119) — Порт-Ройял, Форт-Оранж</td>
+<td>Провизия, Доски, Ткани, Оружие, Медикаменты, Вино, Ром</td>
+<td>Пшеница, Кофе, Какао, Табак, Сахар, Махагони, Эбеновое, Копра, Паприка</td>
+<td><strong>Хлопок, Кожа, Корица</strong></td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Порох</td>
+</tr>
+<tr>
+<td><strong>PuertoRico</strong> (221) — Сан-Хуан</td>
+<td>Парусина, Ткани, Табак, Паприка, Ром</td>
+<td>Пшеница, Порох, Медикаменты, Вино, Эль</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Cuba1</strong> (302) — Сантьяго</td>
+<td>Провизия, Доски, Табак, Кожа, Эль</td>
+<td>Порох, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Cuba2</strong> (399) — Гавана, Пуэрто-Принсипе</td>
+<td>Провизия, Парусина, Ткани, <strong>Золото, Серебро</strong>, Кофе, Сахар, Порох, Медикаменты, Вино, Ром</td>
+<td>Какао, Табак, Хлопок, Кожа, Корица, Копра, Паприка</td>
+<td><strong>Эбеновое, Махагони</strong></td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Curacao</strong> (507) — Виллемстад</td>
+<td>Провизия, Доски, Ткани, Оружие, Медикаменты, Вино, Эль, <strong>Кораб. шёлк</strong></td>
+<td>Пшеница, Табак, Сахар, Хлопок</td>
+<td><strong>Кофе, Какао, Кожа, Эбеновое, Махагони, Корица, Копра, Паприка</strong> (8 позиций!)</td>
+<td>Рабы, Тросы, Сандал, Масло, Порох</td>
+</tr>
+<tr>
+<td><strong>Tortuga</strong> (606) — Тортуга</td>
+<td>Парусина, Фрукты, Табак, Сахар, Ром</td>
+<td>Пшеница, Порох, Медикаменты, Вино, Эль</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>SentMartin</strong> (687) — Мариго, Филипсбург</td>
+<td>Парусина, Кирпич, Фрукты, Табак, Сахар, Хлопок, Ром</td>
+<td>Пшеница, Оружие, Медикаменты, Вино, Эль</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Порох</td>
+</tr>
+<tr>
+<td><strong>Trinidad</strong> (771) — Порт-о-Спейн</td>
+<td>Парусина, Кирпич, Кофе, Какао, Эль, <strong>Масло</strong></td>
+<td>Пшеница, Порох, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Оружие</td>
+</tr>
+<tr>
+<td><strong>Nevis</strong> (860) — Шарльтаун</td>
+<td>Провизия, Кирпич, Ткани, Сахар, Порох, Медикаменты, Вино, Эль</td>
+<td>Пшеница, Кофе, Какао, Табак, Хлопок, Кожа</td>
+<td><strong>Эбеновое, Махагони, Корица, Паприка</strong></td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Antigua</strong> (958) — Сент-Джонс</td>
+<td>Парусина, Табак, Паприка, Эль</td>
+<td>Пшеница, Оружие, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Порох</td>
+</tr>
+<tr>
+<td><strong>Guadeloupe</strong> (1038) — Бас-Тер</td>
+<td>Доски, Фрукты, Кофе, Какао, Ром, <strong>Тросы</strong></td>
+<td>Пшеница, Порох, Медикаменты, Вино, Эль</td>
+<td>—</td>
+<td>Рабы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Martinique</strong> (1143) — Фор-де-Франс, Ле-Франсуа</td>
+<td>Провизия, Кирпич, Кофе, Хлопок, Эль</td>
+<td>Пшеница, Порох, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Hispaniola1</strong> (1233) — Санто-Доминго, Ла-Вега</td>
+<td>Провизия, Доски, <strong>Золото</strong>, Табак, Кожа, Эль</td>
+<td>Порох, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Hispaniola2</strong> (1333) — Порт-о-Пренс, Пиратская крепость</td>
+<td>Провизия, Доски, Табак, Кожа, Эль</td>
+<td>Пшеница, Порох, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Bermudes</strong> (1414)</td>
+<td>Провизия, Парусина, Ткани, <strong>Золото, Серебро</strong>, Кофе, Сахар</td>
+<td>Пшеница, Порох, Оружие, Медикаменты, Вино, Ром, Эль (7 позиций)</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло</td>
+</tr>
+<tr>
+<td><strong>PortoBello</strong> (1612) — Порто-Белло, Панама</td>
+<td>Парусина, Пшеница, Ткани, <strong>Золото, Серебро</strong>, Кожа, Корица, Копра, Порох, Медикаменты, Вино, Эль (12 позиций!)</td>
+<td>Кофе, Какао, Табак, Сахар, Хлопок, Паприка</td>
+<td><strong>Эбеновое, Махагони</strong></td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Cartahena</strong> (1712) — Картахена</td>
+<td>Провизия, Пшеница, <strong>Золото, Серебро</strong>, Кожа, Корица, Копра, Ром</td>
+<td>Порох, Медикаменты, Вино, Эль</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Maracaibo</strong> (1795) — Маракайбо</td>
+<td>Кирпич, Пшеница, Какао, Сахар, Эль</td>
+<td>Порох, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Caracas</strong> (1875) — Каракас</td>
+<td>Кирпич, Пшеница, Кофе, Какао, Кожа, Эль</td>
+<td>Порох, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Cumana</strong> (1948) — Кумана</td>
+<td>Провизия, Пшеница, Хлопок, Паприка, Ром</td>
+<td>Порох, Медикаменты, Вино, Эль</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>SantaCatalina</strong> (2037) — Санта-Каталина</td>
+<td>Доски, Фрукты, <strong>Эбеновое, Махагони</strong>, Ром, <strong>Сандал</strong></td>
+<td>Пшеница, Порох, Медикаменты, Вино, Эль</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Масло, Оружие</td>
+</tr>
+<tr>
+<td><strong>Beliz</strong> (2126) — Белиз</td>
+<td>Провизия, Доски, Кофе, <strong>Махагони</strong>, Копра, Эль, <strong>Сандал</strong></td>
+<td>Пшеница, Оружие, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Масло, Порох</td>
+</tr>
+<tr>
+<td><strong>LostShipsCity</strong> (2241) — Город Потерянных Кораблей</td>
+<td>Кирпич, <strong>Золото, Серебро</strong></td>
+<td>Провизия, Парусина, Доски, Пшеница, Ткани, Фрукты, Порох, Оружие, Медикаменты, Вино, Ром, Эль (<strong>12 позиций!</strong>)</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло</td>
+</tr>
+<tr>
+<td><strong>Providence</strong> (2410) — Сан-Андрес</td>
+<td>Кирпич, Фрукты, Хлопок, Кожа, Эль</td>
+<td>Порох, Медикаменты, Вино, Ром</td>
+<td>—</td>
+<td>Рабы, Тросы, Шёлк, Сандал, Масло, Оружие</td>
+</tr>
+<tr>
+<td>Dominica, Terks, Caiman, KhaelRoa, Ksochitam, RockIsland, SantaQuiteria, IslaDeVieques, IslaMona, IslaDeCoche</td>
+<td>торговли нет (необитаемые/квестовые)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3>Практические торговые маршруты, следующие из таблицы <code>[интерпретация]</code></h3>
+<ol start="251">
+<li><strong>Curacao (Виллемстад) — уникальный «магнит» для колониальных товаров:</strong> 8 позиций AGGRESSIVE
+     (кофе, какао, кожа, эбеновое, махагони, корица, копра, паприка) по цене ×1.40 при priceModify ×2.0.
+     Это лучший город в игре для продажи колониальных товаров.</li>
+<li><strong>Санта-Каталина и Белиз — единственные производители Сандала</strong> (<code>EXPORT</code>, priceModify UNIQUE ×10)
+     и Эбенового/Махагони. Сандал: базовая цена 240 × 10 = 2400 за единицу, вес 7.</li>
+<li><strong>Тросы производятся только в Гваделупе (Бас-Тер)</strong>, масло — только в Тринидаде (Порт-о-Спейн),
+     корабельный шёлк — только в Кюрасао (Виллемстад). Все три — UNIQUE (×10).</li>
+<li>Маршрут «эбеновое/махагони»: покупать в <strong>Санта-Каталине</strong>, продавать в <strong>Кюрасао, Гаване,
+     Порто-Белло или Невисе</strong> (все четыре — AGGRESSIVE ×1.40).</li>
+<li><strong>Золото и серебро производят: Cuba2 (Гавана), Bermudes, PortoBello (Порто-Белло/Панама),
+     Cartahena, Hispaniola1 (только золото), LostShipsCity.</strong> priceModify CROWN ×5.0.</li>
+<li><strong>Город Потерянных Кораблей (LostShipsCity) импортирует 12 позиций</strong> — включая всю провизию,
+     порох, оружие, медикаменты и алкоголь. Идеальный сбыт «расходников» по ×1.20.</li>
+<li><strong>Порто-Белло экспортирует 12 позиций</strong> (в том числе золото, серебро, порох, медикаменты, вино) —
+     лучший город для дешёвых закупок.</li>
+<li><strong>Порох дешевле всего в: Cuba2 (Гавана), Nevis (Шарльтаун), PortoBello</strong> — это EXPORT, ×0.80.
+     Во всех остальных портах он либо IMPORT (×1.20), либо контрабанда.</li>
+<li><strong>Медикаменты дешевле всего: Jamaica (Порт-Ройял), Cuba2, Curacao, Nevis, PortoBello</strong> —
+     во всех остальных 25 портах они IMPORT ×1.20. Закупаться только в этих пяти.</li>
+<li><strong>Оружие (критично для абордажа!) дешевле всего: Jamaica, Curacao, Bermudes</strong> (EXPORT ×0.80).
+     В Barbados, SentMartin, Antigua, Guadeloupe, Beliz — IMPORT ×1.20; в 9 портах — только контрабанда.</li>
+<li><strong>Пшеница почти нигде не производится</strong> — только Порто-Белло, Картахена, Маракайбо, Каракас, Кумана.
+     В 14 портах она IMPORT — очень стабильный товар для продажи.</li>
+<li><strong>Рабы, тросы, шёлк, сандал и масло — CONTRABAND почти на всех островах</strong> — торговать ими
+     легально почти нельзя, только через контрабандистов (что подтверждает: <code>Quantity = 0</code>
+     для UNIQUE и CROWN в лавках).</li>
+<li>Ром производится в 11 портах и импортируется в 13 — самый «двусторонний» товар для коротких маршрутов.</li>
+<li>Эль (Ale) экспортируется в 14 портах — самый распространённый экспорт; продавать невыгодно почти везде.</li>
+</ol>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

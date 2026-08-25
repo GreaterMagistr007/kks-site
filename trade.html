@@ -1,0 +1,3482 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Торговля: механика и маршруты — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="assets/icon-192.png"><link rel="apple-touch-icon" href="assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="index.html" class="">Главная</a><a href="guide.html" class="">Прохождение</a><a href="quests.html" class="">Квесты</a><a href="towns.html" class="">Города</a><a href="trade.html" class="on">Торговля</a><a href="tips.html" class="">Фишки</a><a href="maps.html" class="">Карты</a><a href="timers.html" class="">Таймеры</a><a href="mechanics.html" class="">Механика</a><a href="achievements.html" class="">Достижения</a><a href="search.html" class="">Поиск</a></nav>
+  <form class="qs" action="search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>Торговля: механика и маршруты</h1>
+<p class="sub">формула цены из кода, матрица спроса, контрабанда, особые случаи</p>
+<nav class="toc"><b>Содержание</b><ul><li class="l2"><a href="#h1-plan-dokumenta">План документа</a></li><li class="l2"><a href="#h2-kak-rabotaet-torgovlya-v-kks">Как работает торговля в ККС</a></li><li class="l3"><a href="#h3-glavnoe-otkrytie-spros-predlozhenie-zadaetsya-ostrovom-a-ne-">Главное открытие: спрос/предложение задаётся ОСТРОВОМ, а не городом</a></li><li class="l3"><a href="#h4-formula-ceny-tochno-iz-koda">Формула цены [точно из кода]</a></li><li class="l3"><a href="#h5-pricemodify-mnozhitel-tipa-tovara-tochno-iz-koda-storeutilit">priceModify — множитель типа товара [точно из кода] (storeutilite.c:213-236)</a></li><li class="l3"><a href="#h6-trademodify-tipy-sprosa-v-gorode-tochno-iz-koda-storeutilite">tradeModify — типы спроса в городе [точно из кода] (storeutilite.c:131-155)</a></li><li class="l3"><a href="#h7-sluchaynyy-modifikator-ostrova-rndpricemodify-tochno-iz-koda">Случайный модификатор острова RndPriceModify [точно из кода] (initStore.c:49-62)</a></li><li class="l3"><a href="#h8-vliyanie-kolichestva-tovara-na-cenu-tochno-iz-koda">Влияние количества товара на цену [точно из кода]</a></li><li class="l3"><a href="#h9-sutochnyy-oborot-lavki-tochno-iz-koda-storeutilite-c-376-459">Суточный оборот лавки [точно из кода] (storeutilite.c:376-459)</a></li><li class="l3"><a href="#h10-razmer-magazina-tochno-iz-koda-store-init-c-initgoods-c">Размер магазина [точно из кода] (store_init.c, initGoods.c)</a></li><li class="l3"><a href="#h11-navyk-kommerciya-i-perki-tochno-iz-koda-storeutilite-c-116-1">Навык Коммерция и перки [точно из кода] (storeutilite.c:116, 160-207)</a></li><li class="l3"><a href="#h12-cmodify-nadbavka-na-orudiya-tochno-iz-koda-storeutilite-c-16">cModify — надбавка на орудия [точно из кода] (storeutilite.c:163)</a></li><li class="l3"><a href="#h13-costcoeff-srednyaya-cena-zakupki-tochno-iz-koda">costCoeff — «средняя цена закупки» [точно из кода]</a></li><li class="l3"><a href="#h14-tovary-kotoryh-v-lavkah-ne-byvaet-tochno-iz-koda">Товары, которых в лавках НЕ БЫВАЕТ [точно из кода]</a></li><li class="l3"><a href="#h15-porcha-gruza-v-igre-ee-net-tochno-iz-koda">Порча груза — в игре её НЕТ [точно из кода]</a></li><li class="l2"><a href="#h16-spisok-vseh-tovarov">Список всех товаров</a></li><li class="l3"><a href="#h17-chto-iz-etoy-tablicy-vazhno-dlya-torgovli-interpretaciya">Что из этой таблицы важно для торговли [интерпретация]</a></li><li class="l2"><a href="#h18-matrica-gorod-tovar">Матрица город × товар</a></li><li class="l3"><a href="#h19-svodka-po-kazhdomu-gorodu">Сводка по каждому городу</a></li><li class="l3"><a href="#h20-chto-gde-deshevle-vsego-kupit-tip-export-trademodify-0-80">Что где дешевле всего купить (тип Export, tradeModify 0.80)</a></li><li class="l3"><a href="#h21-chto-gde-dorozhe-vsego-prodat">Что где дороже всего продать</a></li><li class="l3"><a href="#h22-klyuchevye-vyvody-iz-matricy-interpretaciya">Ключевые выводы из матрицы [интерпретация]</a></li><li class="l2"><a href="#h23-gotovye-torgovye-marshruty">Готовые торговые маршруты</a></li><li class="l3"><a href="#h24-model-rascheta">Модель расчёта</a></li><li class="l3"><a href="#h25-vazhno-bez-perkov-torgovli-torgovlya-pochti-ne-rabotaet-toch">ВАЖНО: без перков торговли торговля почти не работает [точно из кода + расчёт]</a></li><li class="l3"><a href="#h26-top-marshrutov-po-pribyli-za-odin-reys">Топ маршрутов по прибыли за один рейс</a></li><li class="l3"><a href="#h27-krugovye-marshruty-gruz-v-obe-storony">Круговые маршруты (груз в обе стороны)</a></li><li class="l3"><a href="#h28-vstroennyy-torgovyy-pomoschnik-igry-tochno-iz-koda">Встроенный «Торговый помощник» игры [точно из кода]</a></li><li class="l2"><a href="#h29-kontrabanda">Контрабанда</a></li><li class="l3"><a href="#h30-kak-eto-ustroeno-v-kode-tochno-iz-koda">Как это устроено в коде [точно из кода]</a></li><li class="l3"><a href="#h31-flagi-contra-sell-contra-buy-tochno-iz-koda-storeutilite-c-4">Флаги CONTRA_SELL / CONTRA_BUY [точно из кода] (storeutilite.c:423-453)</a></li><li class="l3"><a href="#h32-kakie-tovary-kontrabandnye-i-gde-tochno-iz-koda">Какие товары контрабандные и где [точно из кода]</a></li><li class="l3"><a href="#h33-lavka-protiv-kontrabandista-gde-prodavat">Лавка против контрабандиста: где продавать</a></li><li class="l3"><a href="#h34-kak-naznachit-sdelku-i-chto-dlya-etogo-nuzhno-tochno-iz-koda">Как назначить сделку и что для этого нужно [точно из кода]</a></li><li class="l3"><a href="#h35-riski-i-shtrafy-s-chislami-tochno-iz-koda">Риски и штрафы, с числами [точно из кода]</a></li><li class="l3"><a href="#h36-opyt-ot-kontrabandy-tochno-iz-koda-program-interface-contrab">Опыт от контрабанды [точно из кода] (PROGRAM/interface/contraband.c:161, 173)</a></li><li class="l2"><a href="#h37-osobye-sluchai">Особые случаи</a></li><li class="l3"><a href="#h38-nalogi-i-portovye-sbory-ih-net-tochno-iz-koda">Налоги и портовые сборы — их НЕТ [точно из кода]</a></li><li class="l3"><a href="#h39-zahvat-i-razgrablenie-goroda-tochno-iz-koda">Захват и разграбление города [точно из кода]</a></li><li class="l3"><a href="#h40-voyna-blokada-reputaciya-tochno-iz-koda">Война, блокада, репутация [точно из кода]</a></li><li class="l3"><a href="#h41-sezonnost-otsutstvuet-tochno-iz-koda">Сезонность — ОТСУТСТВУЕТ [точно из кода]</a></li><li class="l3"><a href="#h42-epidemii-tochno-iz-koda">Эпидемии [точно из кода]</a></li><li class="l3"><a href="#h43-konkurenty-za-tovar-pgg-tochno-iz-koda-program-scripts-psher">Конкуренты за товар: ПГГ [точно из кода] (PROGRAM/scripts/PsHero.c)</a></li><li class="l3"><a href="#h44-tovar-oruzhie-i-abordazh-kriticheski-vazhno-tochno-iz-koda">Товар «Оружие» и абордаж — критически важно [точно из кода]</a></li><li class="l3"><a href="#h45-rashodniki-proviant-rom-lekarstva-tochno-iz-koda-program-scr">Расходники: провиант, ром, лекарства [точно из кода] (PROGRAM/scripts/food.c)</a></li><li class="l3"><a href="#h46-sklad-v-gorode-tochno-iz-koda">Склад в городе [точно из кода]</a></li><li class="l3"><a href="#h47-nagrablennoe-prodaetsya-za-60-ceny-tochno-iz-koda">Награбленное продаётся за 60% цены [точно из кода]</a></li><li class="l3"><a href="#h48-kak-bystro-rastet-navyk-kommerciya-tochno-iz-koda">Как быстро растёт навык Коммерция [точно из кода]</a></li><li class="l2"><a href="#h49-sverka-s-soobschestvom">Сверка с сообществом</a></li><li class="l3"><a href="#h50-chto-soobschestvo-govorit-verno-podtverzhdaetsya-kodom">Что сообщество говорит верно (подтверждается кодом)</a></li><li class="l3"><a href="#h51-gde-soobschestvo-oshibaetsya">Где сообщество ошибается</a></li><li class="l3"><a href="#h52-chto-soobschestvo-voobsche-ne-znaet-interpretaciya">Что сообщество вообще не знает [интерпретация]</a></li><li class="l2"><a href="#h53-probely">Пробелы</a></li><li class="l3"><a href="#h54-ne-izvlekaetsya-iz-skriptov">Не извлекается из скриптов</a></li><li class="l3"><a href="#h55-trebuet-proverki-v-igre">Требует проверки в игре</a></li><li class="l3"><a href="#h56-mertvyy-kod-naydennyy-po-hodu-mozhet-ozhit-v-modah">Мёртвый код, найденный по ходу (может ожить в модах)</a></li><li class="l3"><a href="#h57-granicy-razbora">Границы разбора</a></li></ul></nav><p>Игра: «Корсары: Каждому Своё» (Sea Dogs: To Each His Own), Steam appid 223330, версия 1.7.3 x64.
+Источник данных: скрипты установленной игры <code>/mnt/data/games/steamapps/common/Sea Dogs To Each His Own/PROGRAM/...</code> (главный источник, точнее любых гайдов) + отчёты сообщества в <code>kks_guide/reports/</code>.
+Дата сборки: 2026-08-23.</p>
+<p>Обозначения:
+- <code>[точно из кода]</code> — число/факт прочитан прямо в скрипте игры, указан <code>файл:строка</code>.
+- <code>[интерпретация]</code> — вывод/расчёт на основе кода, может отличаться от поведения в бою.</p>
+<h2 id="h1-plan-dokumenta">План документа</h2>
+<ol>
+<li>Как работает торговля в ККС</li>
+<li>Список всех товаров</li>
+<li>Матрица город × товар</li>
+<li>Готовые торговые маршруты</li>
+<li>Контрабанда</li>
+<li>Особые случаи</li>
+<li>Сверка с сообществом</li>
+<li>Пробелы</li>
+</ol>
+<hr />
+<h2 id="h2-kak-rabotaet-torgovlya-v-kks">Как работает торговля в ККС</h2>
+<h3 id="h3-glavnoe-otkrytie-spros-predlozhenie-zadaetsya-ostrovom-a-ne-">Главное открытие: спрос/предложение задаётся ОСТРОВОМ, а не городом</h3>
+<p>Профиль торговли (что дёшево, что дорого) прописан не у города, а у <strong>острова</strong> — в <code>PROGRAM/islands/islands_init.c</code>, блоками <code>Islands[n].Trade.Export / .Import / .Aggressive / .Contraband</code>. Магазин города при инициализации читает профиль своего острова (<code>PROGRAM/store/initStore.c:39-88</code>). Следствие <code>[точно из кода]</code>:
+- Города на одном острове имеют <strong>одинаковый набор дешёвых/дорогих товаров</strong>: Порт-Ройял и Марун-Таун (Ямайка); Сантьяго и Пуэрто-Принсипе (Cuba1); Сен-Пьер и Ле Франсуа (Мартиника); Ла Вега и Санто-Доминго (Hispaniola1).
+- Возить товар между двумя городами одного острова бессмысленно — типы спроса совпадают.
+- Панама вообще не имеет острова (<code>PROGRAM/colonies/Colonies_init.c:441</code> — прямой комментарий разработчика «острова панама нет»), Исла Мона имеет остров без секции <code>Trade</code> (<code>islands_init.c:2574</code>). У обоих ВСЕ товары получают тип <code>normal</code> и нулевой случайный модификатор. Это «нейтральные» лавки.
+- Профиль острова <code>LostShipsCity</code> (Локо-Риферте) в <code>islands_init.c:2269-2290</code> прописан, но у этой колонии магазин-заглушка <code>Pirates_STORE</code> (<code>Colonies_init.c:698</code>) — то есть профиль в игре не используется.</p>
+<h3 id="h4-formula-ceny-tochno-iz-koda">Формула цены <code>[точно из кода]</code></h3>
+<p><code>PROGRAM/store/storeutilite.c:238</code>:</p>
+<pre><code>Цена = round( priceModify * basePrice * tradeModify * skillModify * qty * costCoeff * cModify )
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Множитель</th>
+<th>Что это</th>
+<th>Где в коде</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>basePrice</code></td>
+<td>базовая цена товара, поле <code>Goods[i].Cost</code></td>
+<td><code>PROGRAM/store/initGoods.c</code></td>
+</tr>
+<tr>
+<td><code>priceModify</code></td>
+<td>множитель по <strong>типу товара</strong> (константа, одинакова во всём мире)</td>
+<td><code>storeutilite.c:213-236</code></td>
+</tr>
+<tr>
+<td><code>tradeModify</code></td>
+<td>множитель по <strong>типу спроса товара в этом городе</strong></td>
+<td><code>storeutilite.c:131-155</code></td>
+</tr>
+<tr>
+<td><code>skillModify</code></td>
+<td>навык Коммерция + перки</td>
+<td><code>storeutilite.c:160-207</code></td>
+</tr>
+<tr>
+<td><code>costCoeff</code></td>
+<td>средняя цена закупки этой партии у игрока (только при продаже)</td>
+<td><code>storeutilite.c:203-206</code></td>
+</tr>
+<tr>
+<td><code>cModify</code></td>
+<td>надбавка на орудия при покупке</td>
+<td><code>storeutilite.c:163</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="h5-pricemodify-mnozhitel-tipa-tovara-tochno-iz-koda-storeutilit">priceModify — множитель типа товара <code>[точно из кода]</code> (<code>storeutilite.c:213-236</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Тип товара</th>
+<th>priceModify</th>
+<th>Товары</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>T_TYPE_NORMAL</code> повседневные</td>
+<td><strong>×1.0</strong></td>
+<td>провиант, парусина, доски, кирпичи, пшеница, одежда, фрукты</td>
+</tr>
+<tr>
+<td><code>T_TYPE_AMMUNITION</code> боеприпасы</td>
+<td><strong>×1.0</strong></td>
+<td>ядра, картечь, книппели, бомбы</td>
+</tr>
+<tr>
+<td><code>T_TYPE_CANNONS</code> орудия</td>
+<td><strong>×1.0</strong></td>
+<td>все пушки и кулеврины</td>
+</tr>
+<tr>
+<td><code>T_TYPE_EXPORT</code> колониальные</td>
+<td><strong>×2.0</strong></td>
+<td>кофе, какао, табак, сахар, хлопок, кожа, чёрное/красное дерево, ваниль, копра, паприка</td>
+</tr>
+<tr>
+<td><code>T_TYPE_IMPORT</code> импортные</td>
+<td><strong>×3.0</strong></td>
+<td>порох, оружие, лекарства, вино, ром, эль</td>
+</tr>
+<tr>
+<td><code>T_TYPE_CROWN</code> коронные</td>
+<td><strong>×5.0</strong></td>
+<td>рабы, золото, серебро</td>
+</tr>
+<tr>
+<td><code>T_TYPE_UNIQUE</code> уникальные</td>
+<td><strong>×10.0</strong></td>
+<td>корабельный шёлк, канаты, бакаут, смолы</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> Именно это и есть тот «×2.0 на Кюрасао» из предыдущего анализа: множитель ×2.0 принадлежит не городу, а типу «колониальный товар». Городского множителя <code>priceModify</code> в коде <strong>нет</strong>.</p>
+<h3 id="h6-trademodify-tipy-sprosa-v-gorode-tochno-iz-koda-storeutilite">tradeModify — типы спроса в городе <code>[точно из кода]</code> (<code>storeutilite.c:131-155</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Тип спроса в городе</th>
+<th>tradeModify</th>
+<th>Смысл</th>
+<th>Начальный запас в лавке</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Export</code> (экспорт)</td>
+<td><strong>0.80</strong></td>
+<td>остров ПРОИЗВОДИТ товар → тут ДЕШЕВО, здесь покупать</td>
+<td>0.90–1.10 × Norm (<code>initStore.c:107</code>)</td>
+</tr>
+<tr>
+<td><code>normal</code> (по умолчанию)</td>
+<td><strong>1.00</strong></td>
+<td>нейтрально</td>
+<td>0.75–0.85 × Norm (<code>initStore.c:102</code>)</td>
+</tr>
+<tr>
+<td><code>Contraband</code></td>
+<td><strong>1.00</strong></td>
+<td>товар запрещён, торг через контрабандистов</td>
+<td>0.10–0.15 × Norm (<code>initStore.c:122</code>)</td>
+</tr>
+<tr>
+<td><code>Import</code> (импорт)</td>
+<td><strong>1.20</strong></td>
+<td>острову товар нужен → тут ДОРОГО</td>
+<td>0.40–0.45 × Norm (<code>initStore.c:112</code>)</td>
+</tr>
+<tr>
+<td><code>Aggressive</code> (агрессивный спрос)</td>
+<td><strong>1.40</strong></td>
+<td>острову товар очень нужен → тут САМАЯ ВЫСОКАЯ цена</td>
+<td>0.10–0.15 × Norm (<code>initStore.c:117</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> Полный «размах» цены между лучшим местом покупки и лучшим местом продажи для одного товара — 1.40 / 0.80 = <strong>×1.75</strong> по tradeModify. Плюс разница между ценой покупки и продажи (см. <code>skillModify</code>) режет маржу почти вдвое. Поэтому реальные деньги на торговле делаются на товарах с большим <code>priceModify</code> (колониальные ×2, импортные ×3) и на связке Export → Aggressive.</p>
+<h3 id="h7-sluchaynyy-modifikator-ostrova-rndpricemodify-tochno-iz-koda">Случайный модификатор острова <code>RndPriceModify</code> <code>[точно из кода]</code> (<code>initStore.c:49-62</code>)</h3>
+<p>Один раз при старте игры на каждый остров бросается <code>frnd() * 0.15</code> → значение <strong>0…0.15</strong>, и знак:
+- по умолчанию знак <strong>−1</strong> (цены чуть ниже);
+- знак <strong>+1</strong>, если первый инициализированный магазин острова принадлежит главной колонии нации (<code>ismaincolony = 1</code>) или пиратам (<code>initStore.c:59-60</code>).</p>
+<p>Значение хранится на ОСТРОВЕ и общее для всех его городов. Прибавляется к <code>tradeModify</code> (например, Aggressive становится 1.40 ± 0…0.15). Знак по островам, посчитан по порядку инициализации магазинов <code>[интерпретация из кода]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Знак <strong>+1</strong> (цены выше на 0…15%)</th>
+<th>Знак <strong>−1</strong> (цены ниже на 0…15%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ямайка (задаёт Порт-Ройял, главная), Куба-2/Гавана (главная), Кюрасао/Виллемстад (главная), Сент-Кристофер/Капстервиль (главная), Мэйн-Порто-Белло (главная), Исла-Тесоро/Пиратский город (пираты), Эспаньола-1 (задаёт Ла Вега, пираты), Исла Мона (пираты)</td>
+<td>Барбадос, Пуэрто-Рико, Куба-1, Тортуга, Синт-Маартен, Тринидад, Антигуа, Гваделупа, Мартиника, Эспаньола-2, Картахена, Маракайбо, Каракас, Кумана, Санта-Каталина/Блювельд, Юкатан/Белиз, Провиденсия/Сан-Андрес, Панама</td>
+</tr>
+</tbody>
+</table>
+<p>Для орудий модификатор считается по своей формуле (<code>initStore.c:140</code>): <code>(frnd()*0.03 + RndPriceModify + 0.10) * знак</code> → то есть ±0.10…0.28. <code>[интерпретация]</code> В городах со знаком −1 орудия в лавке заметно дешевле (tradeModify 0.72–0.90), в главных/пиратских городах дороже (1.10–1.28).</p>
+<h3 id="h8-vliyanie-kolichestva-tovara-na-cenu-tochno-iz-koda">Влияние количества товара на цену <code>[точно из кода]</code></h3>
+<p><code>AddPriceModify(rateInc) = 1.05 - rateInc/20.0</code> (<code>storeutilite.c:476-480</code>), где <code>rateInc = Quantity / Norm</code> магазина (<code>storeutilite.c:455-459</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Заполнение лавки</th>
+<th>AddPriceModify</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>пусто (0)</td>
+<td>1.05</td>
+</tr>
+<tr>
+<td>половина нормы</td>
+<td>1.025</td>
+</tr>
+<tr>
+<td>норма (1.0)</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>1.75 нормы (потолок)</td>
+<td>0.9625</td>
+</tr>
+<tr>
+<td>2.0 нормы</td>
+<td>0.95</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ключевой вывод <code>[интерпретация]</code>: в ККС цена НЕ проседает по ходу продажи партии.</strong> Весь эффект количества — это ±5%, и он пересчитывается <strong>только раз в сутки</strong> в <code>UpdateStore</code>, который вызывается по событию <code>NextDay</code> (<code>storeutilite.c:7-8</code>, <code>489-509</code>). Внутри одной сессии торга цена фиксирована: можно вылить полный трюм по одной и той же цене. Единственный «естественный» способ подвинуть цену — переночевать/подождать сутки.</p>
+<h3 id="h9-sutochnyy-oborot-lavki-tochno-iz-koda-storeutilite-c-376-459">Суточный оборот лавки <code>[точно из кода]</code> (<code>storeutilite.c:376-459</code>)</h3>
+<p>Каждые игровые сутки для каждого товара:
+1. Случайное морское событие: <code>frnd() &lt; 0.25</code> — товар привезли (+), <code>&gt; 0.70</code> — увезли (−), иначе ничего. Величина: <code>Norm × (frnd()*0.2 + frnd()*0.2 + 0.1)</code> → <strong>10–50% нормы</strong>.
+2. Производство <code>+0.20 × Norm</code> в любой день, когда товар не вывозили.
+3. Потребление <code>−0.10 × Norm</code>, если запас больше <code>0.25 × Norm</code>.
+4. Если запас перевалил <code>1.75 × Norm</code>: с вероятностью 15% лавку «обнуляют» до случайного <code>0…1 × Norm</code> («самосвал / к нам едет ревизор»), иначе держат в коридоре <code>1.75–2.00 × Norm</code>.</p>
+<p>Норма магазина (<code>Norm</code>) — это то количество, которое было в лавке при старте игры; оно фиксируется навсегда (<code>initStore.c:155</code>) и зависит от размера магазина.</p>
+<h3 id="h10-razmer-magazina-tochno-iz-koda-store-init-c-initgoods-c">Размер магазина <code>[точно из кода]</code> (<code>store_init.c</code>, <code>initGoods.c</code>)</h3>
+<p>Начальное количество умножается на коэффициент размера: <code>large</code> — ×1, <code>medium</code> — × <code>MediumNorm</code>, <code>small</code> — × <code>SmallNorm</code> (<code>initStore.c:146-153</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Товары</th>
+<th>MediumNorm</th>
+<th>SmallNorm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>боеприпасы, порох, оружие, лекарства, орудия</td>
+<td>1.0</td>
+<td>0.5–1.0</td>
+</tr>
+<tr>
+<td>повседневные</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>колониальные</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>уникальные и коронные</td>
+<td>0.5</td>
+<td>0.25</td>
+</tr>
+</tbody>
+</table>
+<p>Размеры лавок <code>[точно из кода]</code> (<code>store_init.c</code>): <strong>large</strong> — Порт-Ройял:23, Виллемстад:48, Капстервиль:68, Порто-Белло:73, Гавана:83. <strong>medium</strong> — Бриджтаун:18, Сан-Хуан:33, Сантьяго:38, Тортуга:53, Филипсбург:58, Бас-Тер:88, Пиратский город:112, Порт-о-Пренс:117, Картахена:127, Маракайбо:132, Каракас:137, Кумана:142, Сан-Андрес:157. <strong>small</strong> — Марун-Таун:28, Пуэрто-Принсипе:43, Сан-Хосе:63, Сент-Джонс:78, Сен-Пьер:93, Ле Франсуа:97, Ла Вега:102, Санто-Доминго:107, Панама:122, Блювельд:147, Белиз:152, Исла Мона:162.</p>
+<p><code>[интерпретация]</code> Большая лавка = больше товара и больше денег на скупку у игрока; маленькая быстро «наедается». Для сброса полного трюма колониальных товаров годятся только large/medium.</p>
+<h3 id="h11-navyk-kommerciya-i-perki-tochno-iz-koda-storeutilite-c-116-1">Навык Коммерция и перки <code>[точно из кода]</code> (<code>storeutilite.c:116, 160-207</code>)</h3>
+<p>Шкала навыка в формуле — 0…10 (комментарий в коде на строке 116).</p>
+<p><strong>Покупка (сколько платит игрок):</strong> <code>skillModify = 1.325 − навык × 0.005</code>, далее перки:
+- есть перк <code>HT2</code>: с <code>ProfessionalCommerce</code> −0.20; иначе с <code>BasicCommerce</code> −0.15; иначе −0.05
+- нет <code>HT2</code>: с <code>ProfessionalCommerce</code> −0.15; иначе с <code>BasicCommerce</code> −0.10; иначе 0</p>
+<p><strong>Продажа (сколько получает игрок):</strong> <code>skillModify = 0.675 + навык × 0.005</code>, далее перки:
+- есть <code>HT2</code>: с <code>ProfessionalCommerce</code> +0.20; иначе с <code>AdvancedCommerce</code> +0.15; иначе +0.05
+- нет <code>HT2</code>: с <code>ProfessionalCommerce</code> +0.15; иначе с <code>AdvancedCommerce</code> +0.10; иначе 0</p>
+<table>
+<thead>
+<tr>
+<th>Состояние персонажа</th>
+<th>Коэф. покупки</th>
+<th>Коэф. продажи</th>
+<th>Спред покупка/продажа</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>навык 0, без перков</td>
+<td>1.325</td>
+<td>0.675</td>
+<td>×1.96</td>
+</tr>
+<tr>
+<td>навык 10, без перков</td>
+<td>1.275</td>
+<td>0.725</td>
+<td>×1.76</td>
+</tr>
+<tr>
+<td>навык 10, <code>ProfessionalCommerce</code></td>
+<td>1.125</td>
+<td>0.875</td>
+<td>×1.29</td>
+</tr>
+<tr>
+<td>навык 10, <code>ProfessionalCommerce</code> + <code>HT2</code></td>
+<td><strong>1.075</strong></td>
+<td><strong>0.925</strong></td>
+<td><strong>×1.16</strong></td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> Перк <code>ProfessionalCommerce</code> (+<code>HT2</code>) даёт больше, чем весь навык от 0 до 10: ×0.15…0.20 против ×0.05. Это главный апгрейд торговца. При «максимальном» торговце спред всего 16% — тогда прибыльной становится почти любая связка Export → Aggressive.</p>
+<h3 id="h12-cmodify-nadbavka-na-orudiya-tochno-iz-koda-storeutilite-c-16">cModify — надбавка на орудия <code>[точно из кода]</code> (<code>storeutilite.c:163</code>)</h3>
+<p><code>cModify = 3.0 + MOD_SKILL_ENEMY_RATE / 5.0</code>, применяется <strong>только при покупке орудий игроком</strong>. <code>MOD_SKILL_ENEMY_RATE</code> — уровень сложности, по умолчанию 4 (<code>PROGRAM/_LSC_on_off.h:108</code>; допустимые значения для ККС 2/4/6/8/10 — комментарий там же).</p>
+<table>
+<thead>
+<tr>
+<th>Сложность</th>
+<th>cModify</th>
+<th>Наценка лавки на орудия</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 (лёгкая)</td>
+<td>3.4</td>
+<td>×3.4</td>
+</tr>
+<tr>
+<td>4 (средняя, по умолчанию)</td>
+<td><strong>3.8</strong></td>
+<td>×3.8</td>
+</tr>
+<tr>
+<td>6</td>
+<td>4.2</td>
+<td>×4.2</td>
+</tr>
+<tr>
+<td>8</td>
+<td>4.6</td>
+<td>×4.6</td>
+</tr>
+<tr>
+<td>10 (сложная)</td>
+<td>5.0</td>
+<td>×5.0</td>
+</tr>
+</tbody>
+</table>
+<p>При <strong>продаже</strong> орудий игроком <code>cModify = 1.0</code>. <code>[интерпретация]</code> То есть лавка покупает пушку примерно за <code>Cost × 0.675</code>, а продаёт за <code>Cost × 1.325 × 3.8 ≈ Cost × 5.0</code>. Разница в 7.5 раза — пушки никогда не выгодно покупать в лавке, только снимать с трофеев или брать у контрабандистов (см. раздел «Контрабанда»).</p>
+<h3 id="h13-costcoeff-srednyaya-cena-zakupki-tochno-iz-koda">costCoeff — «средняя цена закупки» <code>[точно из кода]</code></h3>
+<p>При продаже игроком берётся <code>costCoeff</code> из <code>mc.Goods.&lt;товар&gt;.costCoeff</code> (<code>storeutilite.c:203-206</code>). Пересчитывается как средневзвешенная по количеству при каждом пополнении груза (<code>PROGRAM/characters/characterUtilite.c:166-190</code>, <code>PROGRAM/scripts/Crew.c:635-678</code>). <code>[интерпретация]</code> Механизм гасит спекуляцию: товар, купленный дорого, и продаётся дороже (и наоборот) — но одновременно это значит, что <strong>дёшево купленный товар продаётся дешевле</strong>. Тот же коэффициент влияет на оценку стоимости груза при разделе добычи (<code>Crew.c:555-568</code>, доля 0.33 или 0.7 от базовой цены).</p>
+<h3 id="h14-tovary-kotoryh-v-lavkah-ne-byvaet-tochno-iz-koda">Товары, которых в лавках НЕ БЫВАЕТ <code>[точно из кода]</code></h3>
+<ul>
+<li><code>storeutilite.c:418</code>: каждые сутки количество <strong>уникальных</strong> (корабельный шёлк, канаты, бакаут, смолы) и <strong>коронных</strong> (рабы, золото, серебро) товаров принудительно ставится в <strong>0</strong>. Их нельзя купить в лавке ни в одном городе — только продать лавке (или получить с трофеев, из квестов, у контрабандистов).</li>
+<li><code>initGoods.c:572, 588, 636</code>: <code>NotSale = 1</code> у <strong>береговых пушек (36 фн)</strong>, <strong>осадных пушек (42 фн)</strong> и <strong>полных кулеврин (36 фн)</strong> — в лавках их количество всегда 0 (<code>initStore.c:132-135</code>, <code>storeutilite.c:430-433</code>).</li>
+<li><code>initGoods.c:437, 449</code>: <code>NotSale = 1</code> у золота и серебра (флаг проверяется только для орудий, но количество и так обнуляется правилом выше).</li>
+</ul>
+<h3 id="h15-porcha-gruza-v-igre-ee-net-tochno-iz-koda">Порча груза — в игре её НЕТ <code>[точно из кода]</code></h3>
+<p>У товаров есть поле <code>AfraidWater</code> (3 — пшеница, фрукты, кофе, какао, табак, сахар, хлопок, ваниль, копра, паприка; 2 — одежда; 1 — провиант, кожа, порох, вино, ром, эль, корабельный шёлк, бакаут; 0 — всё остальное) и функция <code>CheckForGoodsSpoil</code> (<code>storeutilite.c:540-562</code>), которая должна вычитать эти единицы. <strong>Но функция нигде в коде не вызывается</strong> — проверено <code>grep -rn "CheckForGoodsSpoil" PROGRAM/</code>: единственное вхождение — само её объявление. То же и с <code>AfraidWater</code>: поле читается только внутри этой мёртвой функции.</p>
+<p><strong>Вывод:</strong> в версии 1.7.3 товары в трюме от воды/времени НЕ портятся. Единственная реальная потеря груза в море — <strong>крысы</strong> (<code>PROGRAM/scripts/food.c:122-153</code>, см. раздел «Особые случаи»).</p>
+<hr />
+<h2 id="h16-spisok-vseh-tovarov">Список всех товаров</h2>
+<p>Всего в игре <strong>47 позиций</strong> (<code>PROGRAM/store/goods.h:1</code> — <code>GOODS_QUANTITY 47</code>), из них 47 − 4 боеприпаса − 12 орудий = <strong>31 «настоящий» торговый товар</strong>.</p>
+<p>Пояснения к колонкам <code>[точно из кода]</code>:
+- <strong>Cost</strong> — базовая цена <code>Goods[i].Cost</code> из <code>initGoods.c</code>.
+- <strong>Вес пачки / шт. в пачке</strong> — поля <code>Weight</code> и <code>Units</code>. Вес считается по пачкам: <code>вес = ceil(количество / Units) × Weight</code> (<code>goods.h:94-100</code>). Колонка «т за 1 шт» = <code>Weight / Units</code> — реальный вес одной единицы товара, именно её надо использовать для расчёта трюма.
+- <strong>Цена покупки/продажи эталон</strong> — цена за 1 шт при: навык Коммерция 0, без перков, тип спроса <code>normal</code>, <code>RndPriceModify = 0</code>, <code>AddPriceModify = 1.0</code>, <code>costCoeff = 1.0</code>. То есть <code>priceModify × Cost × 1.325</code> и <code>priceModify × Cost × 0.675</code>. Для орудий в покупку включён <code>cModify = 3.8</code>.
+- <strong>Norm лавки</strong> — базовая норма <code>Goods[i].Norm</code>, от которой считается запас в лавке.
+- <strong>Контрабанда, остр.</strong> — на скольких островах из 25 товар объявлен контрабандой (<code>Islands[n].Trade.Contraband</code>).
+- <strong>Порча</strong> — <code>AfraidWater</code>, столько единиц теряется за срабатывание порчи.</p>
+<h4>Боеприпасы (не товар для торговли — расходник, priceModify ×1)</h4>
+<table>
+<thead>
+<tr>
+<th>Русское название</th>
+<th>Внутреннее имя</th>
+<th>Cost</th>
+<th>Вес пачки</th>
+<th>Шт. в пачке</th>
+<th>т за 1 шт</th>
+<th>Цена покупки эталон</th>
+<th>Цена продажи эталон</th>
+<th>Norm лавки</th>
+<th>Контрабанда, остр.</th>
+<th>Порча</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ядра</td>
+<td><code>Balls</code></td>
+<td>40</td>
+<td>2</td>
+<td>20</td>
+<td>0.100</td>
+<td>53</td>
+<td>27</td>
+<td>600</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:6</td>
+</tr>
+<tr>
+<td>Картечь</td>
+<td><code>Grapes</code></td>
+<td>20</td>
+<td>1</td>
+<td>20</td>
+<td>0.050</td>
+<td>26</td>
+<td>14</td>
+<td>600</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:22</td>
+</tr>
+<tr>
+<td>Книппели</td>
+<td><code>Knippels</code></td>
+<td>40</td>
+<td>2</td>
+<td>20</td>
+<td>0.100</td>
+<td>53</td>
+<td>27</td>
+<td>600</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:38</td>
+</tr>
+<tr>
+<td>Бомбы</td>
+<td><code>Bombs</code></td>
+<td>60</td>
+<td>3</td>
+<td>20</td>
+<td>0.150</td>
+<td>80</td>
+<td>40</td>
+<td>600</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:54</td>
+</tr>
+</tbody>
+</table>
+<h4>Повседневные товары (priceModify ×1)</h4>
+<table>
+<thead>
+<tr>
+<th>Русское название</th>
+<th>Внутреннее имя</th>
+<th>Cost</th>
+<th>Вес пачки</th>
+<th>Шт. в пачке</th>
+<th>т за 1 шт</th>
+<th>Цена покупки эталон</th>
+<th>Цена продажи эталон</th>
+<th>Norm лавки</th>
+<th>Контрабанда, остр.</th>
+<th>Порча</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Провиант</td>
+<td><code>Food</code></td>
+<td>20</td>
+<td>1</td>
+<td>10</td>
+<td>0.100</td>
+<td>26</td>
+<td>14</td>
+<td>1200</td>
+<td>—</td>
+<td>1</td>
+<td>initGoods.c:71</td>
+</tr>
+<tr>
+<td>Парусина</td>
+<td><code>Sailcloth</code></td>
+<td>40</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>53</td>
+<td>27</td>
+<td>1200</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:85</td>
+</tr>
+<tr>
+<td>Доски</td>
+<td><code>Planks</code></td>
+<td>60</td>
+<td>3</td>
+<td>1</td>
+<td>3.000</td>
+<td>80</td>
+<td>40</td>
+<td>1200</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:98</td>
+</tr>
+<tr>
+<td>Кирпичи</td>
+<td><code>Brick</code></td>
+<td>120</td>
+<td>6</td>
+<td>10</td>
+<td>0.600</td>
+<td>159</td>
+<td>81</td>
+<td>1200</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:111</td>
+</tr>
+<tr>
+<td>Пшеница</td>
+<td><code>Wheat</code></td>
+<td>20</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>26</td>
+<td>14</td>
+<td>1200</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:121</td>
+</tr>
+<tr>
+<td>Одежда</td>
+<td><code>Clothes</code></td>
+<td>20</td>
+<td>1</td>
+<td>10</td>
+<td>0.100</td>
+<td>26</td>
+<td>14</td>
+<td>1200</td>
+<td>—</td>
+<td>2</td>
+<td>initGoods.c:133</td>
+</tr>
+<tr>
+<td>Фрукты</td>
+<td><code>Fruits</code></td>
+<td>20</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>26</td>
+<td>14</td>
+<td>1200</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:145</td>
+</tr>
+</tbody>
+</table>
+<h4>Колониальные / экспортные товары (priceModify ×2)</h4>
+<table>
+<thead>
+<tr>
+<th>Русское название</th>
+<th>Внутреннее имя</th>
+<th>Cost</th>
+<th>Вес пачки</th>
+<th>Шт. в пачке</th>
+<th>т за 1 шт</th>
+<th>Цена покупки эталон</th>
+<th>Цена продажи эталон</th>
+<th>Norm лавки</th>
+<th>Контрабанда, остр.</th>
+<th>Порча</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Кофе</td>
+<td><code>Coffee</code></td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>212</td>
+<td>108</td>
+<td>2400</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:158</td>
+</tr>
+<tr>
+<td>Какао</td>
+<td><code>Chocolate</code></td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>212</td>
+<td>108</td>
+<td>2400</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:170</td>
+</tr>
+<tr>
+<td>Табак</td>
+<td><code>Tobacco</code></td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>212</td>
+<td>108</td>
+<td>2400</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:182</td>
+</tr>
+<tr>
+<td>Сахар</td>
+<td><code>Sugar</code></td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>212</td>
+<td>108</td>
+<td>2400</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:194</td>
+</tr>
+<tr>
+<td>Хлопок</td>
+<td><code>Cotton</code></td>
+<td>40</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>106</td>
+<td>54</td>
+<td>2400</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:204</td>
+</tr>
+<tr>
+<td>Кожа</td>
+<td><code>Leather</code></td>
+<td>40</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>106</td>
+<td>54</td>
+<td>2400</td>
+<td>—</td>
+<td>1</td>
+<td>initGoods.c:216</td>
+</tr>
+<tr>
+<td>Чёрное дерево</td>
+<td><code>Ebony</code></td>
+<td>200</td>
+<td>5</td>
+<td>1</td>
+<td>5.000</td>
+<td>530</td>
+<td>270</td>
+<td>2400</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:228</td>
+</tr>
+<tr>
+<td>Красное дерево</td>
+<td><code>Mahogany</code></td>
+<td>160</td>
+<td>4</td>
+<td>1</td>
+<td>4.000</td>
+<td>424</td>
+<td>216</td>
+<td>2400</td>
+<td>—</td>
+<td>1</td>
+<td>initGoods.c:240</td>
+</tr>
+<tr>
+<td>Ваниль</td>
+<td><code>Cinnamon</code></td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>212</td>
+<td>108</td>
+<td>2400</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:252</td>
+</tr>
+<tr>
+<td>Копра</td>
+<td><code>Copra</code></td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>212</td>
+<td>108</td>
+<td>2400</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:264</td>
+</tr>
+<tr>
+<td>Паприка</td>
+<td><code>Paprika</code></td>
+<td>40</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>106</td>
+<td>54</td>
+<td>2400</td>
+<td>—</td>
+<td>3</td>
+<td>initGoods.c:276</td>
+</tr>
+</tbody>
+</table>
+<h4>Импортные товары из Европы (priceModify ×3)</h4>
+<table>
+<thead>
+<tr>
+<th>Русское название</th>
+<th>Внутреннее имя</th>
+<th>Cost</th>
+<th>Вес пачки</th>
+<th>Шт. в пачке</th>
+<th>т за 1 шт</th>
+<th>Цена покупки эталон</th>
+<th>Цена продажи эталон</th>
+<th>Norm лавки</th>
+<th>Контрабанда, остр.</th>
+<th>Порча</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Порох</td>
+<td><code>Powder</code></td>
+<td>60</td>
+<td>1</td>
+<td>20</td>
+<td>0.050</td>
+<td>238</td>
+<td>122</td>
+<td>1200</td>
+<td>6</td>
+<td>1</td>
+<td>initGoods.c:289</td>
+</tr>
+<tr>
+<td>Оружие</td>
+<td><code>Weapon</code></td>
+<td>60</td>
+<td>1</td>
+<td>10</td>
+<td>0.100</td>
+<td>238</td>
+<td>122</td>
+<td>1200</td>
+<td>17</td>
+<td>—</td>
+<td>initGoods.c:301</td>
+</tr>
+<tr>
+<td>Лекарства</td>
+<td><code>Medicament</code></td>
+<td>60</td>
+<td>1</td>
+<td>30</td>
+<td>0.033</td>
+<td>238</td>
+<td>122</td>
+<td>1200</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:313</td>
+</tr>
+<tr>
+<td>Вино</td>
+<td><code>Wine</code></td>
+<td>120</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>477</td>
+<td>243</td>
+<td>1200</td>
+<td>—</td>
+<td>1</td>
+<td>initGoods.c:326</td>
+</tr>
+<tr>
+<td>Ром</td>
+<td><code>Rum</code></td>
+<td>60</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>238</td>
+<td>122</td>
+<td>1200</td>
+<td>—</td>
+<td>1</td>
+<td>initGoods.c:338</td>
+</tr>
+<tr>
+<td>Эль</td>
+<td><code>Ale</code></td>
+<td>60</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>238</td>
+<td>122</td>
+<td>1200</td>
+<td>—</td>
+<td>1</td>
+<td>initGoods.c:350</td>
+</tr>
+</tbody>
+</table>
+<h4>Уникальные товары (priceModify ×10) — в лавках НЕ продаются</h4>
+<table>
+<thead>
+<tr>
+<th>Русское название</th>
+<th>Внутреннее имя</th>
+<th>Cost</th>
+<th>Вес пачки</th>
+<th>Шт. в пачке</th>
+<th>т за 1 шт</th>
+<th>Цена покупки эталон</th>
+<th>Цена продажи эталон</th>
+<th>Norm лавки</th>
+<th>Контрабанда, остр.</th>
+<th>Порча</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Корабельный шёлк</td>
+<td><code>Shipsilk</code></td>
+<td>160</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>2120</td>
+<td>1080</td>
+<td>1200</td>
+<td>24</td>
+<td>1</td>
+<td>initGoods.c:363</td>
+</tr>
+<tr>
+<td>Канаты</td>
+<td><code>Ropes</code></td>
+<td>80</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>1060</td>
+<td>540</td>
+<td>1200</td>
+<td>24</td>
+<td>—</td>
+<td>initGoods.c:376</td>
+</tr>
+<tr>
+<td>Бакаут</td>
+<td><code>Sandal</code></td>
+<td>240</td>
+<td>7</td>
+<td>1</td>
+<td>7.000</td>
+<td>3180</td>
+<td>1620</td>
+<td>1200</td>
+<td>23</td>
+<td>1</td>
+<td>initGoods.c:389</td>
+</tr>
+<tr>
+<td>Смолы</td>
+<td><code>Oil</code></td>
+<td>80</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>1060</td>
+<td>540</td>
+<td>1200</td>
+<td>24</td>
+<td>—</td>
+<td>initGoods.c:401</td>
+</tr>
+</tbody>
+</table>
+<h4>Коронные товары (priceModify ×5) — в лавках НЕ продаются</h4>
+<table>
+<thead>
+<tr>
+<th>Русское название</th>
+<th>Внутреннее имя</th>
+<th>Cost</th>
+<th>Вес пачки</th>
+<th>Шт. в пачке</th>
+<th>т за 1 шт</th>
+<th>Цена покупки эталон</th>
+<th>Цена продажи эталон</th>
+<th>Norm лавки</th>
+<th>Контрабанда, остр.</th>
+<th>Порча</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Рабы</td>
+<td><code>Slaves</code></td>
+<td>100</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>662</td>
+<td>338</td>
+<td>1200</td>
+<td>25</td>
+<td>—</td>
+<td>initGoods.c:415</td>
+</tr>
+<tr>
+<td>Золото</td>
+<td><code>Gold</code></td>
+<td>200</td>
+<td>2</td>
+<td>1</td>
+<td>2.000</td>
+<td>1325</td>
+<td>675</td>
+<td>1200</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:427</td>
+</tr>
+<tr>
+<td>Серебро</td>
+<td><code>Silver</code></td>
+<td>100</td>
+<td>1</td>
+<td>1</td>
+<td>1.000</td>
+<td>662</td>
+<td>338</td>
+<td>1200</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:439</td>
+</tr>
+</tbody>
+</table>
+<h4>Орудия (priceModify ×1, при покупке ещё ×3.8)</h4>
+<table>
+<thead>
+<tr>
+<th>Русское название</th>
+<th>Внутреннее имя</th>
+<th>Cost</th>
+<th>Вес пачки</th>
+<th>Шт. в пачке</th>
+<th>т за 1 шт</th>
+<th>Цена покупки эталон</th>
+<th>Цена продажи эталон</th>
+<th>Norm лавки</th>
+<th>Контрабанда, остр.</th>
+<th>Порча</th>
+<th>Строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Фальконеты</td>
+<td><code>Cannon_3</code></td>
+<td>105</td>
+<td>3</td>
+<td>1</td>
+<td>3.000</td>
+<td>529</td>
+<td>71</td>
+<td>30</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:452</td>
+</tr>
+<tr>
+<td>Лёгкие полупушки</td>
+<td><code>Cannon_6</code></td>
+<td>215</td>
+<td>6</td>
+<td>1</td>
+<td>6.000</td>
+<td>1083</td>
+<td>145</td>
+<td>25</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:468</td>
+</tr>
+<tr>
+<td>Полупушки</td>
+<td><code>Cannon_12</code></td>
+<td>425</td>
+<td>11</td>
+<td>1</td>
+<td>11.000</td>
+<td>2140</td>
+<td>287</td>
+<td>25</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:484</td>
+</tr>
+<tr>
+<td>Флотские полупушки</td>
+<td><code>Cannon_16</code></td>
+<td>600</td>
+<td>16</td>
+<td>1</td>
+<td>16.000</td>
+<td>3021</td>
+<td>405</td>
+<td>20</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:500</td>
+</tr>
+<tr>
+<td>Малые пушки</td>
+<td><code>Cannon_20</code></td>
+<td>815</td>
+<td>20</td>
+<td>1</td>
+<td>20.000</td>
+<td>4104</td>
+<td>550</td>
+<td>15</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:516</td>
+</tr>
+<tr>
+<td>Корабельные пушки</td>
+<td><code>Cannon_24</code></td>
+<td>1200</td>
+<td>29</td>
+<td>1</td>
+<td>29.000</td>
+<td>6042</td>
+<td>810</td>
+<td>15</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:532</td>
+</tr>
+<tr>
+<td>Батарейные пушки</td>
+<td><code>Cannon_32</code></td>
+<td>1705</td>
+<td>40</td>
+<td>1</td>
+<td>40.000</td>
+<td>8585</td>
+<td>1151</td>
+<td>10</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:548</td>
+</tr>
+<tr>
+<td>Береговые пушки</td>
+<td><code>Cannon_36</code></td>
+<td>2055</td>
+<td>46</td>
+<td>1</td>
+<td>46.000</td>
+<td>10347</td>
+<td>1387</td>
+<td>10</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:564</td>
+</tr>
+<tr>
+<td>Осадные пушки</td>
+<td><code>Cannon_42</code></td>
+<td>2490</td>
+<td>50</td>
+<td>1</td>
+<td>50.000</td>
+<td>12537</td>
+<td>1681</td>
+<td>10</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:580</td>
+</tr>
+<tr>
+<td>Полукулеврины</td>
+<td><code>Culverine_8</code></td>
+<td>345</td>
+<td>16</td>
+<td>1</td>
+<td>16.000</td>
+<td>1737</td>
+<td>233</td>
+<td>30</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:596</td>
+</tr>
+<tr>
+<td>Кулеврины</td>
+<td><code>Culverine_18</code></td>
+<td>885</td>
+<td>32</td>
+<td>1</td>
+<td>32.000</td>
+<td>4456</td>
+<td>597</td>
+<td>20</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:612</td>
+</tr>
+<tr>
+<td>Полные кулеврины</td>
+<td><code>Culverine_36</code></td>
+<td>2545</td>
+<td>50</td>
+<td>1</td>
+<td>50.000</td>
+<td>12814</td>
+<td>1718</td>
+<td>10</td>
+<td>—</td>
+<td>—</td>
+<td>initGoods.c:628</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h17-chto-iz-etoy-tablicy-vazhno-dlya-torgovli-interpretaciya">Что из этой таблицы важно для торговли <code>[интерпретация]</code></h3>
+<p><strong>ВНИМАНИЕ: цена в лавке указана за ПАЧКУ из <code>Units</code> штук, а не за штуку</strong> <code>[точно из кода]</code>. В интерфейсе лавки деньги считаются как <code>moneyback = цена × количество / Units</code> (<code>PROGRAM/interface/store.c:728, 752</code>), а шаг изменения количества равен <code>Units</code> (<code>store.c:915-948</code>). Поэтому цена, которую вы видите в лавке, — это цена за 30 лекарств, за 20 порохов, за 10 единиц оружия/провианта/одежды/кирпичей, за 20 боеприпасов и за 1 штуку всего остального.</p>
+<p>Отсюда ключевая метрика трюма — <strong>выручка за 1 тонну груза</strong> = <code>цена за пачку / Weight</code>. Эталонные значения (навык 0, тип спроса <code>normal</code>, цена продажи):</p>
+<table>
+<thead>
+<tr>
+<th>Класс товара</th>
+<th>Cost/Weight</th>
+<th>Продажа за 1 т груза</th>
+<th>Покупка за 1 т груза</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Уникальные</strong> (корабельный шёлк, канаты, смолы)</td>
+<td>80</td>
+<td><strong>540</strong></td>
+<td>1 060</td>
+</tr>
+<tr>
+<td>Уникальные: бакаут</td>
+<td>34.3</td>
+<td><strong>231</strong></td>
+<td>454</td>
+</tr>
+<tr>
+<td><strong>Коронные</strong> (рабы, золото, серебро)</td>
+<td>100</td>
+<td><strong>338</strong></td>
+<td>663</td>
+</tr>
+<tr>
+<td><strong>Импортные</strong> (порох, оружие, лекарства, вино, ром, эль)</td>
+<td>60</td>
+<td><strong>122</strong></td>
+<td>239</td>
+</tr>
+<tr>
+<td><strong>Колониальные</strong> (кофе, какао, табак, сахар, хлопок, кожа, чёрное и красное дерево, ваниль, копра)</td>
+<td>40</td>
+<td><strong>54</strong></td>
+<td>106</td>
+</tr>
+<tr>
+<td>Колониальные: паприка</td>
+<td>20</td>
+<td><strong>27</strong></td>
+<td>53</td>
+</tr>
+<tr>
+<td><strong>Повседневные</strong> (провиант, парусина, доски, кирпичи, пшеница, одежда, фрукты)</td>
+<td>20</td>
+<td><strong>13.5</strong></td>
+<td>27</td>
+</tr>
+<tr>
+<td><strong>Боеприпасы</strong> (ядра, картечь, книппели, бомбы)</td>
+<td>20</td>
+<td><strong>13.5</strong></td>
+<td>27</td>
+</tr>
+<tr>
+<td>Орудия (фальконеты … осадные)</td>
+<td>21–51</td>
+<td>14–34</td>
+<td>109–256 (с наценкой ×3.8)</td>
+</tr>
+</tbody>
+</table>
+<p>Разработчики нормировали товары внутри классов: у <strong>всех</strong> повседневных товаров и боеприпасов отношение <code>Cost/Weight</code> ровно 20, у всех импортных — 60, у всех колониальных кроме паприки — 40, у всех коронных — 100, у уникальных кроме бакаута — 80. То есть <strong>внутри класса выбор конкретного товара на плотность денег не влияет</strong> — важен только класс и тип спроса в городе.</p>
+<ol>
+<li><strong>Самый плотный груз — уникальные товары</strong> (корабельный шёлк, канаты, смолы): 540 монет за тонну при продаже. Купить их в лавке нельзя нигде — только трофеи, квесты, контрабандисты. Это «золотой» груз с захваченных кораблей.</li>
+<li><strong>Из покупаемого в лавке лучший класс — импортные товары</strong> (порох, оружие, лекарства, вино, ром, эль): 122 за тонну против 54 у колониальных. Плюс к этому у импортных максимальная маржа Export → Import: <code>3 × 60 × (1.275×0.925 − 0.725×1.075) = 72</code> монеты с тонны при полной прокачке торговли, тогда как у колониальных Export → Aggressive только <code>2 × 40 × (1.475×0.925 − 0.725×1.075) = 47</code>.</li>
+<li><strong>Паприка — ловушка:</strong> единственный колониальный товар с вдвое худшей плотностью (Cost 40 при весе 2), хотя в Виллемстаде и Капстервиле у неё Aggressive-спрос. Возить её вместо кофе или какао — вдвое хуже.</li>
+<li><strong>Доски, парусина, пшеница, фрукты, кирпичи, провиант, одежда, боеприпасы — мусор для торговли:</strong> 13.5 монеты за тонну груза.</li>
+<li><strong>Рабы</strong> (коронный, ×5): 338 за тонну — очень плотный груз, но контрабанда на всех 25 островах с торговым профилем; продать в лавке нельзя (см. раздел «Контрабанда»), только контрабандистам, в море или по квестам.</li>
+</ol>
+<hr />
+<h2 id="h18-matrica-gorod-tovar">Матрица город × товар</h2>
+<p>Источник: <code>PROGRAM/islands/islands_init.c</code> (секции <code>Islands[n].Trade.*</code>), <code>PROGRAM/colonies/Colonies_init.c</code> (привязка города к острову и нации), <code>PROGRAM/store/store_init.c</code> (размер лавки). Всё в таблицах ниже — <code>[точно из кода]</code>.</p>
+<p><strong>Как читать:</strong> <code>Export</code> = остров производит товар, tradeModify <strong>0.80</strong> — тут покупать. <code>Import</code> = острову товара не хватает, tradeModify <strong>1.20</strong>. <code>Aggressive</code> = острый дефицит, tradeModify <strong>1.40</strong> — тут продавать. Товары, не попавшие ни в один список, торгуются по <code>normal</code> = <strong>1.00</strong>. Знак RndPrice «+» означает ещё +0…15% к цене (и покупки, и продажи), «−» — −0…15%.</p>
+<h3 id="h19-svodka-po-kazhdomu-gorodu">Сводка по каждому городу</h3>
+<p>Всего торговых лавок в игре — <strong>30</strong> (<code>PROGRAM/store/store.h:1-32</code>, индекс 30 — виртуальная «лавка корабля»).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Город</th>
+<th>Остров</th>
+<th>Нация</th>
+<th>Лавка</th>
+<th>Знак RndPrice</th>
+<th>Купить дёшево (Export ×0.80)</th>
+<th>Продать дорого (Aggressive ×1.40)</th>
+<th>Дорого / дефицит (Import ×1.20)</th>
+<th>Контрабанда</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><strong>Бриджтаун</strong></td>
+<td>Барбадос</td>
+<td>Англия</td>
+<td>средняя</td>
+<td>−</td>
+<td>Кирпичи, Фрукты, Какао, Сахар, Ром</td>
+<td>—</td>
+<td>Пшеница, Оружие, Лекарства, Вино, Эль</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Порох</td>
+</tr>
+<tr>
+<td>1</td>
+<td><strong>Сан-Хуан</strong></td>
+<td>Пуэрто-Рико</td>
+<td>Испания</td>
+<td>средняя</td>
+<td>−</td>
+<td>Парусина, Одежда, Табак, Паприка, Ром</td>
+<td>—</td>
+<td>Пшеница, Порох, Лекарства, Вино, Эль</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Сантьяго</strong></td>
+<td>Куба (юг)</td>
+<td>Испания</td>
+<td>средняя</td>
+<td>−</td>
+<td>Провиант, Доски, Табак, Кожа, Эль</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Виллемстад</strong></td>
+<td>Кюрасао</td>
+<td>Голландия</td>
+<td>большая</td>
+<td>+</td>
+<td>Провиант, Доски, Одежда, Оружие, Лекарства, Вино, Эль, Корабельный шёлк</td>
+<td>Кофе, Какао, Кожа, Чёрное дерево, Красное дерево, Ваниль, Копра, Паприка</td>
+<td>Пшеница, Табак, Сахар, Хлопок</td>
+<td>Рабы, Канаты, Бакаут, Смолы, Порох</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Тортуга</strong></td>
+<td>Тортуга</td>
+<td>Франция</td>
+<td>средняя</td>
+<td>−</td>
+<td>Парусина, Фрукты, Табак, Сахар, Ром</td>
+<td>—</td>
+<td>Пшеница, Порох, Лекарства, Вино, Эль</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Филипсбург</strong></td>
+<td>Синт-Маартен</td>
+<td>Голландия</td>
+<td>средняя</td>
+<td>−</td>
+<td>Парусина, Кирпичи, Фрукты, Табак, Сахар, Хлопок, Ром</td>
+<td>—</td>
+<td>Пшеница, Оружие, Лекарства, Вино, Эль</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Порох</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Сан-Хосе</strong></td>
+<td>Тринидад</td>
+<td>Испания</td>
+<td>малая</td>
+<td>−</td>
+<td>Парусина, Кирпичи, Кофе, Какао, Эль, Смолы</td>
+<td>—</td>
+<td>Пшеница, Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Оружие</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Капстервиль</strong></td>
+<td>Сент-Кристофер</td>
+<td>Франция</td>
+<td>большая</td>
+<td>+</td>
+<td>Провиант, Кирпичи, Одежда, Сахар, Порох, Лекарства, Вино, Эль</td>
+<td>Чёрное дерево, Красное дерево, Ваниль, Паприка</td>
+<td>Пшеница, Кофе, Какао, Табак, Хлопок, Кожа</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Порто-Белло</strong></td>
+<td>Мэйн (Порто-Белло)</td>
+<td>Испания</td>
+<td>большая</td>
+<td>+</td>
+<td>Парусина, Пшеница, Одежда, Золото, Серебро, Кожа, Ваниль, Копра, Порох, Лекарства, Вино, Эль</td>
+<td>Чёрное дерево, Красное дерево</td>
+<td>Кофе, Какао, Табак, Сахар, Хлопок, Паприка</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Сент-Джонс</strong></td>
+<td>Антигуа</td>
+<td>Англия</td>
+<td>малая</td>
+<td>−</td>
+<td>Парусина, Табак, Паприка, Эль</td>
+<td>—</td>
+<td>Пшеница, Оружие, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Порох</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Гавана</strong></td>
+<td>Куба (север)</td>
+<td>Испания</td>
+<td>большая</td>
+<td>+</td>
+<td>Провиант, Парусина, Одежда, Золото, Серебро, Кофе, Сахар, Порох, Лекарства, Вино, Ром</td>
+<td>Чёрное дерево, Красное дерево</td>
+<td>Какао, Табак, Хлопок, Кожа, Ваниль, Копра, Паприка</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Бас-Тер</strong></td>
+<td>Гваделупа</td>
+<td>Франция</td>
+<td>средняя</td>
+<td>−</td>
+<td>Доски, Фрукты, Кофе, Какао, Ром, Канаты</td>
+<td>—</td>
+<td>Пшеница, Порох, Лекарства, Вино, Эль</td>
+<td>Рабы, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Сен-Пьер</strong></td>
+<td>Мартиника</td>
+<td>Франция</td>
+<td>малая</td>
+<td>−</td>
+<td>Провиант, Кирпичи, Кофе, Хлопок, Эль</td>
+<td>—</td>
+<td>Пшеница, Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>Ле Франсуа</strong></td>
+<td>Мартиника</td>
+<td>пираты</td>
+<td>малая</td>
+<td>−</td>
+<td>Провиант, Кирпичи, Кофе, Хлопок, Эль</td>
+<td>—</td>
+<td>Пшеница, Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>Ла Вега</strong></td>
+<td>Эспаньола (юг)</td>
+<td>пираты</td>
+<td>малая</td>
+<td>+</td>
+<td>Провиант, Доски, Золото, Табак, Кожа, Эль</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>Санто-Доминго</strong></td>
+<td>Эспаньола (юг)</td>
+<td>Испания</td>
+<td>малая</td>
+<td>+</td>
+<td>Провиант, Доски, Золото, Табак, Кожа, Эль</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>16</td>
+<td><strong>Порт-о-Пренс</strong></td>
+<td>Эспаньола (север)</td>
+<td>Франция</td>
+<td>средняя</td>
+<td>−</td>
+<td>Провиант, Доски, Табак, Кожа, Эль</td>
+<td>—</td>
+<td>Пшеница, Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>17</td>
+<td><strong>Пиратский город (Исла-Тесоро)</strong></td>
+<td>Исла-Тесоро</td>
+<td>пираты</td>
+<td>средняя</td>
+<td>+</td>
+<td>Провиант, Парусина, Одежда, Золото, Серебро, Кофе, Сахар</td>
+<td>—</td>
+<td>Пшеница, Порох, Оружие, Лекарства, Вино, Ром, Эль</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы</td>
+</tr>
+<tr>
+<td>18</td>
+<td><strong>Пуэрто-Принсипе</strong></td>
+<td>Куба (юг)</td>
+<td>пираты</td>
+<td>малая</td>
+<td>−</td>
+<td>Провиант, Доски, Табак, Кожа, Эль</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>19</td>
+<td><strong>Порт-Ройял</strong></td>
+<td>Ямайка</td>
+<td>Англия</td>
+<td>большая</td>
+<td>+</td>
+<td>Провиант, Доски, Одежда, Оружие, Лекарства, Вино, Ром</td>
+<td>Хлопок, Кожа, Ваниль</td>
+<td>Пшеница, Кофе, Какао, Табак, Сахар, Красное дерево, Чёрное дерево, Копра, Паприка</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Порох</td>
+</tr>
+<tr>
+<td>20</td>
+<td><strong>Марун-Таун</strong></td>
+<td>Ямайка</td>
+<td>пираты</td>
+<td>малая</td>
+<td>+</td>
+<td>Провиант, Доски, Одежда, Оружие, Лекарства, Вино, Ром</td>
+<td>Хлопок, Кожа, Ваниль</td>
+<td>Пшеница, Кофе, Какао, Табак, Сахар, Красное дерево, Чёрное дерево, Копра, Паприка</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Порох</td>
+</tr>
+<tr>
+<td>21</td>
+<td><strong>Панама</strong></td>
+<td>Панама (острова нет)</td>
+<td>Испания</td>
+<td>малая</td>
+<td>−</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>22</td>
+<td><strong>Картахена</strong></td>
+<td>Мэйн (Картахена)</td>
+<td>Испания</td>
+<td>средняя</td>
+<td>−</td>
+<td>Провиант, Пшеница, Золото, Серебро, Кожа, Ваниль, Копра, Ром</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Эль</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>23</td>
+<td><strong>Маракайбо</strong></td>
+<td>Мэйн (Маракайбо)</td>
+<td>Испания</td>
+<td>средняя</td>
+<td>−</td>
+<td>Кирпичи, Пшеница, Какао, Сахар, Эль</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>24</td>
+<td><strong>Каракас</strong></td>
+<td>Мэйн (Каракас)</td>
+<td>Испания</td>
+<td>средняя</td>
+<td>−</td>
+<td>Кирпичи, Пшеница, Кофе, Какао, Кожа, Эль</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>25</td>
+<td><strong>Кумана</strong></td>
+<td>Мэйн (Кумана)</td>
+<td>Испания</td>
+<td>средняя</td>
+<td>−</td>
+<td>Провиант, Пшеница, Хлопок, Паприка, Ром</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Эль</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>26</td>
+<td><strong>Блювельд</strong></td>
+<td>Мэйн (Блювельд)</td>
+<td>Англия</td>
+<td>малая</td>
+<td>−</td>
+<td>Доски, Фрукты, Чёрное дерево, Красное дерево, Ром, Бакаут</td>
+<td>—</td>
+<td>Пшеница, Порох, Лекарства, Вино, Эль</td>
+<td>Рабы, Канаты, Корабельный шёлк, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>27</td>
+<td><strong>Белиз</strong></td>
+<td>Юкатан</td>
+<td>Англия</td>
+<td>малая</td>
+<td>−</td>
+<td>Провиант, Доски, Кофе, Красное дерево, Копра, Эль, Бакаут</td>
+<td>—</td>
+<td>Пшеница, Оружие, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Смолы, Порох</td>
+</tr>
+<tr>
+<td>28</td>
+<td><strong>Сан-Андрес</strong></td>
+<td>Провиденсия</td>
+<td>Испания</td>
+<td>средняя</td>
+<td>−</td>
+<td>Кирпичи, Фрукты, Хлопок, Кожа, Эль</td>
+<td>—</td>
+<td>Порох, Лекарства, Вино, Ром</td>
+<td>Рабы, Канаты, Корабельный шёлк, Бакаут, Смолы, Оружие</td>
+</tr>
+<tr>
+<td>29</td>
+<td><strong>Исла Мона</strong></td>
+<td>Исла Мона</td>
+<td>пираты</td>
+<td>малая</td>
+<td>+</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h20-chto-gde-deshevle-vsego-kupit-tip-export-trademodify-0-80">Что где дешевле всего купить (тип Export, tradeModify 0.80)</h3>
+<table>
+<thead>
+<tr>
+<th>Товар</th>
+<th>Города, где ПРОИЗВОДИТСЯ (дешево)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Провиант</td>
+<td>Сантьяго, Виллемстад, Капстервиль, Гавана, Сен-Пьер, Ле Франсуа, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пиратский город (Исла-Тесоро), Пуэрто-Принсипе, Порт-Ройял, Марун-Таун, Картахена, Кумана, Белиз</td>
+</tr>
+<tr>
+<td>Парусина</td>
+<td>Сан-Хуан, Тортуга, Филипсбург, Сан-Хосе, Порто-Белло, Сент-Джонс, Гавана, Пиратский город (Исла-Тесоро)</td>
+</tr>
+<tr>
+<td>Доски</td>
+<td>Сантьяго, Виллемстад, Бас-Тер, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пуэрто-Принсипе, Порт-Ройял, Марун-Таун, Блювельд, Белиз</td>
+</tr>
+<tr>
+<td>Кирпичи</td>
+<td>Бриджтаун, Филипсбург, Сан-Хосе, Капстервиль, Сен-Пьер, Ле Франсуа, Маракайбо, Каракас, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Пшеница</td>
+<td>Порто-Белло, Картахена, Маракайбо, Каракас, Кумана</td>
+</tr>
+<tr>
+<td>Одежда</td>
+<td>Сан-Хуан, Виллемстад, Капстервиль, Порто-Белло, Гавана, Пиратский город (Исла-Тесоро), Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Фрукты</td>
+<td>Бриджтаун, Тортуга, Филипсбург, Бас-Тер, Блювельд, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Кофе</td>
+<td>Сан-Хосе, Гавана, Бас-Тер, Сен-Пьер, Ле Франсуа, Пиратский город (Исла-Тесоро), Каракас, Белиз</td>
+</tr>
+<tr>
+<td>Какао</td>
+<td>Бриджтаун, Сан-Хосе, Бас-Тер, Маракайбо, Каракас</td>
+</tr>
+<tr>
+<td>Табак</td>
+<td>Сан-Хуан, Сантьяго, Тортуга, Филипсбург, Сент-Джонс, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пуэрто-Принсипе</td>
+</tr>
+<tr>
+<td>Сахар</td>
+<td>Бриджтаун, Тортуга, Филипсбург, Капстервиль, Гавана, Пиратский город (Исла-Тесоро), Маракайбо</td>
+</tr>
+<tr>
+<td>Хлопок</td>
+<td>Филипсбург, Сен-Пьер, Ле Франсуа, Кумана, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Кожа</td>
+<td>Сантьяго, Порто-Белло, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пуэрто-Принсипе, Картахена, Каракас, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Чёрное дерево</td>
+<td>Блювельд</td>
+</tr>
+<tr>
+<td>Красное дерево</td>
+<td>Блювельд, Белиз</td>
+</tr>
+<tr>
+<td>Ваниль</td>
+<td>Порто-Белло, Картахена</td>
+</tr>
+<tr>
+<td>Копра</td>
+<td>Порто-Белло, Картахена, Белиз</td>
+</tr>
+<tr>
+<td>Паприка</td>
+<td>Сан-Хуан, Сент-Джонс, Кумана</td>
+</tr>
+<tr>
+<td>Порох</td>
+<td>Капстервиль, Порто-Белло, Гавана</td>
+</tr>
+<tr>
+<td>Оружие</td>
+<td>Виллемстад, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Лекарства</td>
+<td>Виллемстад, Капстервиль, Порто-Белло, Гавана, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Вино</td>
+<td>Виллемстад, Капстервиль, Порто-Белло, Гавана, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Ром</td>
+<td>Бриджтаун, Сан-Хуан, Тортуга, Филипсбург, Гавана, Бас-Тер, Порт-Ройял, Марун-Таун, Картахена, Кумана, Блювельд</td>
+</tr>
+<tr>
+<td>Эль</td>
+<td>Сантьяго, Виллемстад, Сан-Хосе, Капстервиль, Порто-Белло, Сент-Джонс, Сен-Пьер, Ле Франсуа, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пуэрто-Принсипе, Маракайбо, Каракас, Белиз, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Корабельный шёлк</td>
+<td>Виллемстад</td>
+</tr>
+<tr>
+<td>Канаты</td>
+<td>Бас-Тер</td>
+</tr>
+<tr>
+<td>Бакаут</td>
+<td>Блювельд, Белиз</td>
+</tr>
+<tr>
+<td>Смолы</td>
+<td>Сан-Хосе</td>
+</tr>
+<tr>
+<td>Золото</td>
+<td>Порто-Белло, Гавана, Ла Вега, Санто-Доминго, Пиратский город (Исла-Тесоро), Картахена</td>
+</tr>
+<tr>
+<td>Серебро</td>
+<td>Порто-Белло, Гавана, Пиратский город (Исла-Тесоро), Картахена</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h21-chto-gde-dorozhe-vsego-prodat">Что где дороже всего продать</h3>
+<table>
+<thead>
+<tr>
+<th>Товар</th>
+<th>Aggressive ×1.40 (лучший сбыт)</th>
+<th>Import ×1.20 (хороший сбыт)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Пшеница</td>
+<td>—</td>
+<td>Бриджтаун, Сан-Хуан, Виллемстад, Тортуга, Филипсбург, Сан-Хосе, Капстервиль, Сент-Джонс, Бас-Тер, Сен-Пьер, Ле Франсуа, Порт-о-Пренс, Пиратский город (Исла-Тесоро), Порт-Ройял, Марун-Таун, Блювельд, Белиз</td>
+</tr>
+<tr>
+<td>Кофе</td>
+<td>Виллемстад</td>
+<td>Капстервиль, Порто-Белло, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Какао</td>
+<td>Виллемстад</td>
+<td>Капстервиль, Порто-Белло, Гавана, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Табак</td>
+<td>—</td>
+<td>Виллемстад, Капстервиль, Порто-Белло, Гавана, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Сахар</td>
+<td>—</td>
+<td>Виллемстад, Порто-Белло, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Хлопок</td>
+<td>Порт-Ройял, Марун-Таун</td>
+<td>Виллемстад, Капстервиль, Порто-Белло, Гавана</td>
+</tr>
+<tr>
+<td>Кожа</td>
+<td>Виллемстад, Порт-Ройял, Марун-Таун</td>
+<td>Капстервиль, Гавана</td>
+</tr>
+<tr>
+<td>Чёрное дерево</td>
+<td>Виллемстад, Капстервиль, Порто-Белло, Гавана</td>
+<td>Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Красное дерево</td>
+<td>Виллемстад, Капстервиль, Порто-Белло, Гавана</td>
+<td>Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Ваниль</td>
+<td>Виллемстад, Капстервиль, Порт-Ройял, Марун-Таун</td>
+<td>Гавана</td>
+</tr>
+<tr>
+<td>Копра</td>
+<td>Виллемстад</td>
+<td>Гавана, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Паприка</td>
+<td>Виллемстад, Капстервиль</td>
+<td>Порто-Белло, Гавана, Порт-Ройял, Марун-Таун</td>
+</tr>
+<tr>
+<td>Порох</td>
+<td>—</td>
+<td>Сан-Хуан, Сантьяго, Тортуга, Сан-Хосе, Бас-Тер, Сен-Пьер, Ле Франсуа, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пиратский город (Исла-Тесоро), Пуэрто-Принсипе, Картахена, Маракайбо, Каракас, Кумана, Блювельд, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Оружие</td>
+<td>—</td>
+<td>Бриджтаун, Филипсбург, Сент-Джонс, Пиратский город (Исла-Тесоро), Белиз</td>
+</tr>
+<tr>
+<td>Лекарства</td>
+<td>—</td>
+<td>Бриджтаун, Сан-Хуан, Сантьяго, Тортуга, Филипсбург, Сан-Хосе, Сент-Джонс, Бас-Тер, Сен-Пьер, Ле Франсуа, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пиратский город (Исла-Тесоро), Пуэрто-Принсипе, Картахена, Маракайбо, Каракас, Кумана, Блювельд, Белиз, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Вино</td>
+<td>—</td>
+<td>Бриджтаун, Сан-Хуан, Сантьяго, Тортуга, Филипсбург, Сан-Хосе, Сент-Джонс, Бас-Тер, Сен-Пьер, Ле Франсуа, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пиратский город (Исла-Тесоро), Пуэрто-Принсипе, Картахена, Маракайбо, Каракас, Кумана, Блювельд, Белиз, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Ром</td>
+<td>—</td>
+<td>Сантьяго, Сан-Хосе, Сент-Джонс, Сен-Пьер, Ле Франсуа, Ла Вега, Санто-Доминго, Порт-о-Пренс, Пиратский город (Исла-Тесоро), Пуэрто-Принсипе, Маракайбо, Каракас, Белиз, Сан-Андрес</td>
+</tr>
+<tr>
+<td>Эль</td>
+<td>—</td>
+<td>Бриджтаун, Сан-Хуан, Тортуга, Филипсбург, Бас-Тер, Пиратский город (Исла-Тесоро), Картахена, Кумана, Блювельд</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h22-klyuchevye-vyvody-iz-matricy-interpretaciya">Ключевые выводы из матрицы <code>[интерпретация]</code></h3>
+<p><strong>1. Кюрасао (Виллемстад) — безусловный центр сбыта колониальных товаров.</strong> 8 позиций Aggressive (кофе, какао, кожа, чёрное дерево, красное дерево, ваниль, копра, паприка) + 4 позиции Import (пшеница, табак, сахар, хлопок). Плюс большая лавка (много денег на скупку) и знак RndPrice «+» (ещё до +15%). Итог по колониальным товарам: <code>2.0 × Cost × 1.40…1.55 × 0.675</code> — то есть Виллемстад платит примерно <strong>в 1.75–1.94 раза больше</strong>, чем город, где этот товар производится.</p>
+<p><strong>2. Всего 5 островов имеют товары Aggressive</strong> — только там можно взять максимум цены:</p>
+<table>
+<thead>
+<tr>
+<th>Город (остров)</th>
+<th>Aggressive-товары</th>
+<th>Знак</th>
+<th>Лавка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Виллемстад (Кюрасао)</td>
+<td>кофе, какао, кожа, чёрное дерево, красное дерево, ваниль, копра, паприка — <strong>8 позиций</strong></td>
+<td>+</td>
+<td>большая</td>
+</tr>
+<tr>
+<td>Капстервиль (Сент-Кристофер)</td>
+<td>чёрное дерево, красное дерево, ваниль, паприка</td>
+<td>+</td>
+<td>большая</td>
+</tr>
+<tr>
+<td>Порт-Ройял и Марун-Таун (Ямайка)</td>
+<td>хлопок, кожа, ваниль</td>
+<td>+</td>
+<td>большая / малая</td>
+</tr>
+<tr>
+<td>Гавана (Куба-север)</td>
+<td>чёрное дерево, красное дерево</td>
+<td>+</td>
+<td>большая</td>
+</tr>
+<tr>
+<td>Порто-Белло (Мэйн)</td>
+<td>чёрное дерево, красное дерево</td>
+<td>+</td>
+<td>большая</td>
+</tr>
+</tbody>
+</table>
+<p>Все пять — со знаком «+», то есть цена ещё и приподнята случайным модификатором. Это сделано разработчиками намеренно: все пять — главные колонии наций (<code>ismaincolony = 1</code>).</p>
+<p><strong>3. Чёрное и красное дерево — самая «горячая» пара товаров в игре.</strong> Aggressive сразу в 4 городах (Виллемстад, Капстервиль, Гавана, Порто-Белло) и Import в Порт-Ройяле/Марун-Тауне. А производятся только в <strong>двух</strong> городах: Блювельд (оба) и Белиз (только красное). Дефицит зашит в дизайн.</p>
+<p><strong>4. Ловушка с уникальными и коронными товарами.</strong> Их нельзя купить в лавке, но их можно там <strong>невыгодно продать</strong>: в городе, где товар помечен Export, за него дадут только ×0.80.
+- <strong>Корабельный шёлк</strong> — Export в Виллемстаде: НЕ продавать шёлк на Кюрасао.
+- <strong>Канаты</strong> — Export в Бас-Тере.
+- <strong>Смолы</strong> — Export в Сан-Хосе (Тринидад).
+- <strong>Бакаут</strong> — Export в Блювельде и Белизе.
+- <strong>Золото</strong> — Export в Порто-Белло, Гаване, Ла Веге, Санто-Доминго, Пиратском городе, Картахене.
+- <strong>Серебро</strong> — Export в Порто-Белло, Гаване, Пиратском городе, Картахене.
+Ни в одном городе уникальные и коронные товары не имеют статуса Import или Aggressive. Значит максимум за них — <code>normal</code> (1.00) в городе со знаком «+»: <strong>Капстервиль, Порт-Ройял, Марун-Таун, Исла Мона</strong> (для золота и серебра ещё Виллемстад).</p>
+<p><strong>5. Панама и Исла Мона — «нейтральные» лавки.</strong> У Панамы острова нет вообще (<code>Colonies_init.c:441</code>), у Исла Моны нет секции <code>Trade</code> (<code>islands_init.c:2574</code>). Все товары там имеют тип <code>normal</code> (1.00) и <code>RndPriceModify = 0</code> для Панамы. Практический смысл <code>[интерпретация]</code>: это <strong>единственные две лавки, где рабы не контрабанда</strong> (на всех 25 островах с профилем рабы объявлены контрабандой) и где уникальные товары продаются по чистой цене ×1.00 без «экспортного» штрафа. Исла Мона к тому же имеет знак «+».</p>
+<p><strong>6. Эль и ром — самые массовые Export-товары</strong> (эль: 16 городов, ром: 11). Купить их дёшево легко почти везде, но и Import-городов для них много, а Aggressive нет ни одного. Маржа на алкоголе низкая, зато он не портится сильно (AfraidWater 1) и весит 1 т за штуку.</p>
+<p><strong>7. Порох, оружие, лекарства, вино — самый широкий и надёжный спрос.</strong> Лекарства и вино в Import в 22 городах каждый, порох в 18. Производятся при этом только в главных колониях (Капстервиль, Порто-Белло, Гавана, Виллемстад, Порт-Ройял, Марун-Таун). Это готовый «обратный» груз на любом маршруте.</p>
+<hr />
+<h2 id="h23-gotovye-torgovye-marshruty">Готовые торговые маршруты</h2>
+<h3 id="h24-model-rascheta">Модель расчёта</h3>
+<p><code>[интерпретация]</code> Все цифры ниже посчитаны по формуле из кода при таких допущениях:
+- <code>RndPriceModify</code> взят средним по модулю (0.075) со знаком острова из таблицы выше;
+- <code>AddPriceModify = 1.0</code> (лавка в норме);
+- <code>costCoeff = 1.0</code> — товар куплен честно, а не награблен (см. ниже про награбленное);
+- расстояния между городами — оценка по реальной географии Карибов, которую воспроизводит карта игры, в морских милях. В коде игры статических координат нет: позиции берутся из локаторов модели глобальной карты, а перевод такой (<code>PROGRAM/interface/MapBest.c:346-347, 370, 401</code>): <strong>дни пути ≈ дистанция/300 (идя на палубе) … дистанция/100 (по глобальной карте)</strong>, морские мили = дистанция/6.5.</p>
+<h3 id="h25-vazhno-bez-perkov-torgovli-torgovlya-pochti-ne-rabotaet-toch">ВАЖНО: без перков торговли торговля почти не работает <code>[точно из кода + расчёт]</code></h3>
+<p>Проверка на предельном случае. Лучшая теоретическая связка — купить там, где Export и знак «−», продать там, где Aggressive и знак «+»:
+- покупка: <code>tradeModify = 0.80 − 0.075 = 0.725</code>
+- продажа: <code>tradeModify = 1.40 + 0.075 = 1.475</code></p>
+<table>
+<thead>
+<tr>
+<th>Персонаж</th>
+<th>Цена покупки</th>
+<th>Цена продажи</th>
+<th>Итог</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Навык Коммерция 1, без перков</td>
+<td><code>0.725 × 1.325 = 0.961</code></td>
+<td><code>1.475 × 0.675 = 0.996</code></td>
+<td><strong>+3.6%</strong> к затратам</td>
+</tr>
+<tr>
+<td>Навык 100, без перков</td>
+<td><code>0.725 × 1.275 = 0.924</code></td>
+<td><code>1.475 × 0.725 = 1.069</code></td>
+<td>+15.7%</td>
+</tr>
+<tr>
+<td>Навык 100 + «Развитая/Базовая торговля»</td>
+<td><code>0.725 × 1.225 = 0.888</code></td>
+<td><code>1.475 × 0.775 = 1.143</code></td>
+<td>+28.7%</td>
+</tr>
+<tr>
+<td>Навык 100 + «Профессиональная торговля» + герой-торговец (<code>HT2</code>)</td>
+<td><code>0.725 × 1.075 = 0.779</code></td>
+<td><code>1.475 × 0.925 = 1.364</code></td>
+<td><strong>+75.1%</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Вывод:</strong> на старте, с навыком Коммерция около 15 и без перков, чистая перевозка товаров в ККС даёт <strong>единицы процентов, а на связках Export → Import — прямой убыток</strong>. Торговля как источник дохода включается только после <code>AdvancedCommerce</code> / <code>ProfessionalCommerce</code>. Это не баг и не недоработка гайда — это прямое следствие формулы <code>storeutilite.c:160-207</code>.</p>
+<p>Три перка на порядок важнее самого навыка: <code>BasicCommerce</code> («Базовая торговля»), <code>AdvancedCommerce</code> («Развитая торговля»), <code>ProfessionalCommerce</code> («Профессиональная торговля»). Плюс перк <code>HT2</code>, который получает стартовый персонаж с биографией <strong>«общее счетоводство и риторику»</strong> (<code>RESOURCE/INI/texts/russian/common.ini:3663</code>) — вместе с ним даётся и перк <code>Trustworthy</code> («Вызывающий доверие»), открывающий контрабанду (<code>PROGRAM/characters/RPGUtilite.c:3518-3519</code>). Тот же персонаж стартует с Лидерством 15 и Коммерцией 15 (<code>RPGUtilite.c:3517</code>). Если планируется играть торговцем — брать именно этот тип героя.</p>
+<h3 id="h26-top-marshrutov-po-pribyli-za-odin-reys">Топ маршрутов по прибыли за один рейс</h3>
+<p>Считается трюм <strong>500 тонн</strong> (типовой фрегат/галеон среднего класса); «Влезет в 500 т» ограничено ещё и запасом лавки в городе покупки.</p>
+<h4>Профиль «опытный торговец»: навык 100 + «Профессиональная торговля» + герой-счетовод (HT2) — покупка ×1.075, продажа ×0.925</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Товар</th>
+<th>Купить в</th>
+<th>тип</th>
+<th>Продать в</th>
+<th>тип</th>
+<th>Цена покупки за пачку</th>
+<th>Цена продажи за пачку</th>
+<th>Маржа за пачку</th>
+<th><strong>Маржа за 1 т груза</strong></th>
+<th>Влезет в 500 т</th>
+<th>Прибыль за рейс</th>
+<th>Путь, м.миль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Ром</strong> (пачка 1 шт)</td>
+<td>Тортуга</td>
+<td>Export 0.80</td>
+<td>Санто-Доминго</td>
+<td>Import 1.20</td>
+<td>140</td>
+<td>212</td>
+<td>72</td>
+<td><strong>72</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>36 000</strong></td>
+<td>188</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Эль</strong> (пачка 1 шт)</td>
+<td>Сент-Джонс</td>
+<td>Export 0.80</td>
+<td>Пиратский город</td>
+<td>Import 1.20</td>
+<td>140</td>
+<td>212</td>
+<td>72</td>
+<td><strong>72</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>36 000</strong></td>
+<td>429</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Чёрное дерево</strong> (пачка 1 шт)</td>
+<td>Блювельд</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>312</td>
+<td>546</td>
+<td>234</td>
+<td><strong>47</strong></td>
+<td>100 шт (500 т)</td>
+<td><strong>23 400</strong></td>
+<td>874</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Красное дерево</strong> (пачка 1 шт)</td>
+<td>Блювельд</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>249</td>
+<td>437</td>
+<td>187</td>
+<td><strong>47</strong></td>
+<td>125 шт (500 т)</td>
+<td><strong>23 400</strong></td>
+<td>874</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Какао</strong> (пачка 1 шт)</td>
+<td>Сан-Хосе</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>125</td>
+<td>218</td>
+<td>94</td>
+<td><strong>47</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>23 400</strong></td>
+<td>444</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Кофе</strong> (пачка 1 шт)</td>
+<td>Сан-Хосе</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>125</td>
+<td>218</td>
+<td>94</td>
+<td><strong>47</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>23 400</strong></td>
+<td>444</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Копра</strong> (пачка 1 шт)</td>
+<td>Картахена</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>125</td>
+<td>218</td>
+<td>94</td>
+<td><strong>47</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>23 400</strong></td>
+<td>402</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Ваниль</strong> (пачка 1 шт)</td>
+<td>Картахена</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>125</td>
+<td>218</td>
+<td>94</td>
+<td><strong>47</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>23 400</strong></td>
+<td>402</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Кожа</strong> (пачка 1 шт)</td>
+<td>Сантьяго</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>62</td>
+<td>109</td>
+<td>47</td>
+<td><strong>47</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>23 400</strong></td>
+<td>619</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Хлопок</strong> (пачка 1 шт)</td>
+<td>Сан-Андрес</td>
+<td>Export 0.80</td>
+<td>Порт-Ройял</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>62</td>
+<td>109</td>
+<td>47</td>
+<td><strong>47</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>23 400</strong></td>
+<td>379</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Вино</strong> (пачка 1 шт)</td>
+<td>Виллемстад</td>
+<td>Export 0.80</td>
+<td>Санто-Доминго</td>
+<td>Import 1.20</td>
+<td>339</td>
+<td>425</td>
+<td>86</td>
+<td><strong>43</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>21 487</strong></td>
+<td>386</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Сахар</strong> (пачка 1 шт)</td>
+<td>Тортуга</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td>Import 1.20</td>
+<td>125</td>
+<td>189</td>
+<td>64</td>
+<td><strong>32</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>16 000</strong></td>
+<td>527</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>Табак</strong> (пачка 1 шт)</td>
+<td>Тортуга</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td>Import 1.20</td>
+<td>125</td>
+<td>189</td>
+<td>64</td>
+<td><strong>32</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>16 000</strong></td>
+<td>527</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>Паприка</strong> (пачка 1 шт)</td>
+<td>Сент-Джонс</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>62</td>
+<td>109</td>
+<td>47</td>
+<td><strong>23</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>11 700</strong></td>
+<td>508</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>Оружие</strong> (пачка 10 шт)</td>
+<td>Виллемстад</td>
+<td>Export 0.80</td>
+<td>Пиратский город</td>
+<td>Import 1.20</td>
+<td>169</td>
+<td>212</td>
+<td>43</td>
+<td><strong>43</strong></td>
+<td>1200 шт (120 т)</td>
+<td><strong>5 157</strong></td>
+<td>505</td>
+</tr>
+<tr>
+<td>16</td>
+<td><strong>Пшеница</strong> (пачка 1 шт)</td>
+<td>Маракайбо</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td>Import 1.20</td>
+<td>16</td>
+<td>24</td>
+<td>8</td>
+<td><strong>8</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>4 000</strong></td>
+<td>180</td>
+</tr>
+</tbody>
+</table>
+<h4>Профиль «средний»: навык 100 + «Базовая/Развитая торговля» — покупка ×1.225, продажа ×0.775</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Товар</th>
+<th>Купить в</th>
+<th>тип</th>
+<th>Продать в</th>
+<th>тип</th>
+<th>Цена покупки за пачку</th>
+<th>Цена продажи за пачку</th>
+<th>Маржа за пачку</th>
+<th><strong>Маржа за 1 т груза</strong></th>
+<th>Влезет в 500 т</th>
+<th>Прибыль за рейс</th>
+<th>Путь, м.миль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Чёрное дерево</strong> (пачка 1 шт)</td>
+<td>Блювельд</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>355</td>
+<td>457</td>
+<td>102</td>
+<td><strong>20</strong></td>
+<td>100 шт (500 т)</td>
+<td><strong>10 200</strong></td>
+<td>874</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Красное дерево</strong> (пачка 1 шт)</td>
+<td>Блювельд</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>284</td>
+<td>366</td>
+<td>82</td>
+<td><strong>20</strong></td>
+<td>125 шт (500 т)</td>
+<td><strong>10 200</strong></td>
+<td>874</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Какао</strong> (пачка 1 шт)</td>
+<td>Сан-Хосе</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>142</td>
+<td>183</td>
+<td>41</td>
+<td><strong>20</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>10 200</strong></td>
+<td>444</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Кофе</strong> (пачка 1 шт)</td>
+<td>Сан-Хосе</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>142</td>
+<td>183</td>
+<td>41</td>
+<td><strong>20</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>10 200</strong></td>
+<td>444</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Копра</strong> (пачка 1 шт)</td>
+<td>Картахена</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>142</td>
+<td>183</td>
+<td>41</td>
+<td><strong>20</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>10 200</strong></td>
+<td>402</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Ваниль</strong> (пачка 1 шт)</td>
+<td>Картахена</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>142</td>
+<td>183</td>
+<td>41</td>
+<td><strong>20</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>10 200</strong></td>
+<td>402</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Кожа</strong> (пачка 1 шт)</td>
+<td>Сантьяго</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>71</td>
+<td>91</td>
+<td>20</td>
+<td><strong>20</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>10 200</strong></td>
+<td>619</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Хлопок</strong> (пачка 1 шт)</td>
+<td>Сан-Андрес</td>
+<td>Export 0.80</td>
+<td>Порт-Ройял</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>71</td>
+<td>91</td>
+<td>20</td>
+<td><strong>20</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>10 200</strong></td>
+<td>379</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Ром</strong> (пачка 1 шт)</td>
+<td>Тортуга</td>
+<td>Export 0.80</td>
+<td>Санто-Доминго</td>
+<td>Import 1.20</td>
+<td>160</td>
+<td>178</td>
+<td>18</td>
+<td><strong>18</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>9 000</strong></td>
+<td>188</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Эль</strong> (пачка 1 шт)</td>
+<td>Сент-Джонс</td>
+<td>Export 0.80</td>
+<td>Пиратский город</td>
+<td>Import 1.20</td>
+<td>160</td>
+<td>178</td>
+<td>18</td>
+<td><strong>18</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>9 000</strong></td>
+<td>429</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Паприка</strong> (пачка 1 шт)</td>
+<td>Сент-Джонс</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td><strong>Aggr 1.40</strong></td>
+<td>71</td>
+<td>91</td>
+<td>20</td>
+<td><strong>10</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>5 100</strong></td>
+<td>508</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Сахар</strong> (пачка 1 шт)</td>
+<td>Тортуга</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td>Import 1.20</td>
+<td>142</td>
+<td>158</td>
+<td>16</td>
+<td><strong>8</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>4 000</strong></td>
+<td>527</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>Табак</strong> (пачка 1 шт)</td>
+<td>Тортуга</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td>Import 1.20</td>
+<td>142</td>
+<td>158</td>
+<td>16</td>
+<td><strong>8</strong></td>
+<td>250 шт (500 т)</td>
+<td><strong>4 000</strong></td>
+<td>527</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>Пшеница</strong> (пачка 1 шт)</td>
+<td>Маракайбо</td>
+<td>Export 0.80</td>
+<td>Виллемстад</td>
+<td>Import 1.20</td>
+<td>18</td>
+<td>20</td>
+<td>2</td>
+<td><strong>2</strong></td>
+<td>500 шт (500 т)</td>
+<td><strong>1 000</strong></td>
+<td>180</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h27-krugovye-marshruty-gruz-v-obe-storony">Круговые маршруты (груз в обе стороны)</h3>
+<p>Таблицы ниже — лучший товар «туда» и лучший «обратно» для каждой пары городов, профиль «опытный торговец». Маржа указана на 1 тонну груза.</p>
+<h4>Главное открытие: «алкогольное кольцо» ром ⇄ эль</h4>
+<p>Ром и эль — импортные товары (priceModify ×3) с одинаковой базовой ценой 60 и весом 1. При этом они <strong>зеркальны</strong>: там, где остров производит ром, он обычно ввозит эль, и наоборот. Это даёт полностью гружёный круг в обе стороны с маржой <strong>47 монет за тонну в каждую сторону, 94 за круг</strong> — лучший результат среди всех легальных схем.</p>
+<table>
+<thead>
+<tr>
+<th>Пара городов</th>
+<th>Туда</th>
+<th>Обратно</th>
+<th>Путь в одну сторону</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Тортуга ⇄ Порт-о-Пренс</strong></td>
+<td>ром (Export 0.80 → Import 1.20)</td>
+<td>эль (Export 0.80 → Import 1.20)</td>
+<td><strong>9 морских миль</strong> — самый короткий торговый круг в игре</td>
+</tr>
+<tr>
+<td>Сент-Джонс ⇄ Бас-Тер</td>
+<td>эль → ром</td>
+<td>ром → эль</td>
+<td>67 миль</td>
+</tr>
+<tr>
+<td>Филипсбург ⇄ Сент-Джонс</td>
+<td>ром → эль</td>
+<td>эль → ром</td>
+<td>91 миля</td>
+</tr>
+<tr>
+<td>Каракас ⇄ Кумана</td>
+<td>эль → ром</td>
+<td>ром → эль</td>
+<td>159 миль</td>
+</tr>
+<tr>
+<td>Сан-Хосе ⇄ Кумана</td>
+<td>эль → ром</td>
+<td>ром → эль</td>
+<td>160 миль</td>
+</tr>
+<tr>
+<td>Блювельд ⇄ Сан-Андрес</td>
+<td>ром → эль</td>
+<td>эль → ром</td>
+<td>164 мили</td>
+</tr>
+<tr>
+<td>Сантьяго ⇄ Тортуга</td>
+<td>эль → ром</td>
+<td>ром → эль</td>
+<td>169 миль</td>
+</tr>
+<tr>
+<td>Картахена ⇄ Маракайбо</td>
+<td>ром → эль</td>
+<td>эль → ром</td>
+<td>231 миля</td>
+</tr>
+<tr>
+<td>Пуэрто-Принсипе ⇄ Тортуга</td>
+<td>эль → ром</td>
+<td>ром → эль</td>
+<td>297 миль</td>
+</tr>
+</tbody>
+</table>
+<p>Оба товара весят 1 тонну за штуку, не имеют пачек (<code>Units = 1</code>) и есть в лавке в количестве 0.9–1.1 нормы (1080–1320 шт в большой лавке, вдвое меньше в малой). Минус только один: у рома и эля нет ни одного города с Aggressive-спросом, поэтому потолок маржи 94/т за круг не пробить.</p>
+<h4>Круги «импортный товар туда — колониальный обратно»</h4>
+<p>Если надо не просто катать ром с элем, а работать с колониальными товарами, лучшие круги такие (профиль «опытный торговец»):</p>
+<table>
+<thead>
+<tr>
+<th>Связка</th>
+<th>Товар туда</th>
+<th>Маржа/т</th>
+<th>Товар обратно</th>
+<th>Маржа/т</th>
+<th>Круг, маржа/т</th>
+<th>Круг при 500 т</th>
+<th>Круг при 1800 т</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Виллемстад ⇄ Каракас</td>
+<td>Лекарства</td>
+<td>18</td>
+<td>Кофе</td>
+<td>47</td>
+<td><strong>65</strong></td>
+<td>32 400</td>
+<td>116 640</td>
+</tr>
+<tr>
+<td>Виллемстад ⇄ Маракайбо</td>
+<td>Лекарства</td>
+<td>18</td>
+<td>Какао</td>
+<td>47</td>
+<td><strong>65</strong></td>
+<td>32 400</td>
+<td>116 640</td>
+</tr>
+<tr>
+<td>Виллемстад ⇄ Картахена</td>
+<td>Лекарства</td>
+<td>18</td>
+<td>Кожа</td>
+<td>47</td>
+<td><strong>65</strong></td>
+<td>32 400</td>
+<td>116 640</td>
+</tr>
+<tr>
+<td>Порт-Ройял ⇄ Сантьяго</td>
+<td>Лекарства</td>
+<td>18</td>
+<td>Кожа</td>
+<td>47</td>
+<td><strong>65</strong></td>
+<td>32 400</td>
+<td>116 640</td>
+</tr>
+<tr>
+<td>Капстервиль ⇄ Бас-Тер</td>
+<td>Порох</td>
+<td>18</td>
+<td>Ром</td>
+<td>39</td>
+<td><strong>57</strong></td>
+<td>28 350</td>
+<td>102 060</td>
+</tr>
+<tr>
+<td>Белиз ⇄ Капстервиль</td>
+<td>Красное дерево</td>
+<td>47</td>
+<td>Лекарства</td>
+<td>18</td>
+<td><strong>65</strong></td>
+<td>32 400</td>
+<td>116 640</td>
+</tr>
+<tr>
+<td>Блювельд ⇄ Порто-Белло</td>
+<td>Чёрное дерево</td>
+<td>47</td>
+<td>Порох</td>
+<td>18</td>
+<td><strong>65</strong></td>
+<td>32 400</td>
+<td>116 640</td>
+</tr>
+<tr>
+<td>Тортуга ⇄ Виллемстад</td>
+<td>Ром</td>
+<td>39</td>
+<td>Лекарства</td>
+<td>18</td>
+<td><strong>57</strong></td>
+<td>28 350</td>
+<td>102 060</td>
+</tr>
+<tr>
+<td>Сен-Пьер ⇄ Виллемстад</td>
+<td>Кофе</td>
+<td>47</td>
+<td>Лекарства</td>
+<td>18</td>
+<td><strong>65</strong></td>
+<td>32 400</td>
+<td>116 640</td>
+</tr>
+<tr>
+<td>Бас-Тер ⇄ Виллемстад</td>
+<td>Кофе</td>
+<td>47</td>
+<td>Лекарства</td>
+<td>18</td>
+<td><strong>65</strong></td>
+<td>32 400</td>
+<td>116 640</td>
+</tr>
+<tr>
+<td>Порто-Белло ⇄ Картахена</td>
+<td>Порох</td>
+<td>18</td>
+<td>Ром</td>
+<td>39</td>
+<td><strong>57</strong></td>
+<td>28 350</td>
+<td>102 060</td>
+</tr>
+<tr>
+<td>### Практические маршруты, которые стоит запомнить <code>[интерпретация]</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>1. «Виллемстад — Мэйн» — лучший короткий круг в игре.</strong>
+Кюрасао лежит прямо напротив венесуэльского берега: до Маракайбо ~180 миль, до Каракаса ~150, до Куманы ~290. Схема:
+- В Виллемстаде покупаем <strong>лекарства, оружие, вино, эль, провиант, доски, одежду</strong> (всё Export 0.80).
+- Идём в Каракас / Маракайбо / Кумана / Картахену, продаём лекарства и вино (там Import 1.20), берём <strong>кофе, какао, кожу, ваниль, копру, паприку, хлопок</strong> (Export 0.80).
+- Возвращаемся в Виллемстад и сдаём колониальные товары по Aggressive 1.40 (+знак «+»).
+Полный круг 300–800 миль, оба плеча гружёные, маржа <strong>65 монет с тонны за круг</strong> при «профессиональной торговле»: это <strong>32 400 монет</strong> на трюм 500 тонн и <strong>116 600</strong> на трюм 1800 тонн.</p>
+<p><strong>2. «Блювельд/Белиз → Виллемстад» — самый дорогой единичный товар.</strong>
+Чёрное и красное дерево производятся только в Блювельде и Белизе, а Aggressive-спрос на них сразу в Виллемстаде, Капстервиле, Гаване и Порто-Белло. Маржа на штуку — 234 (чёрное) и 187 (красное) монет, самая высокая в игре среди легальных товаров. Минусы: путь 870+ миль, дерево тяжёлое (5 и 4 тонны за штуку), а лавки в Блювельде и Белизе — малые. Промежуточный сброс: Порто-Белло (Aggressive на оба дерева) всего в 285 милях от Блювельда — это гораздо практичнее.</p>
+<p><strong>3. «Порт-Ройял ⇄ Сантьяго / Пуэрто-Принсипе» — самый короткий безопасный круг (135–220 миль).</strong>
+Туда: лекарства, вино, ром, оружие, провиант, доски, одежда из Порт-Ройяла (все Export 0.80) — в Сантьяго они Import 1.20 (порох, лекарства, вино, ром). Обратно: <strong>кожа</strong> из Сантьяго (Export 0.80) в Порт-Ройял, где она Aggressive 1.40. Плюс табак: Export в Сантьяго, Import в Порт-Ройяле.
+Осторожно: Порт-Ройял английский, Сантьяго испанский — при войне Англии с Испанией круг становится опасным (см. «Особые случаи»).</p>
+<p><strong>4. «Капстервиль ⇄ Бас-Тер» — 97 миль, самый короткий маршрут вообще.</strong>
+Капстервиль (Сент-Кристофер, Франция, большая лавка): Export — провиант, кирпичи, одежда, сахар, порох, лекарства, вино, эль. Бас-Тер (Гваделупа, Франция): Export — доски, фрукты, кофе, какао, ром, канаты; Import — пшеница, порох, лекарства, вино, эль. Схема: лекарства/порох/вино из Капстервиля → Бас-Тер; кофе/какао из Бас-Тера → Капстервиль (там Import 1.20). Обе колонии французские — никаких проблем с флагом.</p>
+<p><strong>5. «Тортуга → Виллемстад» — классический сахарно-табачный рейс (527 миль).</strong>
+Тортуга: Export — парусина, фрукты, табак, сахар, ром. Виллемстад: Import на табак и сахар. Обратно из Виллемстада — лекарства и оружие в любой испанский порт Мэйна.</p>
+<p><strong>6. «Порто-Белло ⇄ Картахена» (250 миль) и «Порто-Белло ⇄ Сан-Андрес» (253 мили).</strong>
+Порто-Белло — большая лавка и главная колония Испании со знаком «+», у неё 12 позиций Export, включая <strong>золото, серебро, порох, лекарства, вино, эль, ваниль, копру, кожу</strong>. Aggressive у неё на чёрное и красное дерево. Отличная база для испанского торговца.</p>
+<p><strong>7. Чего НЕ делать:</strong>
+- Не возить доски, парусину, пшеницу, фрукты — 13–14 монет выручки за тонну трюма.
+- Не возить товар между городами одного острова (Порт-Ройял ↔ Марун-Таун, Сантьяго ↔ Пуэрто-Принсипе, Сен-Пьер ↔ Ле Франсуа, Ла Вега ↔ Санто-Доминго) — типы спроса там идентичны, маржа нулевая.
+- Не продавать награбленный груз как обычный: <code>costCoeff</code> для добычи равен <code>0.80 − MOD_SKILL_ENEMY_RATE × 0.05</code> = <strong>0.60 на средней сложности</strong> (<code>PROGRAM/scripts/Crew.c:617-680</code>). Награбленное уходит за 60% нормальной цены. На сложности 10 — за 30%.</p>
+<h3 id="h28-vstroennyy-torgovyy-pomoschnik-igry-tochno-iz-koda">Встроенный «Торговый помощник» игры <code>[точно из кода]</code></h3>
+<p>В игре есть собственный торговый калькулятор — на карте, в панели города (<code>PROGRAM/interface/MapBest.c:524-660</code>, настройки в <code>PROGRAM/activemap_settings.h</code>). Он берёт цены из «торговой книги» игрока (записанный прайс-лист посещённых городов, <code>storeutilite.c:588-630</code>) и сортирует товары по показателю <code>(цена продажи в городе Б − цена покупки здесь) / вес</code> — то есть <strong>по прибыли на единицу веса</strong>, ровно та метрика, что использована в таблицах выше. Помощник намеренно пропускает контрабанду и всё, начиная с корабельного шёлка (уникальные, коронные, орудия) — <code>MapBest.c:590</code>. Настройка <code>TRADEASSISTANT_MODE</code>: 0 — только по записанным в книгу ценам (честно), 1 — по реальным текущим ценам (в комментарии кода прямо названо читерством).</p>
+<p>Важно: чтобы помощник видел город, туда надо <strong>зайти в лавку</strong> — цены запоминаются в <code>NullCharacter.PriceList</code> при разговоре с торговцем. Для контрабандных товаров вместо цены в книгу пишется <code>"???"</code> (<code>storeutilite.c:614-627</code>).</p>
+<hr />
+<h2 id="h29-kontrabanda">Контрабанда</h2>
+<h3 id="h30-kak-eto-ustroeno-v-kode-tochno-iz-koda">Как это устроено в коде <code>[точно из кода]</code></h3>
+<p>Две отдельные системы, которые часто путают:</p>
+<p><strong>A. Контрабандный товар в обычной лавке.</strong> В коде есть функция <code>GetStoreGoodsUsed</code> (<code>PROGRAM/store/storeutilite.c:97-109</code>), которая должна скрывать контрабанду в лавке от игрока без перка <code>Trustworthy</code> («Вызывающий доверие»), — <strong>но она нигде не вызывается</strong> (проверено <code>grep -rn "GetStoreGoodsUsed" PROGRAM/</code>: единственное вхождение — само объявление). Перк <code>Trustworthy</code> на ассортимент лавки <strong>не влияет</strong>.</p>
+<p>Реальное поведение лавки задаётся интерфейсом <code>PROGRAM/interface/store.c</code>:
+- Товар со типом спроса <code>Contraband</code> <strong>виден в списке</strong> (розовым цветом, <code>store.c:297-298</code>), и его <strong>можно купить</strong>, если у лавки есть запас (<code>store.c:349-350</code>).
+- <strong>Продать контрабанду в лавку нельзя:</strong> для типа <code>Contraband</code> цена продажи принудительно ставится в 0 и в таблице показывается прочерк (<code>store.c:326-332</code>, <code>store.c:651-654</code>).
+- Строка товара вообще не показывается, если и у лавки, и у игрока его 0 (<code>store.c:274</code>).
+- <strong>Орудия в обычной лавке не продаются вовсе</strong> — строка <code>if (tradeType == T_TYPE_CANNONS) continue;</code> (<code>store.c:257</code>). Пушками торгует отдельный интерфейс оружейника (<code>PROGRAM/interface/cannons.c:300, 314, 596, 612</code>), по той же формуле с <code>cModify = 3.8</code>.</p>
+<p><strong>Практический смысл <code>[интерпретация]</code>:</strong> рабы, корабельный шёлк, канаты, бакаут и смолы, будучи контрабандой почти на всех островах, <strong>не продаются в лавке ни за какие деньги</strong> — только контрабандистам, в море проходящим кораблям или по квестам. Исключения — Панама и Исла Мона, где у товаров нет контрабандного статуса вообще, и те города, где конкретный уникальный товар помечен как Export (см. таблицу ниже).</p>
+<p><strong>B. Торговля с контрабандистами на берегу.</strong> Отдельная формула <code>GetContrabandGoodsPrice</code> (<code>PROGRAM/scripts/smuggling.c:436-559</code>):</p>
+<pre><code>Цена = round( priceModify * basePrice * tradeModify * skillModify * qty * costModify * cModify )
+</code></pre>
+<p>Отличия от лавки:
+- <code>AddPriceModify</code> <strong>не применяется</strong> (<code>smuggling.c</code> — строки, аналогичной <code>storeutilite.c:155</code>, нет): наполненность склада города на цену контрабандиста не влияет.
+- вместо <code>costCoeff</code> — жёсткая константа <code>costModify</code>: <strong>1.05 при покупке игроком</strong> (<code>smuggling.c:503</code>), <strong>0.85 при продаже игроком</strong> (<code>smuggling.c:526</code>).
+- <code>cModify</code> для орудий: <strong><code>2.0 − MOD_SKILL_ENEMY_RATE/20 = 1.8</code></strong> на средней сложности, причём <strong>в обе стороны</strong> (<code>smuggling.c:484</code> и <code>:508</code>). В лавке <code>3.8</code> и только при покупке.
+- <code>tradeModify</code> и <code>priceModify</code> — те же, что в лавке города.</p>
+<p><strong>Комментарий в коде про «0.7 магазинной цены» (<code>storeutilite.c:441</code>) устарел и формулой не подтверждается.</strong> Реальное соотношение — 0.85 при продаже и 1.05 при покупке.</p>
+<h3 id="h31-flagi-contra-sell-contra-buy-tochno-iz-koda-storeutilite-c-4">Флаги CONTRA_SELL / CONTRA_BUY <code>[точно из кода]</code> (<code>storeutilite.c:423-453</code>)</h3>
+<p>Пересчитываются каждые игровые сутки:
+- <code>TradeType == Cannons</code> → всегда <strong>CONTRA_SELL</strong> (орудия всегда можно сдать контрабандисту).
+- Для товаров типа <strong>колониальный (Export)</strong> и <strong>импортный (Import)</strong>: запас <code>&lt; 0.80 × Norm</code> → <strong>CONTRA_SELL</strong> (в городе дефицит, контрабандист купит у вас); запас <code>&gt; 1.20 × Norm</code> → <strong>CONTRA_BUY</strong> (в городе избыток, контрабандист продаст вам).
+- <code>TradeType == Contraband</code> → всегда <strong>CONTRA_SELL</strong>.</p>
+<p>Ассортимент контрабандиста (<code>smuggling.c:74-95</code>): при CONTRA_SELL у него <strong>0 единиц</strong> товара (он только покупает); при CONTRA_BUY — <strong><code>запас лавки / 4 + rand(200)</code></strong> единиц на продажу.</p>
+<h3 id="h32-kakie-tovary-kontrabandnye-i-gde-tochno-iz-koda">Какие товары контрабандные и где <code>[точно из кода]</code></h3>
+<p>Списки берутся из <code>Islands[n].Trade.Contraband</code>. Практически всюду одинаковые:</p>
+<table>
+<thead>
+<tr>
+<th>Товар</th>
+<th>На скольких из 25 островов контрабанда</th>
+<th>Где НЕ контрабанда</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Рабы</strong></td>
+<td>25 из 25</td>
+<td>только Панама и Исла Мона (у них нет торгового профиля)</td>
+</tr>
+<tr>
+<td><strong>Корабельный шёлк</strong></td>
+<td>24</td>
+<td>Кюрасао (там Export), Панама, Исла Мона</td>
+</tr>
+<tr>
+<td><strong>Канаты</strong></td>
+<td>24</td>
+<td>Гваделупа (Export), Панама, Исла Мона</td>
+</tr>
+<tr>
+<td><strong>Смолы</strong></td>
+<td>24</td>
+<td>Тринидад (Export), Панама, Исла Мона</td>
+</tr>
+<tr>
+<td><strong>Бакаут</strong></td>
+<td>23</td>
+<td>Санта-Каталина и Юкатан (Export), Панама, Исла Мона</td>
+</tr>
+<tr>
+<td><strong>Оружие</strong></td>
+<td>17</td>
+<td>Барбадос, Кюрасао, Ямайка, Синт-Маартен, Антигуа, Юкатан, Исла-Тесоро, Панама, Исла Мона</td>
+</tr>
+<tr>
+<td><strong>Порох</strong></td>
+<td>6 (Барбадос, Ямайка, Синт-Маартен, Антигуа, Кюрасао, Юкатан)</td>
+<td>все остальные</td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> Уникальные товары (шёлк, канаты, бакаут, смолы) и рабы — контрабанда почти везде. При этом их количество в лавках всегда 0 (<code>storeutilite.c:418</code>), значит купить их в лавке нельзя нигде: они приходят только с трофеев, из квестов и от контрабандистов (когда флаг CONTRA_BUY, что для типа <code>Contraband</code> не выставляется — то есть <strong>чистую контрабанду у контрабандистов тоже не купить</strong>, только продать).</p>
+<h3 id="h33-lavka-protiv-kontrabandista-gde-prodavat">Лавка против контрабандиста: где продавать</h3>
+<p>Расчёт при навыке Коммерция 0 без перков, tradeModify 1.00, за пачку из <code>Units</code> штук.</p>
+<p>Ключевое отличие, которое решает всё <code>[точно из кода]</code>: <strong>в формуле контрабандиста нет <code>costCoeff</code></strong> (<code>smuggling.c:436-559</code> — в отличие от <code>storeutilite.c:203-206</code>). Значит происхождение груза контрабандисту безразлично, а лавка за награбленное платит только 60% (см. «Награбленное продаётся за 60% цены»).</p>
+<table>
+<thead>
+<tr>
+<th>Товар</th>
+<th>priceModify</th>
+<th>Cost</th>
+<th>В лавке города, где товар контрабанда</th>
+<th>В лавке города, где товар обычный (чистый груз)</th>
+<th>То же, но груз награблен (costCoeff 0.60)</th>
+<th>Контрабандисту (любой груз)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Рабы</td>
+<td>×5</td>
+<td>100</td>
+<td><strong>продать нельзя</strong></td>
+<td>338</td>
+<td>203</td>
+<td><strong>287</strong></td>
+</tr>
+<tr>
+<td>Корабельный шёлк</td>
+<td>×10</td>
+<td>160</td>
+<td><strong>продать нельзя</strong></td>
+<td>1 080</td>
+<td>648</td>
+<td><strong>918</strong></td>
+</tr>
+<tr>
+<td>Канаты</td>
+<td>×10</td>
+<td>80</td>
+<td><strong>продать нельзя</strong></td>
+<td>540</td>
+<td>324</td>
+<td><strong>459</strong></td>
+</tr>
+<tr>
+<td>Бакаут</td>
+<td>×10</td>
+<td>240</td>
+<td><strong>продать нельзя</strong></td>
+<td>1 620</td>
+<td>972</td>
+<td><strong>1 377</strong></td>
+</tr>
+<tr>
+<td>Смолы</td>
+<td>×10</td>
+<td>80</td>
+<td><strong>продать нельзя</strong></td>
+<td>540</td>
+<td>324</td>
+<td><strong>459</strong></td>
+</tr>
+<tr>
+<td>Порох (пачка 20 шт)</td>
+<td>×3</td>
+<td>60</td>
+<td><strong>продать нельзя</strong></td>
+<td>122</td>
+<td>73</td>
+<td><strong>103</strong></td>
+</tr>
+<tr>
+<td>Оружие (пачка 10 шт)</td>
+<td>×3</td>
+<td>60</td>
+<td><strong>продать нельзя</strong></td>
+<td>122</td>
+<td>73</td>
+<td><strong>103</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Читается так: <strong>честно купленный</strong> товар выгоднее сдать в лавку города, где он не контрабанда (+18% против контрабандиста), а <strong>награбленный — контрабандисту</strong> (+42% против лавки, потому что лавка режет цену до 60%).</p>
+<h4>Орудия: лавка против контрабандиста <code>[точно из кода]</code></h4>
+<p>Лавка: <code>cModify = 3.8</code> только при покупке. Контрабандист: <code>cModify = 1.8</code> в обе стороны, плюс costModify 1.05 (покупка) / 0.85 (продажа). Навык 0, tradeModify 1.00.</p>
+<table>
+<thead>
+<tr>
+<th>Орудие</th>
+<th>Cost</th>
+<th>Купить в лавке</th>
+<th>Купить у контрабандиста</th>
+<th>Экономия</th>
+<th>Продать в лавку</th>
+<th>Продать контрабандисту</th>
+<th>Выигрыш</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Фальконеты</td>
+<td>105</td>
+<td>529</td>
+<td><strong>263</strong></td>
+<td>−50%</td>
+<td>71</td>
+<td><strong>108</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Лёгкие полупушки</td>
+<td>215</td>
+<td>1083</td>
+<td><strong>538</strong></td>
+<td>−50%</td>
+<td>145</td>
+<td><strong>222</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Полупушки</td>
+<td>425</td>
+<td>2140</td>
+<td><strong>1064</strong></td>
+<td>−50%</td>
+<td>287</td>
+<td><strong>439</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Флотские полупушки</td>
+<td>600</td>
+<td>3021</td>
+<td><strong>1503</strong></td>
+<td>−50%</td>
+<td>405</td>
+<td><strong>620</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Малые пушки</td>
+<td>815</td>
+<td>4104</td>
+<td><strong>2041</strong></td>
+<td>−50%</td>
+<td>550</td>
+<td><strong>842</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Корабельные пушки</td>
+<td>1200</td>
+<td>6042</td>
+<td><strong>3005</strong></td>
+<td>−50%</td>
+<td>810</td>
+<td><strong>1239</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Батарейные пушки</td>
+<td>1705</td>
+<td>8585</td>
+<td><strong>4270</strong></td>
+<td>−50%</td>
+<td>1151</td>
+<td><strong>1761</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Береговые пушки (в лавке не продаётся)</td>
+<td>2055</td>
+<td>10347</td>
+<td><strong>5146</strong></td>
+<td>−50%</td>
+<td>1387</td>
+<td><strong>2122</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Осадные пушки (в лавке не продаётся)</td>
+<td>2490</td>
+<td>12537</td>
+<td><strong>6236</strong></td>
+<td>−50%</td>
+<td>1681</td>
+<td><strong>2572</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Полукулеврины</td>
+<td>345</td>
+<td>1737</td>
+<td><strong>864</strong></td>
+<td>−50%</td>
+<td>233</td>
+<td><strong>356</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Кулеврины</td>
+<td>885</td>
+<td>4456</td>
+<td><strong>2216</strong></td>
+<td>−50%</td>
+<td>597</td>
+<td><strong>914</strong></td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>Полные кулеврины (в лавке не продаётся)</td>
+<td>2545</td>
+<td>12814</td>
+<td><strong>6373</strong></td>
+<td>−50%</td>
+<td>1718</td>
+<td><strong>2628</strong></td>
+<td>+53%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Итог <code>[интерпретация]</code>:</strong>
+1. <strong>Честно купленный товар — в лавку, награбленный — контрабандисту.</strong> Контрабандист платит на 15% меньше номинала (<code>costModify 0.85</code>), зато не смотрит на происхождение груза; лавка режет награбленное до 60%. Порог: если <code>costCoeff</code> груза ниже <strong>0.85</strong>, контрабандист выгоднее лавки. Любая добыча в море и при грабеже города даёт 0.60 — то есть <strong>вся добыча идёт контрабандисту</strong>, если её не «отмыть» через склад (см. «Особые случаи»).
+2. <strong>Орудия — всегда к контрабандистам.</strong> Продажа пушки контрабандисту даёт <strong>+53%</strong> к цене оружейника, покупка — <strong>вдвое дешевле</strong>. Это единственный способ купить береговые пушки (36 фн), осадные пушки (42 фн) и полные кулеврины (36 фн): в лавках у них <code>NotSale = 1</code> (<code>initGoods.c:572, 588, 636</code>), а трофейные пушки почти всегда «грязные», то есть в лавке за них дадут 60% от и без того низкой цены.
+3. Трофейные пушки со снятых на абордаже кораблей — самый доходный груз для контрабандиста. Батарейная пушка (32 фн) уходит ему за 1 761 против 1 151 у оружейника (и всего 691, если она награблена и не отмыта).
+4. <strong>Уникальные товары (шёлк, канаты, бакаут, смолы) и рабы</strong>: в подавляющем большинстве городов их продать в лавку вообще нельзя. Легальные точки сбыта по коду — только те города, где товар в списке <code>Export</code> острова (там за него дадут всего ×0.80), плюс <strong>Панама и Исла Мона</strong>, где статуса контрабанды нет ни у чего и цена идёт по <code>normal</code> ×1.00. Исла Мона к тому же со знаком «+».</p>
+<h3 id="h34-kak-naznachit-sdelku-i-chto-dlya-etogo-nuzhno-tochno-iz-koda">Как назначить сделку и что для этого нужно <code>[точно из кода]</code></h3>
+<p>Агент контрабандистов сидит в таверне (диалог <code>PROGRAM/dialogs/russian/Smuggler Agent_dialog.c</code>). Требования:
+- <strong>Класс корабля мельче порога:</strong> отказ, если у любого корабля эскадры класс <code>&lt; MOD_SKILL_ENEMY_RATE/5 + 1.5</code> (<code>Smuggler Agent_dialog.c:491</code>). На средней сложности порог <strong>2.3</strong> — значит корабли 1-го и 2-го класса (мановары, линкоры, тяжёлые фрегаты) сделку блокируют. Нужен класс 3 и ниже.
+- <strong>Отношение с контрабандистами &gt; 5</strong> (<code>Smuggler Agent_dialog.c:543</code>); при ≥ 70 — дружеский приём.
+- <strong>Не больше одной сделки в день с одним агентом</strong> (<code>Smuggler Agent_dialog.c:539-541</code>).
+- Место встречи — случайный берег <strong>текущего острова</strong> (<code>smuggling.c:262-280</code>).
+- На берегу выставляются <strong>3 контрабандиста</strong>, живут 4 дня, но таймер снятия — <strong>2 дня</strong> (<code>smuggling.c:298-318</code>). Практическое окно на сделку — <strong>2 суток</strong>.</p>
+<h3 id="h35-riski-i-shtrafy-s-chislami-tochno-iz-koda">Риски и штрафы, с числами <code>[точно из кода]</code></h3>
+<table>
+<thead>
+<tr>
+<th>Риск</th>
+<th>Условие / вероятность</th>
+<th>Последствия</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Контрабандисты сами грабят игрока</td>
+<td><code>drand(11) == 3</code> → <strong>8.3%</strong>, только до первой сделки (<code>Smuggler_OnShore_dialog.c:318</code>)</td>
+<td>забирают товар, бой</td>
+</tr>
+<tr>
+<td>Морская погоня прибрежной стражи</td>
+<td><code>Скрытность(0..10) &lt; Rand(12)</code> → шанс ≈ <code>(12 − Скрытность)/12</code>. При Скрытности 0 — 92%, при 10 — 8% (<code>Smuggler_OnShore_dialog.c:326-329</code>)</td>
+<td>до 3 капитанов нации патруля, <code>AlwaysEnemy</code>, живут 3 дня, погоня снимается через 2 дня или при выходе на карту мира (<code>smuggling.c:381-409</code>)</td>
+</tr>
+<tr>
+<td>Облава на берегу (независимо от погони)</td>
+<td><code>Скрытность(0..100) &lt; Rand(120)</code> → шанс ≈ <code>(120 − Скрытность)/120</code>. Даже при Скрытности 100 остаётся <strong>17%</strong> (<code>Smuggler_OnShore_dialog.c:279</code>, <code>contraband.c:243-250</code>)</td>
+<td>стража: <strong>2 × количество офицеров + 3</strong> солдат плюс офицер-переговорщик (<code>quests_reaction.c:853</code>)</td>
+</tr>
+<tr>
+<td>Постоянный штраф за саму сделку</td>
+<td>всегда, даже при полном успехе (<code>Smuggler_OnShore_dialog.c:291-293</code>, <code>contraband.c:255-257</code>)</td>
+<td>репутация «благородство» <strong>−1</strong>, недовольство офицеров, отношение с контрабандистами <strong>+15</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Как выйти из облавы</strong> (<code>PROGRAM/dialogs/russian/Smuggler_Guards_dialog.c</code>):
+1. <strong>По репутации</strong> — нужно <code>благородство ≥ 70</code> и <strong>Лидерство ≥ 5</strong> (шкала 0..10). Патруль отпускает игрока и забирает контрабандистов: отношение с контрабандистами <strong>−30</strong> (<code>Smuggler_Guards_dialog.c:35, 103-121</code>).
+2. <strong>Взятка</strong> — нужно <code>ранг ≥ 4</code> и <strong>Коммерция ≥ 5</strong>. Предложить можно 1/10, 1/5 или 1/2 всех денег; принимают только если сумма <strong>≥ ранг × 1000 песо</strong>, иначе бой (<code>Smuggler_Guards_dialog.c:44, 133-192</code>).
+3. <strong>Наглость</strong> — нужно <code>благородство ≤ 25</code> и фехтование ≥ 8. Патруль уходит, отношение с контрабандистами <strong>+10</strong> (<code>Smuggler_Guards_dialog.c:31, 53, 210</code>).
+4. Бой с патрулём: репутация у нации патруля <strong>−1</strong> (<code>Smuggler_Guards_dialog.c:82</code>).</p>
+<h3 id="h36-opyt-ot-kontrabandy-tochno-iz-koda-program-interface-contrab">Опыт от контрабанды <code>[точно из кода]</code> (<code>PROGRAM/interface/contraband.c:161, 173</code>)</h3>
+<ul>
+<li>покупка у контрабандиста: <code>+ сумма_сделки / 800</code> опыта в Коммерцию</li>
+<li>продажа контрабандисту: <code>+ сумма_сделки / 1600</code> опыта в Коммерцию</li>
+<li>за каждый выход из контрабандного торга: <strong>+100 опыта в Скрытность</strong> (<code>Smuggler_OnShore_dialog.c:287</code>, <code>contraband.c:251</code>)</li>
+<li>после каждой сделки проходит <strong>15 минут</strong> игрового времени (<code>contraband.c:162, 177</code>)</li>
+</ul>
+<p><code>[интерпретация]</code> Контрабанда — не столько способ заработать на разнице цен (она отрицательная), сколько способ: (а) сбыть трофейные пушки на 53% дороже, (б) купить старшие калибры, которых нет в лавках, (в) быстро качать Скрытность (+100 за сделку) и Коммерцию.</p>
+<hr />
+<h2 id="h37-osobye-sluchai">Особые случаи</h2>
+<h3 id="h38-nalogi-i-portovye-sbory-ih-net-tochno-iz-koda">Налоги и портовые сборы — их НЕТ <code>[точно из кода]</code></h3>
+<p><code>colonies[i].tax_rate = MOD_SKILL_ENEMY_RATE</code> (<code>PROGRAM/colonies/Colonies_init.c:45</code>) — <strong>мёртвый атрибут</strong>, нигде больше в коде не читается. Портовых сборов и пошлин при входе в порт в игре тоже нет: в <code>GetStoreGoodsPrice</code> (<code>storeutilite.c:114-239</code>) вообще нет обращений к нации, репутации или отношениям. <strong>Цена в лавке не зависит ни от вашего флага, ни от отношений с нацией, ни от состояния войны.</strong> Налоги в игре есть только «в обратную сторону» — как доход с города, который принадлежит игроку.</p>
+<h3 id="h39-zahvat-i-razgrablenie-goroda-tochno-iz-koda">Захват и разграбление города <code>[точно из кода]</code></h3>
+<table>
+<thead>
+<tr>
+<th>Событие</th>
+<th>Что происходит с лавкой</th>
+<th>Файл:строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Город захвачен любой нацией (в т.ч. НПС-эскадрой)</td>
+<td><strong>весь товар в лавке в 0</strong>, вклады у ростовщика пропадают, корабли, оставленные в порту, пропадают</td>
+<td><code>PROGRAM/scripts/colony.c:1002-1006</code>, <code>storeutilite.c:634-653</code></td>
+</tr>
+<tr>
+<td>Осада НПС-эскадрой выиграна, но город не взят («форт разрушен, город разграблен»)</td>
+<td><strong>весь товар в лавке в 0</strong></td>
+<td><code>PROGRAM/scripts/Siege.c:648-650</code></td>
+</tr>
+<tr>
+<td>Мэр откупился (обычный откуп)</td>
+<td>запас каждого товара <strong>делится на 3</strong>; добыча = <code>(FortValue + rand(10)) × 2000</code> песо</td>
+<td><code>colony.c:939-948</code></td>
+</tr>
+<tr>
+<td>Мэр откупился «вполовину»</td>
+<td>запас <strong>делится на 6</strong>; добыча = <code>(FortValue + rand(10)) × 700</code></td>
+<td><code>colony.c:933-935</code></td>
+</tr>
+</tbody>
+</table>
+<p>Вероятность, что осаждающая эскадра именно <strong>захватит</strong> город, а не разграбит: при силе форта ≤ 60 — <code>1/3</code>; иначе нужно превосходство сил и <code>rand(|сила_форта − 60|) == 0</code> (<code>Siege.c:628-636</code>).</p>
+<p><code>[интерпретация]</code> Практический вывод: <strong>после любого захвата или разграбления города там нечего покупать и некому продавать</strong> — лавка стоит на нуле и восстанавливается по обычному суточному циклу (<code>+0.2 Norm</code> в день в лучшем случае), то есть на восстановление до нормы уходят примерно 5–10 игровых суток. Зато цена продажи в такой лавке максимальная: пустой склад даёт <code>AddPriceModify = 1.05</code>.</p>
+<p>Откуп Порт-Ройяла (FortValue 95) даёт <strong>190 000–208 000 песо</strong> — больше, чем любой торговый рейс.</p>
+<h3 id="h40-voyna-blokada-reputaciya-tochno-iz-koda">Война, блокада, репутация <code>[точно из кода]</code></h3>
+<ul>
+<li><strong>На цены война не влияет вообще</strong> (см. выше).</li>
+<li><strong>На торговые квесты (фрахты) влияет сильно</strong> (<code>PROGRAM/dialogs/russian/Common_Store.c</code>):</li>
+<li>фрахт не дадут, если игрок в состоянии войны с нацией торговца (<code>Common_Store.c:968</code>);</li>
+<li>город-получатель выбирается только среди тех, чья нация не воюет с нацией игрока (<code>Common_Store.c:1928-1929</code>; Панама, Minentown, Сан-Андрес и свой остров исключены всегда);</li>
+<li>если нация торговца в войне со всеми — торговли нет: «Политическая обстановка в архипелаге не позволяет мне торговать» (<code>Common_Store.c:1047-1048</code>);</li>
+<li>фрахт не дадут при плохой репутации <code>isBadReputation(pchar, 42)</code> (<code>Common_Store.c:977</code>);</li>
+<li>один фрахт в день на торговца (<code>Common_Store.c:964-966</code>).</li>
+<li><strong>Параметры фрахта</strong> (<code>Common_Store.c:1001-1027</code>): товар — случайный колониальный из диапазона кофе…паприка; масса ограничена 1500 ц и свободным местом; при количестве меньше 100 шт заказ не выдадут; вознаграждение <code>количество × (Weight/Units) × (4 + rand(3) + Коммерция(0..10))</code>; срок <strong>25 + rand(5) дней</strong>; провал — репутация «благородство» −1 (<code>Common_Store.c:1077</code>). С шансом <code>1/8</code> для дешёвых товаров (Cost ≤ 44) заказчик расплатится самим грузом вместо денег (<code>Common_Store.c:1096-1101</code>).</li>
+</ul>
+<p><code>[интерпретация]</code> При максимальной Коммерции фрахт платит <code>количество × вес × 14</code> — то есть <strong>14 монет за тонну-единицу</strong>, что для тяжёлых колониальных товаров сравнимо с торговлей, а риска и вложений нет.</p>
+<h3 id="h41-sezonnost-otsutstvuet-tochno-iz-koda">Сезонность — ОТСУТСТВУЕТ <code>[точно из кода]</code></h3>
+<p>В <code>PROGRAM/store/*</code> нет ни одного обращения к календарю, месяцу или сезону. Упоминания «сезона дождей с апреля по октябрь» есть только в текстах слухов (<code>PROGRAM/scripts/Rumour_Data.h:11</code>). <strong>Месяц и сезон на цены и наличие товаров не влияют.</strong></p>
+<h3 id="h42-epidemii-tochno-iz-koda">Эпидемии <code>[точно из кода]</code></h3>
+<ul>
+<li><strong>Эпидемия в колонии — мёртвый код.</strong> <code>Colonies[i].disease</code> задаётся нулём в <code>Colonies_init.c:39-40</code> и больше никогда не меняется. Карантин при высадке (<code>PROGRAM/sea_ai/sea.c:301-322</code>) в 1.7.3 не срабатывает — условия помечены <code>// to_do</code>.</li>
+<li><strong>Эпидемия на корабле работает</strong> — как генерируемая ситуация после захвата «чумного» приза (<code>PROGRAM/scripts/GenQuests.c:1783-1891</code>). Увеличивает суточный расход лекарств <strong>×2 или ×3</strong> (<code>food.c:276-277</code>) и отключает бонус морали от рома. Длительность от 3 до 20 дней.</li>
+</ul>
+<h3 id="h43-konkurenty-za-tovar-pgg-tochno-iz-koda-program-scripts-psher">Конкуренты за товар: ПГГ <code>[точно из кода]</code> (<code>PROGRAM/scripts/PsHero.c</code>)</h3>
+<p>Соперничающие капитаны (ПГГ) реально участвуют в экономике:
+- ПГГ-торговец <strong>скупает товар из лавки</strong> на почти всё свободное место своей эскадры (<code>PsHero.c:447-458</code>) и <strong>привозит товар в другой город</strong> (<code>PsHero.c:254</code>).
+- Когда ПГГ снаряжается в городе, с вероятностью <strong>1/5</strong> он выгребает припасы из лавки и <strong>нанимает всех матросов</strong> (<code>SetCrewQuantity(refTown, 0)</code>) — <code>PsHero.c:847-869</code>. Точные объёмы: ядра −273±20, порох −490±60, книппели −133±20, картечь −105±20, бомбы −84±40, провиант −11±50, оружие −8±25, лекарства −5±25, ром −5±20, доски −14±40, парусина −7±20.</p>
+<p><code>[интерпретация]</code> Если в городе вдруг нет ни матросов, ни пороха — вероятнее всего только что снарядился ПГГ. Стоит уйти и вернуться через несколько дней.</p>
+<h3 id="h44-tovar-oruzhie-i-abordazh-kriticheski-vazhno-tochno-iz-koda">Товар «Оружие» и абордаж — критически важно <code>[точно из кода]</code></h3>
+<p><code>GetWeaponCrew()</code> — <code>PROGRAM/characters/characterUtilite.c:3798-3806</code>:</p>
+<pre><code>if (crew &gt; weaponOnBoard)
+    crew = weaponOnBoard + round((crew - weaponOnBoard) / 2.0);
+</code></pre>
+<p><strong>Правило: 1 единица товара «Оружие» = 1 полноценный вооружённый матрос; все матросы сверх запаса оружия считаются за половину.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>Оружие в трюме</th>
+<th>Реально идёт в абордаж</th>
+<th>Потеря</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>300</td>
+<td>300+</td>
+<td>300</td>
+<td>0</td>
+</tr>
+<tr>
+<td>300</td>
+<td>200</td>
+<td>250</td>
+<td>−17%</td>
+</tr>
+<tr>
+<td>300</td>
+<td>100</td>
+<td>200</td>
+<td>−33%</td>
+</tr>
+<tr>
+<td>300</td>
+<td>0</td>
+<td><strong>150</strong></td>
+<td><strong>−50%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Где применяется: старт абордажа (<code>PROGRAM/Loc_ai/LAi_boarding.c:125</code>), расчёт сдачи капитана без боя (<code>LAi_boarding.c:1396</code>), оценка сил морским ИИ (<code>PROGRAM/sea_ai/AIShip.c:1158</code>), авто-абордаж компаньонов (<code>PROGRAM/scripts/companions.c:45, 56</code>), десант по перку <code>Troopers</code> (<code>characterUtilite.c:3717</code>).</p>
+<p><strong>Расход оружия:</strong>
+- после абордажа списывается по числу погибших: <code>RemoveCharacterGoodsSelf(mchar, GOOD_WEAPON, deadCrew)</code> (<code>LAi_boarding.c:774</code>);
+- десант компаньона по перку <code>Troopers</code> тратит <code>команда/2</code> оружия (<code>characterUtilite.c:3721</code>);
+- штурм города тратит <code>количество × 0.7</code> (<code>PROGRAM/scripts/colony.c:183</code>);
+- трофей с захваченного корабля: примерно <strong>1 ед. оружия на 10 матросов противника</strong> (<code>#define WEAPON_BY_ENEMY_CREW 10</code>, <code>PROGRAM/interface/transfer_main.c:5, 2070</code>).</p>
+<p>Оружие: Cost 60, тип импортный (priceModify ×3), вес 1 за 10 штук — то есть <strong>300 единиц оружия занимают всего 30 тонн трюма</strong>. Покупать дёшево (Export 0.80) в Виллемстаде, Порт-Ройяле и Марун-Тауне. Контрабанда на 17 из 25 островов, легально торгуется на Барбадосе, Кюрасао, Ямайке, Синт-Маартене, Антигуа, Юкатане, Исла-Тесоро, в Панаме и на Исла Моне.</p>
+<h3 id="h45-rashodniki-proviant-rom-lekarstva-tochno-iz-koda-program-scr">Расходники: провиант, ром, лекарства <code>[точно из кода]</code> (<code>PROGRAM/scripts/food.c</code>)</h3>
+<p>Это не товары для торговли, а обязательный суточный расход. Константы: <code>food.c:1-8</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Расходник</th>
+<th>Суточный расход</th>
+<th>Что будет, если кончится</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Провиант</strong></td>
+<td><code>(Команда + 5.1)/10 + Пассажиры/10 + (Рабы + 6)/20</code> — примерно <strong>1 шт на 10 матросов в день</strong> (<code>food.c:364-366</code>)</td>
+<td>умирает <strong>10% команды</strong> и <strong>20% рабов</strong>, здоровье ГГ −1, репутация authority −1, мораль −(12 − Лидерство) (<code>food.c:397-432</code>)</td>
+</tr>
+<tr>
+<td><strong>Ром</strong></td>
+<td><code>(Команда + 5.1) / (60 − 2.5 × сложность)</code> — на средней сложности <strong>1 шт на 50 матросов в день</strong> (<code>food.c:311-314</code>)</td>
+<td>просто исчезает бонус <strong>+2 к морали в день</strong> (<code>food.c:328</code>); прямого штрафа нет</td>
+</tr>
+<tr>
+<td><strong>Лекарства</strong></td>
+<td>проверка болезни с шансом <strong>1/4 в день</strong>; заболевает от 1 до <code>min(30, Команда/10)</code> матросов, расходуется столько же лекарств (<code>food.c:249-285</code>)</td>
+<td>все заболевшие <strong>умирают</strong>, мораль −(число/2) до −15, репутация authority −1 (<code>food.c:259-273</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Расчёт на рейс <code>[интерпретация]</code>: команда 200 человек, 5 офицеров → <strong>21 провианта/день</strong>, <strong>5 рома/день</strong>, до <strong>20 лекарств/день</strong> в худшем случае (в среднем ~2.6/день: 1/4 × среднее 10). На 30 дней это 630 провианта (63 т), 150 рома (150 т), ~80 лекарств (2.7 т). Ром — самый тяжёлый из расходников; при дальнем рейсе им можно пренебречь, потеряв только +2 морали в день.</p>
+<p>Артефакты-множители: <code>talisman6</code> — провиант ×0.75 (<code>food.c:364</code>); <code>talisman4</code> — ром ×0.2 и снятие штрафа морали за перегруз команды (<code>food.c:311, 340</code>).</p>
+<p><strong>Крысы</strong> (<code>food.c:122-153</code>): каждые сутки на каждом корабле с шансом <strong>75%</strong> выбирается случайный товар из диапазона провиант…смолы (кирпичи исключены) и, если его больше 60 единиц, теряется <code>1 + rand(количество / (10 + Ремонт + Удача))</code>. Перк <code>HT2</code> (герой-торговец) делит потерю <strong>пополам</strong>; квестовая кошка — ×0.75; полностью отключают артефакт <code>talisman1</code>, предмет «мышьяк» (<code>rat_poison</code>) или квестовый флаг. За потерю начисляется опыт в Ремонт и Удачу.</p>
+<p><strong>Бунт</strong> (<code>food.c:436-477</code>): при морали ≤ 0 или репутации authority &lt; 5 — бунт на корабле ГГ; корабль-компаньон при морали ≤ 0 или лояльности ≤ 0 уходит из эскадры.</p>
+<h3 id="h46-sklad-v-gorode-tochno-iz-koda">Склад в городе <code>[точно из кода]</code></h3>
+<p>Склад есть только у <strong>четырёх</strong> лавочников: <strong>Порто-Белло</strong> (<code>PROGRAM/characters/init/PortoBello.c:205</code>), <strong>Капстервиль</strong> (<code>Nevis.c:246</code>), <strong>Порт-Ройял</strong> (<code>Jamaica.c:227</code>), <strong>Пиратский город</strong> (<code>Bermudes.c:66</code>).</p>
+<ul>
+<li>Цена аренды (<code>PROGRAM/characters/QuestsUtilite.c:5035-5046</code>): <code>10000 × (5 + сложность) × (3 + отношение_нации) / 360</code> — на средней сложности это <code>250 × (3 + отношение)</code> песо <strong>в месяц</strong>, то есть примерно <strong>500 / 750 / 1000</strong> песо/месяц при враждебном / нейтральном / дружественном отношении.</li>
+<li>Вместимость — <strong>50 000 ц.</strong> (<code>PROGRAM/interface/storage.c</code>, <code>questbook.c:1106</code>).</li>
+<li><strong>Рабов на склад класть нельзя</strong> (<code>storage.c:214</code>).</li>
+<li>Каждая операция со складом — 5 минут игрового времени (<code>storage.c:513, 519</code>).</li>
+<li>Пока долг по аренде не оплачен, на склад не пускают (<code>Common_Store.c:589-601</code>). При отказе от склада весь товар насильно грузится на корабль ГГ, в том числе с перегрузом (<code>QuestsUtilite.c:5049-5058</code>).</li>
+<li><strong>Склад НЕ «отмывает» награбленное:</strong> при сдаче он запоминает <code>costCoeff</code> груза, при выдаче возвращает его же (<code>storage.c:511-517</code>). Обнуляется только полностью опустошённая ячейка (<code>storeutilite.c:719</code>).</li>
+</ul>
+<p><code>[интерпретация]</code> Все четыре склада стоят в городах с большой лавкой и знаком «+» — это готовые торговые базы. Порт-Ройял и Капстервиль вдобавок имеют Aggressive-спрос.</p>
+<h3 id="h47-nagrablennoe-prodaetsya-za-60-ceny-tochno-iz-koda">Награбленное продаётся за 60% цены <code>[точно из кода]</code></h3>
+<p>Главный скрытый множитель — <code>costCoeff</code> (<code>PROGRAM/scripts/Crew.c:617-679</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Происхождение груза</th>
+<th>costCoeff</th>
+<th>Множитель к цене продажи</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>куплено в лавке / было в трюме до выхода в море</td>
+<td><strong>1.00</strong></td>
+<td>100%</td>
+</tr>
+<tr>
+<td>взято в море (приз, абордаж) или при грабеже города, сложность 2</td>
+<td>0.70</td>
+<td>70%</td>
+</tr>
+<tr>
+<td>то же, сложность 4 (по умолчанию)</td>
+<td><strong>0.60</strong></td>
+<td><strong>60%</strong></td>
+</tr>
+<tr>
+<td>сложность 6</td>
+<td>0.50</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>сложность 8</td>
+<td>0.40</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>сложность 10</td>
+<td>0.30</td>
+<td>30%</td>
+</tr>
+</tbody>
+</table>
+<p>Формула: <code>0.80 − MOD_SKILL_ENEMY_RATE × 0.05</code> (<code>Crew.c:628-631</code>). Пересчёт происходит при выходе в море (<code>PROGRAM/sea_ai/sea.c:653</code>), при уходе из моря на сушу (<code>sea.c:375</code>, <code>PROGRAM/reload.c:334</code>) и вокруг грабежа города (<code>PROGRAM/scripts/colony.c:950-952</code>). Смешивание купленного и награбленного даёт средневзвешенный коэффициент по количеству (<code>Crew.c:668</code>).</p>
+<p>Тот же коэффициент занижает оценку груза при дележе добычи с командой: корабль считается по <code>Цена × 0.2</code>, пушки по <code>Cost × 0.33 × costCoeff</code>, обычные товары по <code>Cost × 0.7 × costCoeff / Units</code> (<code>Crew.c:525-573</code>).</p>
+<p><code>[интерпретация]</code> Отсюда важное следствие: <strong>смешивать купленный и трофейный товар в одном трюме вредно</strong> — коэффициент усредняется, и честно купленная партия начинает продаваться дешевле. Трофейный груз лучше держать и сдавать отдельно.</p>
+<h3 id="h48-kak-bystro-rastet-navyk-kommerciya-tochno-iz-koda">Как быстро растёт навык Коммерция <code>[точно из кода]</code></h3>
+<ul>
+<li>Контрабанда: покупка <code>+ сумма/800</code> опыта, продажа <code>+ сумма/1600</code> (<code>PROGRAM/interface/contraband.c:161, 173</code>).</li>
+<li>Взятка патрулю требует Коммерцию ≥ 5 (шкала 0..10, то есть 50 по обычной) — <code>Smuggler_Guards_dialog.c:44</code>.</li>
+<li>Навык казначея (<code>treasurer</code>) в офицерах <strong>заменяет</strong> навык ГГ, если он выше (<code>PROGRAM/characters/RPGUtilite.c:1396-1404</code>). Хороший казначей мгновенно даёт весь бонус навыка, но <strong>перки (<code>BasicCommerce</code> и т.д.) проверяются через <code>CheckOfficersPerk</code></strong> — то есть их может иметь и офицер.</li>
+</ul>
+<hr />
+<h2 id="h49-sverka-s-soobschestvom">Сверка с сообществом</h2>
+<p>Источники: Steam-гайд S.V.V. «Квесты и их прохождение» (id 1735467948, разделы 92–102), Steam-гайд Wolfie Mozart «Самый лёгкий и честный способ заработать» (id 696899377), форум «Гавань Корсаров», тема t=4498 «К:КС — Торговля и другие способы заработка» (45 страниц), PiratesAhoy! «Guide — Easy Money», плюс собранные ранее отчёты <code>kks_guide/reports/04-tips-tricks.md</code>, <code>11-harbour-tips.md</code>, <code>13-gpk-crossover-tips.md</code>, <code>14-engine-numbers.md</code>. Полные конспекты: <code>kks_guide/reports/agent-trade-community.md</code> и <code>agent-trade-mechanics.md</code>.</p>
+<h3 id="h50-chto-soobschestvo-govorit-verno-podtverzhdaetsya-kodom">Что сообщество говорит верно (подтверждается кодом)</h3>
+<table>
+<thead>
+<tr>
+<th>Утверждение сообщества</th>
+<th>Подтверждение в коде</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«Городов агрессивного спроса крайне мало, работать стоит с Порт-Ройялом и Виллемстадом; на Кюрасао товаров агрессивного спроса вдвое больше» (Wolfie Mozart)</td>
+<td>Ровно так: Aggressive-товары есть только на 5 островах, у Виллемстада 8 позиций против 3 у Порт-Ройяла (<code>islands_init.c:581-588</code> против <code>:200-202</code>)</td>
+</tr>
+<tr>
+<td>«Административные центры Порт-Ройял, Виллемстад, Капстервиль, Гавана, Порто-Белло покупают любые колониальные» (S.V.V.)</td>
+<td>Все пятеро — <code>ismaincolony = 1</code>, все со знаком RndPrice «+», у всех Aggressive или Import на колониальные товары</td>
+</tr>
+<tr>
+<td>Перки: «Базовая торговля» −10% на покупку, «Развитая торговля» +10% на продажу, «Профессиональная торговля» ±15% (S.V.V.)</td>
+<td>Точно эти числа: <code>storeutilite.c:169, 175, 178, 196, 199</code></td>
+</tr>
+<tr>
+<td>«Полная прокачка навыка Торговля даёт всего +5%/−5%» (S.V.V.)</td>
+<td>Точно: навык 1..100 делится на 10 и умножается на 0.005 → максимум 0.05 (<code>storeutilite.c:162, 184</code>)</td>
+</tr>
+<tr>
+<td>«Со старта в торговле успешен только Счетовод, он стартует с Торговлей 15» (S.V.V., FAQ форума)</td>
+<td><code>RPGUtilite.c:3517</code>: <code>SetShipSkill(ch, 15, 15, 3, 3, 3, 3, 3, 3, 8)</code> — Лидерство 15, Коммерция 15; плюс бесплатные перки <code>Trustworthy</code> и <code>HT2</code> (<code>:3518-3519</code>)</td>
+</tr>
+<tr>
+<td>«Кофе и какао закупать на Мартинике и Гваделупе, продавать на Кюрасао» (MinZDraV, Mergot, Mirten)</td>
+<td>Кофе Export в Сен-Пьере, Ле Франсуа и Бас-Тере, Aggressive в Виллемстаде. Маржа 47/т — расчёт совпадает</td>
+</tr>
+<tr>
+<td>«Кожа Сантьяго / Пуэрто-Принсипе / Санто-Доминго / Картахена → Порт-Ройял и Виллемстад» (Wolfie Mozart)</td>
+<td>Кожа Export в этих городах, Aggressive в Виллемстаде и на Ямайке</td>
+</tr>
+<tr>
+<td>«Дерево Блювельд → Капстервиль / Гавана / Виллемстад» (Wolfie Mozart, ВалераS)</td>
+<td>Чёрное и красное дерево Export только в Блювельде (красное ещё в Белизе), Aggressive в Виллемстаде, Капстервиле, Гаване и Порто-Белло</td>
+</tr>
+<tr>
+<td>«После захвата: форт уничтожен — доступна треть товаров магазина, форт цел — шестая часть» (вики ГПК)</td>
+<td><code>SetNull2StoreManPart</code> делит запас на 3 при обычном откупе и на 6 при «половинном» (<code>colony.c:933-940</code>)</td>
+</tr>
+<tr>
+<td>«Товар "Оружие" в трюме критичен для абордажа» (вики ГПК)</td>
+<td><code>GetWeaponCrew</code> (<code>characterUtilite.c:3798-3806</code>): без оружия в бой идёт ровно половина команды</td>
+</tr>
+<tr>
+<td>«Контрабандисты работают только с кораблём не выше 3–4 класса» (S.V.V., вики)</td>
+<td>Порог <code>MOD_SKILL_ENEMY_RATE/5 + 1.5</code> = 2.3 на средней и 3.5 на сложности 10 (<code>Smuggler Agent_dialog.c:491</code>)</td>
+</tr>
+<tr>
+<td>«Контрабандисты покупают чуть дешевле магазина, продают чуть дороже» (S.V.V.)</td>
+<td><code>costModify</code> 0.85 при продаже и 1.05 при покупке (<code>smuggling.c:503, 526</code>)</td>
+</tr>
+<tr>
+<td>«Контрабандная цена НЕ зависит от происхождения товара, а магазин ворованное покупает за гроши» (S.V.V.)</td>
+<td>В формуле контрабандиста нет <code>costCoeff</code>; в лавочной он есть (<code>storeutilite.c:203-206</code>)</td>
+</tr>
+<tr>
+<td>«Награбленное магазины берут за полцены и меньше» (Old Nick, Wolfie)</td>
+<td><code>costCoeff</code> = <code>0.80 − сложность × 0.05</code>: 0.60 на средней, 0.30 на сложной (<code>Crew.c:628-631</code>)</td>
+</tr>
+<tr>
+<td>«Отмывка: выгрузить на склад → выйти в море → загрузить обратно» (S.V.V., idealist, Славсон)</td>
+<td><strong>Работает и является ошибкой в коде.</strong> При выходе в море <code>Partition_GetCargoCostCoeff("before")</code> для товара с нулевым остатком ставит коэффициент 1.0 (<code>Crew.c:674-676</code>), а при выемке со склада <code>storage.c:511</code> сначала перезаписывает коэффициент склада текущим (уже чистым) коэффициентом игрока и только потом <code>storage.c:512</code> его читает</td>
+</tr>
+<tr>
+<td>«Смешивание отмытого с грязным поднимает цену всей партии» (Славсон)</td>
+<td>Средневзвешенное по количеству: <code>newCoeff = (oldQty×oldCoeff + newCoeff×newQty)/(oldQty+newQty)</code> (<code>Crew.c:668</code>)</td>
+</tr>
+<tr>
+<td>«Для максимальной цены на пушки снять их с флагмана и отмывать отдельно» (Славсон)</td>
+<td><code>Partition_GetCargoCostCoeff</code> считает и установленные на корабли пушки, и пушки-товар (<code>Crew.c:585-605</code>)</td>
+</tr>
+<tr>
+<td>Лог rokjir 2024: 1600 ц кофе куплено за 97 600 (61/т), продано за 168 000 (105/т)</td>
+<td>Формула даёт 62.4/т на покупку и 109/т на продажу — сходится с точностью около 4%</td>
+</tr>
+<tr>
+<td>«1 раб ≈ 343 песо» (Nelsonliang)</td>
+<td>5 × 100 × 0.675 = 337.5 при нулевом навыке</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h51-gde-soobschestvo-oshibaetsya">Где сообщество ошибается</h3>
+<table>
+<thead>
+<tr>
+<th>Миф</th>
+<th>Что на самом деле</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«Стратегическое сырьё (шёлк, канаты, бакаут, смолы) продавать в Бас-Тере, Сан-Хосе, Виллемстаде, Белизе, Блювельде» (Славсон)</td>
+<td>Это ровно те города, где данный товар помечен <code>Export</code> → tradeModify <strong>0.80</strong>, то есть <strong>худшая цена в игре</strong>. Максимум за уникальные товары дают города, где они <code>normal</code> ×1.00 и знак «+»: Капстервиль, Порт-Ройял, Марун-Таун, Исла Мона</td>
+</tr>
+<tr>
+<td>«Золото лучше всего продавать в пиратском Шарптауне» (Wolfie Mozart)</td>
+<td>Золото и серебро в Пиратском городе (Исла-Тесоро) — <code>Export</code> ×0.80 (<code>islands_init.c:1458-1459</code>). Там за них дадут меньше всего. Хорошие точки: Виллемстад, Капстервиль, Порт-Ройял, Марун-Таун, Исла Мона (все <code>normal</code> ×1.00 со знаком «+»)</td>
+</tr>
+<tr>
+<td>«Паприка из Бриджтауна → Виллемстад» (Wolfie Mozart)</td>
+<td>Барбадос паприку не производит: его Export — кирпичи, фрукты, какао, сахар, ром (<code>islands_init.c:90-94</code>). Паприка Export в Сан-Хуане, Сент-Джонсе и Кумане. Вдобавок паприка — худший колониальный товар: <code>Cost/Weight</code> = 20 против 40 у остальных</td>
+</tr>
+<tr>
+<td>«Хлопок Белиз → Порт-Ройял» (Wolfie Mozart)</td>
+<td>Юкатан хлопок не производит (<code>islands_init.c:2210-2216</code>). Хлопок Export в Филипсбурге, Сен-Пьере, Ле Франсуа, Кумане и Сан-Андресе</td>
+</tr>
+<tr>
+<td>«Цены зависят от количества товара: привёз полный трюм ванили — цена упала с 212 до 95» (dim10, при поддержке Tymofei)</td>
+<td>Влияние количества — множитель <code>AddPriceModify = 1.05 − (Кол-во/Норма)/20</code>, и он <strong>пересчитывается только при суточном обновлении</strong>, после которого количество жёстко зажимается в коридор 1.75–2.0 нормы (<code>storeutilite.c:403-413</code>). Итог — диапазон <strong>всего 0.95…1.05</strong>, то есть ±5%. Падение 212 → 95 (×0.45) формулой не объясняется; наиболее вероятная причина — <code>costCoeff</code> того груза (награбленный товар даёт ×0.60 и ниже при смешивании)</td>
+</tr>
+<tr>
+<td>«После крупной продажи цены восстанавливаются 3 недели» (rokjir), «дней так 10» (Titan_777)</td>
+<td>Перезатаренная лавка зажимается обратно <strong>на следующие же сутки</strong> (<code>storeutilite.c:403-413</code>), с шансом 15% вообще обнуляется до случайной доли нормы</td>
+</tr>
+<tr>
+<td>«Отмывка: сдать на склад и поспать 3 дня в таверне, не выходя на глобалку» (Де Ритер)</td>
+<td>Сон коэффициент не сбрасывает: <code>Partition_GetCargoCostCoeff("before")</code> вызывается только при входе в морской режим (<code>sea_ai/sea.c:653</code>). Вероятно, измерено восстановление <code>AddPriceModify</code></td>
+</tr>
+<tr>
+<td>«Достаточно смены локации берег–корабль» (CLIPER)</td>
+<td>Нужен именно вход в море; переход в каюту <code>Partition_SetValue</code> не вызывает</td>
+</tr>
+<tr>
+<td>«Товар на складе не портится, а со временем даже дорожает» (S.V.V.)</td>
+<td>Порчи товара в игре нет вообще (<code>CheckForGoodsSpoil</code> — мёртвый код), и склад цену никак не меняет. «Дорожает» — это тот же эффект отмывки <code>costCoeff</code></td>
+</tr>
+<tr>
+<td>«Прибыль по торговым маршрутам 200–600 монет за рейс, контрабанда даёт +15…40%» (SEO-статьи, <code>reports/04-tips-tricks.md:62, 64</code>)</td>
+<td>Полностью не соответствует коду: маржа считается десятками монет на тонну, реальный рейс на 500 т даёт 30–47 тысяч. У контрабандиста цена продажи <strong>на 15% ниже</strong> лавочной, а не выше</td>
+</tr>
+<tr>
+<td>«У торговца не выручить больше 30 000 песо за заход» (вики ГПК, <code>13-gpk-crossover-tips.md:121</code>)</td>
+<td>Константы <code>TRADER_MAX_MONEY 30000</code> и др. действительно есть (<code>PROGRAM/scripts/utils.c:44-57</code>), но в <strong>товарной лавке города</strong> деньги торговца не проверяются и не списываются вовсе (<code>PROGRAM/interface/store.c:706-770</code> — проверка баланса есть только для морской торговли, <code>Colony == "none"</code>). Лимит касается торговли предметами и сделок с капитанами в море</td>
+</tr>
+<tr>
+<td>«Контрабандистам можно только продавать, купить у них нельзя» (вики ГПК)</td>
+<td>Купить можно — при флаге <code>CONTRA_BUY</code>, который ставится товарам типа Export/Import, когда их в лавке больше 1.20 нормы (<code>storeutilite.c:443-446</code>); ассортимент = <code>запас лавки / 4 + rand(200)</code> (<code>smuggling.c:91</code>)</td>
+</tr>
+<tr>
+<td>«Перк "Вызывающий доверие" открывает контрабанду в лавке» (следует из чтения <code>storeutilite.c:97-109</code>)</td>
+<td>Функция <code>GetStoreGoodsUsed</code> в игре <strong>никогда не вызывается</strong>. Реальная польза перка — обход проверок репутации <code>isBadReputation</code> (фрахт, ростовщик, боеприпасы, конвои)</td>
+</tr>
+<tr>
+<td>«Пиратские магазины купят и продадут что угодно» (S.V.V.)</td>
+<td>Пиратские города отличаются только знаком RndPrice «+1» (цены выше на 0…15%). Списки Export/Import/Contraband у них такие же, как у соседей по острову: Марун-Таун = Порт-Ройял, Ле Франсуа = Сен-Пьер, Ла Вега = Санто-Доминго, Пуэрто-Принсипе = Сантьяго</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h52-chto-soobschestvo-voobsche-ne-znaet-interpretaciya">Что сообщество вообще не знает <code>[интерпретация]</code></h3>
+<ol>
+<li><strong>Торговый профиль привязан к острову, а не к городу.</strong> Ни один гайд этого не формулирует, хотя все примеры сообщества это подтверждают.</li>
+<li><strong>Без перков коммерции честная торговля убыточна или даёт единицы процентов.</strong> Максимум для персонажа без перков — +3.6% к затратам на самой лучшей связке в игре.</li>
+<li><strong><code>RndPriceModify</code> — постоянный случайный сдвиг 0…15% на весь остров на всю игру</strong>, со знаком «+» у главных колоний и пиратских городов и «−» у остальных. Это объясняет, почему у разных игроков «одна и та же» связка даёт разную маржу.</li>
+<li><strong>Цена не меняется в течение игрового дня</strong> — весь трюм надо сбывать одним заходом, «продавать по частям» бессмысленно.</li>
+<li><strong>Порто-Белло — шестой город агрессивного спроса</strong> (чёрное и красное дерево), в гайдах не упоминается.</li>
+<li><strong>«Алкогольное кольцо» ром ⇄ эль</strong> — лучшая круговая схема (94 монеты с тонны за круг), в гайдах отсутствует полностью. Пара Тортуга ⇄ Порт-о-Пренс идеальна: обе стороны гружёные, расстояние минимальное.</li>
+<li><strong>Внутри класса товаров плотность денег одинакова</strong>: у всех повседневных <code>Cost/Weight</code> = 20, у импортных 60, у колониальных 40 (кроме паприки — 20), у коронных 100, у уникальных 80 (кроме бакаута — 34). Выбирать конкретный товар внутри класса по «цене» бессмысленно.</li>
+<li><strong>Цена в лавке указана за пачку из <code>Units</code> штук</strong>, а не за штуку. Отсюда все ошибки в подсчётах «выгоды на единицу» в гайдах.</li>
+<li><strong>Панама и Исла Мона — лавки без торгового профиля</strong>, единственные, где нет контрабандных товаров.</li>
+</ol>
+<hr />
+<h2 id="h53-probely">Пробелы</h2>
+<p>Что не удалось выяснить или что осталось за рамками разбора.</p>
+<h3 id="h54-ne-izvlekaetsya-iz-skriptov">Не извлекается из скриптов</h3>
+<ol>
+<li><strong>Точные расстояния между городами.</strong> Позиции островов на глобальной карте берутся из локаторов бинарной модели <code>RESOURCE/MODELS/WorldMap/islands/islands.gm</code> — в текстовых скриптах их нет. В коде есть только пересчёт (<code>PROGRAM/interface/MapBest.c:346-347, 370, 401</code>): морские мили = дистанция/6.5, дни пути = дистанция/300 (на палубе) … дистанция/100 (по глобальной карте). Все расстояния в этом справочнике — оценка по реальной географии Карибского моря, которую карта игры воспроизводит; погрешность может достигать десятков процентов. Поля <code>colonies[n].map.x/y</code> в <code>Colonies_init.c</code> для расчётов непригодны: у Сан-Хуана и Порт-Ройяла там одинаковые координаты (933, 312).</li>
+<li><strong>Точное значение <code>RndPriceModify</code> в конкретной партии.</strong> Оно бросается один раз при старте игры (<code>frnd() * 0.15</code>) и сохраняется в атрибуте острова. Знак предсказуем (таблица в разделе 1), величина — нет. В расчётах взято среднее 0.075. Реальный разброс маржи между сохранениями — до ±15% в каждую сторону на каждом плече маршрута.</li>
+<li><strong>Начальный запас лавки в конкретной партии.</strong> Тоже случайный в пределах, указанных в разделе 1, и фиксируется навсегда как «норма» магазина. Приведённые в таблицах запасы — середина диапазона.</li>
+<li><strong>Точные значения <code>RELATION_ENEMY / NEITRAL / FRIEND</code>.</strong> Это движковые константы, в скриптах не определены. Из-за этого цена аренды склада (<code>10000 × (5 + сложность) × (3 + отношение) / 360</code>) приведена как «примерно 500 / 750 / 1000 песо в месяц» — точные значения зависят от того, равны ли константы −1 / 0 / 1.</li>
+<li><strong>Как именно распределяются лавки по нациям после захвата городов игроком или НПС.</strong> Смена нации меняет <code>Colonies[n].nation</code>, но торговый профиль остаётся привязан к острову и не меняется.</li>
+</ol>
+<h3 id="h55-trebuet-proverki-v-igre">Требует проверки в игре</h3>
+<ol start="6">
+<li><strong>Расхождение по влиянию количества на цену.</strong> Код даёт диапазон <code>AddPriceModify</code> 0.95…1.05 с суточным зажимом количества (<code>storeutilite.c:403-413, 476-480</code>), сообщество (в том числе разработчик Tymofei) утверждает, что цены заметно проседают при завозе большой партии. Возможные объяснения: (а) наблюдался эффект <code>costCoeff</code> награбленного груза, (б) поведение отличалось в более ранних патчах. Проверяется замером: продать полный трюм и посмотреть цену на следующий игровой день.</li>
+<li><strong>Действительно ли контрабандные по типу товары можно КУПИТЬ в городской лавке.</strong> По коду <code>PROGRAM/interface/store.c:349-350</code> цена покупки для них выводится и запас не обнуляется (кроме уникальных и коронных, которые обнуляются всегда), но проверка «в живой игре» не проводилась.</li>
+<li><strong>Смотрители маяков</strong> как точка сверхдешёвой закупки (сообщество приводит чёрное дерево по 50 и кожу по 10 песо). Их торговля идёт не через лавку и не через <code>GetStoreGoodsPrice</code> — это отдельные диалоги, и в этом разборе они не анализировались. То же касается лоточников, индейских торговцев и ростовщиков.</li>
+<li><strong>Постоянные квестовые источники стратегического сырья</strong> (Гиллис Борн в Виллемстаде, Фадей Московит в Бас-Тере, Сержио Сальдо на маяке Тринидада, Ян Свенсон в Блювельде — по датам месяца, за дублоны). Сведения взяты из гайда S.V.V., в коде не перепроверялись.</li>
+<li><strong>Экономика наместника</strong> — сумма налоговых сборов со своего города «зависит от Авторитета и Торговли наместника и размера города» (вики ГПК). Формула в скриптах не искалась.</li>
+<li><strong>Вклады у ростовщиков</strong> (максимальные суммы по городам, ставка <code>(Торговля + Харизма)/40 + 1.66</code> % в месяц) — числа сообщества, в коде не проверялись. Это отдельная от лавочной торговли механика.</li>
+<li><strong>Апгрейд кораблей за стратегическое сырьё</strong> (какое сырьё в каком из пяти городов апгрейда требуется) — за рамками торгового справочника, числа из гайда S.V.V. не верифицированы.</li>
+</ol>
+<h3 id="h56-mertvyy-kod-naydennyy-po-hodu-mozhet-ozhit-v-modah">Мёртвый код, найденный по ходу (может ожить в модах)</h3>
+<ol start="13">
+<li><code>GetStoreGoodsUsed</code> (<code>storeutilite.c:97-109</code>) — фильтр контрабанды по перку <code>Trustworthy</code>, нигде не вызывается.</li>
+<li><code>CheckForGoodsSpoil</code> и поле <code>AfraidWater</code> (<code>storeutilite.c:540-562</code>) — порча груза, нигде не вызывается.</li>
+<li><code>colonies[i].tax_rate</code> (<code>Colonies_init.c:45</code>) и <code>colonies[i].smuggling_nation</code> — только присваиваются, нигде не читаются.</li>
+<li><code>Colonies[i].disease</code> (<code>Colonies_init.c:39-40</code>) — эпидемия в колонии, никогда не меняется; проверки карантина помечены <code>// to_do</code>.</li>
+<li>Торговый профиль острова <code>LostShipsCity</code> (<code>islands_init.c:2269-2290</code>) — прописан, но у колонии магазин-заглушка <code>Pirates_STORE</code>, поэтому не используется.</li>
+<li>Закомментированная «хардкорная» формула аренды склада (<code>QuestsUtilite.c:5037-5042</code>).</li>
+</ol>
+<h3 id="h57-granicy-razbora">Границы разбора</h3>
+<ol start="19">
+<li>Разбирались только скрипты базовой игры 1.7.3 из <code>PROGRAM/</code>. Модификации (в том числе широко распространённые сборки) могут менять любые приведённые числа.</li>
+<li>Не анализировались: торговля предметами (<code>PROGRAM/interface/itemstrade.c</code> — там та же формула <code>skillModify</code>, но своя ценовая база), верфь, найм команды, азартные игры, каперские патенты и торговые лицензии.</li>
+<li>Расчёты маржи сделаны для <code>AddPriceModify = 1.0</code>. В реальной игре лавки чаще всего перетарены (суточный цикл гонит запас к 1.75–2.0 нормы), поэтому фактические цены в среднем на 3–5% ниже приведённых — одинаково и на покупке, и на продаже, так что на маржу это почти не влияет.</li>
+</ol>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script></body></html>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Неудачливый вор — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="on">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="">
+<h1>Неудачливый вор</h1>
+<p class="sub">Генераторные (верфисты)</p>
+<a class="back" href="../quests.html">← все квесты</a>
+<p><span class="tag side">побочный</span></p>
+<table><tr><th>Где начинается</th><td>любая верфь</td></tr><tr><th>У кого</th><td>владелец верфи</td></tr><tr><th>Триггер</th><td>верфист просит найти воришку, укравшего ценный инструмент</td></tr><tr><th>Линия</th><td>Генераторные (верфисты)</td></tr><tr><th>В скриптах игры</th><td><code>Device / Device_Over</code></td></tr></table>
+<h3>Требования</h3><ul><li>навык скрытности и харизмы для запугивания</li><li>деньги на выкуп инструмента</li></ul>
+<h3>Таймеры</h3><table><tr><th>Что</th><th>Срок</th><th>Если просрочить</th></tr><tr><td>Device_Over</td><td><b>30 дней</b></td><td>провал квеста [код]</td></tr></table><h3>Порядок действий</h3><ol><li>Взять задание у владельца верфи и опросить жителей, уличных торговцев, магазинщика и тавернщика — укажут на оборванца.</li><li>Искать нищего в городе, в домах и в джунглях.</li><li>Исход 1: купить инструмент за деньги.</li><li>Исход 2: запугать охраной — отдаст сам.</li><li>Исход 3: запугать, он нападёт — убить и снять инструмент и оружие.</li><li>Исход 4: запугать, он убежит — квест провален.</li><li>Исход 5: он выбросил инструмент в траву за городскими воротами — искать в джунглях в локации городских ворот.</li></ol><h3>Награды</h3><ul><li>песо от верфиста</li><li>оружие с вора</li><li>Честь, Харизма, Везение, Скрытность</li><li>верфист может дополнительно предложить купить новый корабль</li></ul>
+<h3>Предупреждения</h3><div class="warnbox"><ul><li>если вор убежит — квест провален безвозвратно</li></ul></div><h3>Города квеста</h3><a class="tag" href="../towns.html">любой город</a><h3>Действующие лица</h3><span class="tag">владелец верфи</span><span class="tag">нищий-вор</span><h3>Предметы</h3><span class="tag">инструмент (Tool)</span><p class="src">Источники: 06-scripts-analysis.md, 12-harbour-sidequests.md</p>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

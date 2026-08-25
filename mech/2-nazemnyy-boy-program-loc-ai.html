@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2. Наземный бой (PROGRAM/Loc_ai/) — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>2. Наземный бой (PROGRAM/Loc_ai/)</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>2.1. Базовые константы <code>[код]</code> <code>PROGRAM/Loc_ai/LAi_defines.c:5-47</code></h3>
+<table>
+<thead>
+<tr>
+<th>Константа</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LAI_DEFAULT_HP / HP_MAX</td>
+<td>40.0</td>
+<td>HP по умолчанию для NPC</td>
+</tr>
+<tr>
+<td>LAI_DEFAULT_CHARGE</td>
+<td>1.0</td>
+<td>состояние заряда пистолета</td>
+</tr>
+<tr>
+<td>LAI_DEFAULT_ENERGY / MAX</td>
+<td>100.0</td>
+<td>энергия по умолчанию</td>
+</tr>
+<tr>
+<td>LAI_DEFAULT_DLTHP</td>
+<td>0.1</td>
+<td>регенерация HP, ед./сек</td>
+</tr>
+<tr>
+<td>LAI_DEFAULT_DLTBLTHP</td>
+<td>5</td>
+<td>скорость «высасывания» HP из бутылки/зелья, ед./сек</td>
+</tr>
+<tr>
+<td>LAI_DEFAULT_DLTCHRG</td>
+<td>0.05</td>
+<td>базовая скорость зарядки пистолета в сек (т.е. 20 с на перезарядку)</td>
+</tr>
+<tr>
+<td>LAI_GROUP_DEF_LOOK / HEAR / SAY</td>
+<td>15.0 / 2.5 / 15.0</td>
+<td>радиусы обнаружения обычных NPC</td>
+</tr>
+<tr>
+<td>LAI_GROUP_PLA_LOOK / HEAR / SAY</td>
+<td>12.0 / 7.0 / 15.0</td>
+<td>группа игрока</td>
+</tr>
+<tr>
+<td>LAI_GROUP_GRD_LOOK / HEAR / SAY</td>
+<td>13.0 / 8.0 / 10.0</td>
+<td>стражники (видят дальше и слышат лучше!)</td>
+</tr>
+<tr>
+<td>LAI_GROUP_MNS_LOOK / HEAR / SAY</td>
+<td>10.0 / 6.0 / 15.0</td>
+<td>монстры</td>
+</tr>
+<tr>
+<td>LAI_GROUP_ACT_LOOK / HEAR / SAY</td>
+<td>10.0 / 2.0 / 8.0</td>
+<td>актёры (квестовые)</td>
+</tr>
+<tr>
+<td>LAI_GROUP_HUB_LOOK / HEAR / SAY</td>
+<td>10.0 / 3.0 / 20.0</td>
+<td>губернатор</td>
+</tr>
+</tbody>
+</table>
+<p><code>[код]</code> <code>LAi_utils.c:278-292</code> <code>LAi_GetCharacterFightLevel</code> = <code>навык_соотв_типа_клинка / 100</code> → 0..1.
+<code>[код]</code> <code>LAi_utils.c:296-303</code> <code>LAi_GetCharacterGunLevel</code> = <code>Pistol / 100</code>.
+<code>[код]</code> <code>LAi_utils.c:305-311</code> <code>LAi_GetCharacterLuckLevel</code> = <code>Fortune / 100</code>.</p>
+<h3>2.2. Урон клинком — точная формула <code>[код]</code> <code>LAi_fightparams.c:18-59</code></h3>
+<pre><code>aSkill = навык_фехтования_атакующего / 100
+eSkill = навык_фехтования_защищающегося / 100
+bladeDmg = 0.1*Attack + 0.4*Attack*aSkill + Attack*fRandSmall(aSkill)
+если aSkill &lt; eSkill:  bladeDmg *= (1.0 + 0.7*(aSkill - eSkill))     // штраф до -70%
+если Rank врага &gt; 50:  bladeDmg *= 45 / Rank                          // антиэксплойт «хардкорных» абордажей
+если бой в каюте и цель = ГГ: bladeDmg *= (1 + rank_атакующего/100)
+dmg = bladeDmg * kAttackDmg(тип удара)
+если сложность &lt; 5 и цель = ГГ: dmg *= (4 + MOD_SKILL_ENEMY_RATE)/10   // 0.6 при сложн.2; 0.8 при 4
+</code></pre>
+<p><code>[интерпретация]</code> На сложности 2 игрок получает <strong>60%</strong> урона, на 4 — <strong>80%</strong>, на 6/8/10 — <strong>100%</strong>.
+Навык фехтования даёт максимум ×(0.1+0.4+случ) — т.е. ~5x рост от навыка 0 к 100, плюс защита от штрафа отставания.</p>
+<h3>2.3. Коэффициенты типов удара (kAttackDmg) <code>[код]</code> <code>LAi_fightparams.c:63-256</code></h3>
+<p>Все формулы зависят от <strong>параметров клинка</strong>: <code>Weight</code> (вес), <code>lenght</code> (длина), <code>curve</code> (кривизна), <code>Balance</code> (баланс).</p>
+<table>
+<thead>
+<tr>
+<th>Удар</th>
+<th>FencingL (лёгкие)</th>
+<th>FencingS (сабли)</th>
+<th>FencingH (тяжёлые)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fast (быстрый)</td>
+<td><code>0.6*L*C*(0.9+(W-2)/5)*(0.85+B/6.67)</code></td>
+<td><code>L*C*(0.85+(W-2.4)/4)*(0.85+B/6.67)</code></td>
+<td><code>0.9*L*C*(0.85+(W-3)/5)*(0.85+B/6.67)</code></td>
+</tr>
+<tr>
+<td>force (обычный)</td>
+<td><code>L/C*(0.9+(W-2)/5)*(1.22-B*0.22)</code></td>
+<td><code>0.6*L/C*(0.85+(W-2.4)/4)*(1.22-B*0.22)</code></td>
+<td><code>0.5*L/C*(0.85+(W-3)/5)*(1.22-B*0.22)</code></td>
+</tr>
+<tr>
+<td>round (круговой)</td>
+<td><code>0.6*L*C*(0.9+(W-2)/5)</code></td>
+<td><code>0.9*L*C*(0.85+(W-2.4)/4)</code></td>
+<td><code>0.7*L*C*(0.85+(W-3)/5)</code></td>
+</tr>
+<tr>
+<td>break (пробивающий)</td>
+<td><code>0.7/L*C*(0.9+(W-2)/5)*(0.85+B/6.67)</code></td>
+<td><code>0.8/L*C*(0.85+(W-2.4)/4)*(0.85+B/6.67)</code></td>
+<td><code>C/L*(0.85+(W-3)/5)*(0.85+B/6.67)</code></td>
+</tr>
+<tr>
+<td>feint / feintc</td>
+<td><code>0.9/L/C*(0.9+(W-2)/5)*(1.22-B*0.22)</code></td>
+<td><code>0.4/L/C*(0.85+(W-2.4)/4)*(1.22-B*0.22)</code></td>
+<td><code>0.4/L/C*(0.85+(W-3)/5)*(1.22-B*0.22)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Важнейшие детали <code>[код]</code>:
+- Заблокированный удар: fast/force/round/feint → <code>kAttackDmg = 0</code> (полный ноль урона).
+  <strong>break (пробивающий) при блоке всё равно даёт <code>kAttackDmg = 1.0</code></strong> (<code>LAi_fightparams.c:155-157</code>) —
+  единственный удар, проходящий сквозь блок.
+- fast/force при блоке дают 0 <strong>только если атакующий не животное</strong> (<code>!CheckAttribute(attack,"animal")</code>)
+  — животные пробивают блок любым ударом.
+- <code>[интерпретация]</code> Для лёгких клинков (FencingL) сильнее всего <code>force</code> (там <code>L/C</code>, т.е. длинный и мало изогнутый),
+  для саблей (FencingS) — <code>fast</code>, для тяжёлых (FencingH) — <code>fast</code> и <code>break</code>.
+  Пробивающий удар (break) выгоден коротким и изогнутым клинкам (<code>C/L</code>).
+- Перки/артефакты на break: <code>HardHitter</code> ×2.0, <code>indian_4</code> (атакующий) ×1.25, <code>amulet_4</code> (у цели) ×0.85,
+  <code>amulet_3</code> (у атакующего) ×0.90, <code>indian_3</code> (у цели) ×1.10 (<code>LAi_fightparams.c:183-201</code>).
+- <code>BladeDancer</code> даёт ×1.3 к круговому (<code>round</code>) удару (<code>LAi_fightparams.c:149-152</code>).
+- Кража энергии противника ×0.9 за удар: FencingH при любом ударе, FencingL/FencingS — только с перком <code>HardHitter</code>.
+  Перк <code>HT1</code> у цели полностью защищает от этой кражи. Артефакт <code>totem_11</code> крадёт ещё ×0.9 (<code>LAi_fightparams.c:251-254</code>).</p>
+<h3>2.4. Урон мушкетом в рукопашной (приклад/ствол/штык) <code>[код]</code> <code>LAi_fightparams.c:261-390</code></h3>
+<p>Коэффициенты фиксированные: fast 0.7, force 1.0, round 0.6 (×1.3 с BladeDancer),
+<strong>break 3.0</strong> (при блоке 1.0; ×1.25 с <code>indian_4</code>), feint 0.5, feintc 0.8.
+<code>[интерпретация]</code> Пробивающий удар мушкетом (штыком) — самый сильный удар в наземном бою (коэф. 3.0).</p>
+<h3>2.5. Расход энергии на удары <code>[код]</code> <code>LAi_fightparams.c:447-495</code></h3>
+<table>
+<thead>
+<tr>
+<th>Действие</th>
+<th>Базовая энергия</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fast</td>
+<td>10.0</td>
+</tr>
+<tr>
+<td>force</td>
+<td>7.0</td>
+</tr>
+<tr>
+<td>round</td>
+<td>18.0</td>
+</tr>
+<tr>
+<td>break</td>
+<td>14.0</td>
+</tr>
+<tr>
+<td>hit_parry (тратит АТАКУЕМЫЙ при парировании)</td>
+<td>20.0 (для животных 0)</td>
+</tr>
+<tr>
+<td>feintc (при успешном финте)</td>
+<td>7.0</td>
+</tr>
+</tbody>
+</table>
+<p>Модификация: <code>energy = energy * (1.0 - 0.3*fSkill) * EnergyType_оружия</code>, где fSkill = навык/100.
+<code>[интерпретация]</code> При навыке 100 расход энергии <strong>−30%</strong>. <code>force</code> — самый экономичный удар (7),
+<code>round</code> — самый дорогой (18). Парирование стоит 20 энергии — дорого.</p>
+<h3>2.6. Восстановление энергии <code>[код]</code> <code>LAi_fightparams.c:497-518</code></h3>
+<pre><code>базовый множитель = 1.6666667 ед/сек
+* 1.5  если перк Energaiser (скрытый, у ГГ и боссов)
+* 1.15 если перк Tireless
+* 1.15 если перк HT3
+</code></pre>
+<p><code>[интерпретация]</code> Максимум = 1.6667<em>1.5</em>1.15*1.15 ≈ 3.31 ед/сек. Полное восстановление 130 энергии
+(Ловкость 10) занимает ~78 с без перков и ~39 с со всеми.</p>
+<h3>2.7. Пистолеты/мушкеты: точность и урон</h3>
+<p><code>[код]</code> <code>LAi_fightparams.c:524-556</code> <code>LAi_GunCalcProbability</code>:</p>
+<pre><code>если kDist &gt;= 0.9 (очень близко) → попадание 100%
+pmin = accuracy_оружия (по умолчанию 0.3) + 0.3*Pistol/100
+p = pmin + (1 - pmin)*(kDist/0.9)
++0.25 если перк GunProfessional, иначе +0.10 если Gunman
+*2    ночью с артефактом totem_12
+*1.15 indian_2 у стрелка;  *1.10 indian_1 у цели
+*0.90 amulet_1 у стрелка;  *0.85 amulet_2 у цели
+</code></pre>
+<p><code>[код]</code> <code>LAi_fightparams.c:559-676</code> <code>LAi_GunCalcDamage</code>:</p>
+<pre><code>dmg = DmgMin + (DmgMax - DmgMin)*frandSmall(Pistol/100)
+    (DmgMin_C/DmgMax_C если у цели кираса, DmgMin_NC/DmgMax_NC если нет)
+попадание также снимает энергию: EnergyP_C / EnergyP_NC
+если сложность &lt; 5 и цель = ГГ: dmg *= (4 + MOD_SKILL_ENEMY_RATE)/10
+indian_1 у стрелка: +15;  indian_2 у цели: *1.1;  amulet_1 у цели: -15;  amulet_2 у стрелка: *0.9
+KhaelRoa_item: *10 (Калеуче);  MultiShooter: *значение атрибута
+группа KSOCHITAM_MONSTERS: /6 (пули почти не работают)
+GuardMask у цели: dmg = 0
+</code></pre>
+<p><code>[код]</code> <code>LAi_fightparams.c:592-596</code> перк <code>HT4</code>: попадание дополнительно снимает <code>20 + rand(20)</code> энергии врага.
+<code>[код]</code> <code>LAi_fightparams.c:1035</code> Каждый выстрел стоит стрелку <strong>−4 энергии</strong>.
+<code>[код]</code> <code>LAi_fightparams.c:1116-1119</code> Кираса режет урон от пуль на <code>G_CirassLevel</code> предмета
+(отдельный от клинков параметр), от клинков — на <code>B_CirassLevel</code> (<code>LAi_fightparams.c:882</code>).</p>
+<h3>2.8. Скорость перезарядки пистолета <code>[код]</code> <code>LAi_fightparams.c:701-729</code></h3>
+<pre><code>charge_dlt = базовая (0.05/сек) * (1.0 + 0.3*Pistol/100)
+*2.00 если MultiShooter
+*1.40 если перк HT4
+*1.25 если GunProfessional, иначе *1.1 если Gunman
+</code></pre>
+<p><code>[интерпретация]</code> База — 20 с на перезарядку. При Pistol 100 → 1.3× → ~15.4 с;
++ GunProfessional → 1.625× → ~12.3 с; + HT4 → 2.275× → ~8.8 с; + MultiShooter → ~4.4 с.
+Флаг <code>bRechargePistolOnLine</code> (<code>_LSC_on_off.h:89</code>, по умолчанию true) — перезарядка без убирания сабли.</p>
+<h3>2.9. Критические удары <code>[код]</code> <code>LAi_fightparams.c:743-767</code></h3>
+<pre><code>шанс = 15% с перком SwordplayProfessional, иначе 5% с перком CriticalHit
+шанс *= chance, где chance = 1.15 (indian_3 у атакующего) / 1.10 (indian_4 у цели)
+                            / 0.85 (amulet_3 у цели) / 0.90 (amulet_4 у атакующего)
+критикал = удвоение урона: dmg *= (1 + critical), critical = 1.0
+крит невозможен при блоке (isBlocked → critical = 0)
+</code></pre>
+<p><code>[код]</code> <code>LAi_fightparams.c:851-871</code> <strong>Кираса гасит крит с вероятностью</strong>:
+| Кираса | Шанс, что крит СРАБОТАЕТ |
+|---|---|
+| cirass4, underwater | 0.0 (крит невозможен) |
+| cirass1 | 0.2 |
+| cirass2 | 0.3 |
+| cirass3, cirass8, suit4 | 0.5 |
+| cirass7 | 0.7 |
+| cirass6, suit1 | 0.8 |
+| cirass5 | 1.0 (не защищает) |</p>
+<p>За успешный крит начисляется +5 опыта в Fortune (<code>LAi_fightparams.c:875</code>).</p>
+<h3>2.10. Снижение получаемого урона <code>[код]</code> <code>LAi_fightparams.c:872-905</code></h3>
+<pre><code>kDmg = 0.9  перк BasicDefense
+kDmg = 0.8  перк AdvancedDefense
+kDmg = 0.7  перк SwordplayProfessional     (значения НЕ складываются — берётся лучшее)
+dmg *= kDmg;   dmg *= (1 + critical)
+если кираса: dmg *= (1 - B_CirassLevel предмета)
+    HT3 + тяжёлая кираса (тип 2): *0.85;  HT1 + лёгкая (тип 1): *0.80
+kaleuche_amulet3: *0.75
+Перк Rush: атакующий ×3.0 к урону; цель с Rush получает ×0.5 (LAi_fightparams.c:769-778)
+</code></pre>
+<p><code>[код]</code> <code>LAi_character.c:...</code> <code>LAi_ApplyCharacterDamage</code>: <strong>урон офицерам ×0.7</strong> (тип LAI_TYPE_OFFICER).</p>
+<h3>2.11. Стан после удара <code>[код]</code> <code>LAi_fightparams.c:1338-1378</code> <code>LAi_NPC_StunChance</code></h3>
+<p>Шанс стана (чем меньше — тем лучше):
+| Условие | Значение |
+|---|---|
+| экипирован <code>totem_05</code> | 0 (стан невозможен) |
+| перк SwordplayProfessional | 40 |
+| перк AdvancedDefense | 70 |
+| перк BasicDefense | 80 |
+| без перков | 90 |</p>
+<h3>2.12. Поведение AI (зависит от сложности!) <code>[код]</code> <code>LAi_fightparams.c:1170-1272</code></h3>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Формула</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Активность атаки (в сек)</td>
+<td><code>0.3 + навык*0.7 + 0.1</code></td>
+</tr>
+<tr>
+<td>Активность защиты (2 раза/сек)</td>
+<td><code>0.3 + навык*0.35</code></td>
+</tr>
+<tr>
+<td>Вес fast</td>
+<td><code>20 * (3.0 если у NPC сабля, 0.5 если тяжёлый) * (0.8 + 0.1*MOD_SKILL_ENEMY_RATE)</code></td>
+</tr>
+<tr>
+<td>Вес force</td>
+<td><code>50 * (3.0 если лёгкий клинок) * (0.8 + 0.1*MOD_SKILL_ENEMY_RATE)</code></td>
+</tr>
+<tr>
+<td>Вес round</td>
+<td><code>20 * (0.8 + 0.1*MOD_SKILL_ENEMY_RATE)</code>, не выбирается если врагов &lt; 3</td>
+</tr>
+<tr>
+<td>Вес break</td>
+<td><code>20 * (3.0 если тяжёлый, 0.5 если лёгкий) * (0.6 + 0.1*MOD_SKILL_ENEMY_RATE)</code></td>
+</tr>
+<tr>
+<td>Вес feint</td>
+<td><code>10 * (0.6 + 0.1*MOD_SKILL_ENEMY_RATE)</code></td>
+</tr>
+<tr>
+<td>Вес блока</td>
+<td><code>80 * (0.5 + 0.05*MOD_SKILL_ENEMY_RATE)</code></td>
+</tr>
+<tr>
+<td>Вес парирования</td>
+<td><code>20 * (0.6 + 0.1*MOD_SKILL_ENEMY_RATE)</code></td>
+</tr>
+<tr>
+<td>Активность стрельбы</td>
+<td><code>0.001 + Pistol/100*0.06</code>, +0.38 своим офицерам; врагам <code>+0.4*MOD/10</code> если <code>SuperShooter</code>, иначе <code>+0.1*MOD/10</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> Веса нормируются на общую сумму (комментарий разработчика <code>LAi_fightparams.c:1249</code>),
+поэтому на высокой сложности NPC чаще используют пробивающие удары и финты, а на низкой — чаще просто блокируют.
+Стрельба врагов на сложности 10 в 10 раз активнее, чем на сложности 1.</p>
+<h3>2.13. Опыт за наземный бой <code>[код]</code> <code>LAi_fightparams.c:394-444, 924-960</code></h3>
+<pre><code>exp_за_удар = dmg * ((1 + rank_врага*0.5) / (1 + rank_свой*0.5))
+* 1.1 (break заблокирован) / 1.2 (break прошёл) / 1.5 (feint, feintc)
+exp обрезается текущими HP врага
+Начисление: навык_клинка += exp*0.2       (для горожан с атрибутом City: exp*0.02 — в 10 раз меньше!)
+            Pistol       += exp*0.85      (для горожан exp*0.1)
+</code></pre>
+<p>За убийство <code>[код]</code> <code>LAi_fightparams.c:930-946</code>:</p>
+<pre><code>навык_клинка += 10.0 + ((1+rank_врага)/(1+rank_свой))*6.5        (для горожан: /20)
+Defence += 1;  Fortune += 1;  Leadership += 1
+</code></pre>
+<p><code>[интерпретация]</code> Убийство мирных горожан даёт в 20 раз меньше опыта, чем убийство «настоящего» противника —
+прокачка на горожанах умышленно бесполезна. Финты дают +50% опыта. Опыт из пистолета (×0.85) в 4 раза
+эффективнее, чем из клинка (×0.2), за то же количество урона.</p>
+<h3>2.14. Яды <code>[код]</code> <code>LAi_utils.c:1127-1155</code></h3>
+<ul>
+<li>Обычный яд: <code>chr_ai.poison = текущий + 30 + rand(20)</code> секунд;
+  урон <strong>2 HP в секунду</strong> (<code>LAi_character.c:975-990</code>).</li>
+<li><code>MakePoisonAttackCheckSex</code>: шанс отравления <strong>15%</strong> (<code>rand(1000) &lt; 150</code>) при ударе, если противник —
+  <code>sex == "skeleton"</code>, <code>sex == "crab"</code>, экипирован <code>indian_10</code>, либо имеет атрибут <code>viper</code>.
+  Для <code>viper</code> (змея) шанс практически 100% (<code>rand(2) &lt; 2</code>).</li>
+<li>Артефакты <code>talisman8</code> и <code>kaleuche_amulet3</code> полностью защищают от отравления
+  (<code>LAi_fightparams.c:911</code>, <code>LAi_utils.c:1146</code>).</li>
+<li>Яд таино (<code>indian_poison</code> у атакующего): <code>[код]</code> <code>QuestsUtilite.c:6308-6340</code> наносит <strong>15 HP</strong> мгновенно и
+  повторяется циклом каждые 0.5 условных ед. времени, пока HP &gt; 15; при HP &lt; 15 персонаж <strong>умирает мгновенно</strong>.
+  Атрибут <code>PoisonResistent</code> отменяет; на монстров/скелетов не действует.
+  Не работает, если ГГ — мушкетёр (<code>IsMushketer</code>).</li>
+</ul>
+<h3>2.15. Лечение зельями <code>[код]</code> <code>LAi_character.c:958-974</code></h3>
+<p>Зелье задаёт <code>chr_ai.hp_bottle</code> (общий запас HP) и <code>hp_dlt_bottle</code> (скорость «вливания», по умолчанию
+<code>LAI_DEFAULT_DLTBLTHP = 5</code> HP/сек). То есть зелья лечат <strong>не мгновенно</strong>, а потоком 5 HP/сек;
+базовая регенерация без зелья — 0.1 HP/сек.</p>
+<h3>2.16. Огнестрельные ловушки/повреждения от огня <code>[код]</code> <code>LAi_fightparams.c:1382-1396</code></h3>
+<p>Событие <code>Location_CharacterSGFire</code>: урон <code>(5 + rand(5)) * kDmg</code>.
+<code>[код]</code> <code>characters_events.c:135,205</code>: урон от специальных событий = <code>15 + MOD_SKILL_ENEMY_RATE</code>
+(т.е. 17 на легкой, 25 на сложной).</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

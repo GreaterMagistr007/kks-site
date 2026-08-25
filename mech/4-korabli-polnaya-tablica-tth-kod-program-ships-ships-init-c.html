@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4. Корабли — полная таблица ТТХ `[код]` `PROGRAM/ships/ships_init.c` — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>4. Корабли — полная таблица ТТХ `[код]` `PROGRAM/ships/ships_init.c`</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><p>Все значения — прямо из <code>ships_init.c</code> (строка указана в колонке «стр.»).
+<code>Trюм</code> = Capacity (вместимость трюма); <code>Экип.</code> = MaxCrew/OptCrew/MinCrew; <code>Пушки</code> = CannonsQuantity/Min;
+<code>Кал.</code> = MaxCaliber (макс. калибр); <code>Спд</code> = SpeedRate (базовая скорость, узлы); <code>Пов.</code> = TurnRate;
+<code>Прот.в.</code> = WindAgainstSpeed (ход против ветра, чем больше — тем лучше лавирует).</p>
+<h3>4.1. Ординарные (покупаемые/встречаемые) корабли</h3>
+<table>
+<thead>
+<tr>
+<th>Корабль</th>
+<th>Кл.</th>
+<th>Трюм</th>
+<th>Экип. max/opt/min</th>
+<th>Пушки</th>
+<th>Кал.</th>
+<th>Спд</th>
+<th>Пов.</th>
+<th>Цена</th>
+<th>HP</th>
+<th>Прот.в.</th>
+<th>стр.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Лодка (Boat)</td>
+<td>6</td>
+<td>50</td>
+<td>10/5/1</td>
+<td>0</td>
+<td>12</td>
+<td>4</td>
+<td>40</td>
+<td>100</td>
+<td>100</td>
+<td>—</td>
+<td>93</td>
+</tr>
+<tr>
+<td>Баркас (Tartane)</td>
+<td>6</td>
+<td>80</td>
+<td>15/12/1</td>
+<td>0</td>
+<td>3</td>
+<td>7.0</td>
+<td>75</td>
+<td>2 100</td>
+<td>150</td>
+<td>1.0</td>
+<td>134</td>
+</tr>
+<tr>
+<td>Тартана (WarTartane)</td>
+<td>6</td>
+<td>210</td>
+<td>25/20/3</td>
+<td>6/6</td>
+<td>3</td>
+<td>12.0</td>
+<td>70</td>
+<td>4 800</td>
+<td>400</td>
+<td>1.25</td>
+<td>194</td>
+</tr>
+<tr>
+<td>Курьерский люггер (LuggerQuest)</td>
+<td>5</td>
+<td>550</td>
+<td>37/30/8</td>
+<td>10/8</td>
+<td>12</td>
+<td><strong>16.0</strong></td>
+<td><strong>65</strong></td>
+<td>10 100</td>
+<td>750</td>
+<td><strong>1.60</strong></td>
+<td>963</td>
+</tr>
+<tr>
+<td>Люггер (Lugger)</td>
+<td>5</td>
+<td>670</td>
+<td>50/40/8</td>
+<td>12/10</td>
+<td>6</td>
+<td>15.0</td>
+<td>60</td>
+<td>10 600</td>
+<td>600</td>
+<td>1.50</td>
+<td>1028</td>
+</tr>
+<tr>
+<td>Шлюп (Sloop)</td>
+<td>5</td>
+<td>900</td>
+<td>62/50/10</td>
+<td>14/12</td>
+<td>12</td>
+<td>14.0</td>
+<td>55</td>
+<td>14 500</td>
+<td>900</td>
+<td>1.30</td>
+<td>1093</td>
+</tr>
+<tr>
+<td>Барк (Barque)</td>
+<td>5</td>
+<td>1 500</td>
+<td>62/50/26</td>
+<td>14/12</td>
+<td>6</td>
+<td>9.0</td>
+<td>30</td>
+<td>23 300</td>
+<td>1 500</td>
+<td>0.7</td>
+<td>259</td>
+</tr>
+<tr>
+<td>Военная шхуна (Schooner_W)</td>
+<td>4</td>
+<td>1 350</td>
+<td>122/98/18</td>
+<td>18/16</td>
+<td>18</td>
+<td>13.5</td>
+<td>55</td>
+<td>22 300</td>
+<td>1 450</td>
+<td>1.15</td>
+<td>1305</td>
+</tr>
+<tr>
+<td>Бриг (Brig)</td>
+<td>4</td>
+<td>1 350</td>
+<td>150/120/20</td>
+<td>16/14</td>
+<td>18</td>
+<td>14.5</td>
+<td>45</td>
+<td>27 700</td>
+<td>2 500</td>
+<td>0.55</td>
+<td>1233</td>
+</tr>
+<tr>
+<td>Торговая шхуна (Schooner)</td>
+<td>4</td>
+<td>1 700</td>
+<td>75/60/32</td>
+<td>12/10</td>
+<td>16</td>
+<td>12.5</td>
+<td>50</td>
+<td>24 300</td>
+<td>1 250</td>
+<td>1.10</td>
+<td>323</td>
+</tr>
+<tr>
+<td>Бригантина (Brigantine)</td>
+<td>4</td>
+<td>1 800</td>
+<td>175/140/16</td>
+<td>16/14</td>
+<td>18</td>
+<td>14.0</td>
+<td>50</td>
+<td>33 900</td>
+<td>2 800</td>
+<td>1.40</td>
+<td>1161</td>
+</tr>
+<tr>
+<td>Баркентина (Barkentine)</td>
+<td>4</td>
+<td>2 000</td>
+<td>106/85/30</td>
+<td>14/12</td>
+<td>16</td>
+<td>11.0</td>
+<td>40</td>
+<td>31 300</td>
+<td>2 000</td>
+<td>1.25</td>
+<td>391</td>
+</tr>
+<tr>
+<td>Шнява (Shnyava)</td>
+<td>4</td>
+<td>2 250</td>
+<td>150/120/28</td>
+<td>16/14</td>
+<td>18</td>
+<td>13.5</td>
+<td>45</td>
+<td>35 200</td>
+<td>2 200</td>
+<td>1.10</td>
+<td>462</td>
+</tr>
+<tr>
+<td>Флейт (Fleut)</td>
+<td>4</td>
+<td><strong>3 000</strong></td>
+<td>175/140/40</td>
+<td>16/14</td>
+<td>16</td>
+<td>13.0</td>
+<td>35</td>
+<td>46 800</td>
+<td>3 000</td>
+<td>0.65</td>
+<td>533</td>
+</tr>
+<tr>
+<td>Шебека (XebekVML)</td>
+<td>3</td>
+<td>2 500</td>
+<td>181/145/22</td>
+<td>22/20</td>
+<td>20</td>
+<td><strong>15.5</strong></td>
+<td><strong>60</strong></td>
+<td>42 000</td>
+<td>3 000</td>
+<td><strong>1.55</strong></td>
+<td>1519</td>
+</tr>
+<tr>
+<td>Корвет (Corvette)</td>
+<td>3</td>
+<td>2 700</td>
+<td>225/180/28</td>
+<td>20/18</td>
+<td>20</td>
+<td>14.5</td>
+<td>40</td>
+<td>45 500</td>
+<td>3 250</td>
+<td>0.60</td>
+<td>1446</td>
+</tr>
+<tr>
+<td>Полакр (Polacre)</td>
+<td>3</td>
+<td>2 750</td>
+<td>206/165/24</td>
+<td>22/18</td>
+<td>20</td>
+<td>14.0</td>
+<td>50</td>
+<td>45 900</td>
+<td>3 250</td>
+<td>1.35</td>
+<td>1593</td>
+</tr>
+<tr>
+<td>Галеон (Galeon_l)</td>
+<td>3</td>
+<td>3 000</td>
+<td>250/200/36</td>
+<td>20/18</td>
+<td>20</td>
+<td>12.0</td>
+<td>35</td>
+<td>52 500</td>
+<td>4 000</td>
+<td>0.60</td>
+<td>1374</td>
+</tr>
+<tr>
+<td>Каравелла (Caravel)</td>
+<td>3</td>
+<td>3 500</td>
+<td>225/180/48</td>
+<td>20/18</td>
+<td>20</td>
+<td>11.0</td>
+<td>25</td>
+<td>53 200</td>
+<td>3 200</td>
+<td>1.25</td>
+<td>601</td>
+</tr>
+<tr>
+<td>Каракка (Caracca)</td>
+<td>3</td>
+<td>4 000</td>
+<td>250/200/52</td>
+<td>20/18</td>
+<td>18</td>
+<td>13.0</td>
+<td>30</td>
+<td>60 900</td>
+<td>3 700</td>
+<td>0.75</td>
+<td>742</td>
+</tr>
+<tr>
+<td>Пинас (Pinnace)</td>
+<td>3</td>
+<td><strong>4 500</strong></td>
+<td>200/160/42</td>
+<td>18/16</td>
+<td>18</td>
+<td>14.0</td>
+<td>35</td>
+<td>68 000</td>
+<td>4 200</td>
+<td>0.65</td>
+<td>668</td>
+</tr>
+<tr>
+<td>Фрегат (Frigate)</td>
+<td>2</td>
+<td>4 000</td>
+<td>400/320/52</td>
+<td>46/40</td>
+<td>24</td>
+<td><strong>14.5</strong></td>
+<td>35</td>
+<td>66 900</td>
+<td>4 600</td>
+<td>0.50</td>
+<td>1743</td>
+</tr>
+<tr>
+<td>Тяжёлый фрегат (Frigate_h)</td>
+<td>2</td>
+<td>4 250</td>
+<td>437/350/56</td>
+<td>50/46</td>
+<td>32</td>
+<td>13.5</td>
+<td>32</td>
+<td>73 700</td>
+<td>5 400</td>
+<td>0.45</td>
+<td>1817</td>
+</tr>
+<tr>
+<td>Навио (Navio)</td>
+<td>2</td>
+<td>5 000</td>
+<td>350/280/62</td>
+<td>36/32</td>
+<td>20</td>
+<td>12.0</td>
+<td>32</td>
+<td>77 400</td>
+<td>4 800</td>
+<td>0.60</td>
+<td>815</td>
+</tr>
+<tr>
+<td>Тяжёлый галеон (Galeon_h)</td>
+<td>2</td>
+<td>5 100</td>
+<td>525/420/60</td>
+<td>54/48</td>
+<td>32</td>
+<td>11.5</td>
+<td>29</td>
+<td>80 900</td>
+<td>5 000</td>
+<td>0.45</td>
+<td>1668</td>
+</tr>
+<tr>
+<td>Ост-Индец (EastIndiaMan)</td>
+<td>2</td>
+<td><strong>5 800</strong></td>
+<td>425/340/76</td>
+<td>36/32</td>
+<td>24</td>
+<td>13.5</td>
+<td>30</td>
+<td>88 000</td>
+<td>5 200</td>
+<td>0.55</td>
+<td>889</td>
+</tr>
+<tr>
+<td>Военный корабль (Lineship)</td>
+<td>1</td>
+<td>5 700</td>
+<td>750/600/80</td>
+<td>56/48</td>
+<td>32</td>
+<td>13.0</td>
+<td>29</td>
+<td>93 800</td>
+<td>7 000</td>
+<td>0.40</td>
+<td>1893</td>
+</tr>
+<tr>
+<td>Французский лин. кор. (Warship)</td>
+<td>1</td>
+<td>6 850</td>
+<td>812/650/94</td>
+<td>66/58</td>
+<td>42</td>
+<td>13.0</td>
+<td>28</td>
+<td>110 900</td>
+<td>9 000</td>
+<td>0.35</td>
+<td>1967</td>
+</tr>
+<tr>
+<td>Голландский лин. кор. (Battleship)</td>
+<td>1</td>
+<td>7 400</td>
+<td>875/700/120</td>
+<td>80/72</td>
+<td>42</td>
+<td>12.0</td>
+<td>27</td>
+<td>122 000</td>
+<td>9 500</td>
+<td>0.30</td>
+<td>2041</td>
+</tr>
+<tr>
+<td>Испанский лин. кор. (Manowar)</td>
+<td>1</td>
+<td>8 600</td>
+<td>937/750/140</td>
+<td>102/92</td>
+<td>42</td>
+<td>12.0</td>
+<td>26</td>
+<td>139 600</td>
+<td>10 000</td>
+<td>0.25</td>
+<td>2115</td>
+</tr>
+<tr>
+<td>Английский лин. кор. (Manowar_e)</td>
+<td>1</td>
+<td><strong>9 200</strong></td>
+<td><strong>1000/800/160</strong></td>
+<td><strong>112/102</strong></td>
+<td>42</td>
+<td>12.0</td>
+<td>25</td>
+<td>151 100</td>
+<td><strong>10 800</strong></td>
+<td>0.25</td>
+<td>2189</td>
+</tr>
+</tbody>
+</table>
+<h3>4.2. Квестовые/уникальные корабли</h3>
+<table>
+<thead>
+<tr>
+<th>Корабль</th>
+<th>Кл.</th>
+<th>Трюм</th>
+<th>Экип. max/opt/min</th>
+<th>Пушки</th>
+<th>Кал.</th>
+<th>Спд</th>
+<th>Пов.</th>
+<th>Цена</th>
+<th>HP</th>
+<th>Прот.в.</th>
+<th>стр.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Лёгкая шебека «Мэйфэнг» (Mayfang)</td>
+<td>4</td>
+<td>1 900</td>
+<td>137/110/20</td>
+<td>20/20</td>
+<td>20</td>
+<td><strong>17.0</strong></td>
+<td><strong>65</strong></td>
+<td>30 500</td>
+<td>1 950</td>
+<td><strong>1.60</strong></td>
+<td>2265</td>
+</tr>
+<tr>
+<td>Приватирский кеч «Мираж» (Mirage)</td>
+<td>4</td>
+<td>2 300</td>
+<td>200/160/16</td>
+<td>22/22</td>
+<td>20</td>
+<td>16.0</td>
+<td>45</td>
+<td>36 900</td>
+<td>2 350</td>
+<td>1.40</td>
+<td>2332</td>
+</tr>
+<tr>
+<td>Патрульный бриг «Валькирия» (Valciria)</td>
+<td>4</td>
+<td>2 000</td>
+<td>181/145/22</td>
+<td>20/20</td>
+<td>20</td>
+<td>15.5</td>
+<td>55</td>
+<td>35 300</td>
+<td>2 650</td>
+<td>1.20</td>
+<td>2397</td>
+</tr>
+<tr>
+<td>Малый фрегат «Гриффондор» (Corvette_quest)</td>
+<td>3</td>
+<td>3 800</td>
+<td>312/250/45</td>
+<td>34/34</td>
+<td>24</td>
+<td>15.75</td>
+<td>38</td>
+<td>61 100</td>
+<td>4 000</td>
+<td>0.65</td>
+<td>2465</td>
+</tr>
+<tr>
+<td>Полакр «Тореро» (Polacre_q)</td>
+<td>3</td>
+<td>3 100</td>
+<td>220/175/25</td>
+<td>24/24</td>
+<td>24</td>
+<td>14.25</td>
+<td>52</td>
+<td>55 000</td>
+<td>3 750</td>
+<td>1.35</td>
+<td>2532</td>
+</tr>
+<tr>
+<td>Быстрый фрегат «Фортуна» (ArabellaShip)</td>
+<td>2</td>
+<td>4 000</td>
+<td>425/340/50</td>
+<td>42/42</td>
+<td>24</td>
+<td><strong>17.25</strong></td>
+<td>37.25</td>
+<td>67 700</td>
+<td>4 800</td>
+<td>0.60</td>
+<td>2601</td>
+</tr>
+<tr>
+<td>Проклятый «Калеуче» (Flyingdutchman)</td>
+<td>1</td>
+<td>5 000</td>
+<td>777/622/94</td>
+<td>56/56</td>
+<td><strong>36</strong></td>
+<td>15.2</td>
+<td>32</td>
+<td>100 000</td>
+<td>6 666</td>
+<td>0.45</td>
+<td>3313</td>
+</tr>
+<tr>
+<td>Копия «Калеуче» (Flyingdutchman_l)</td>
+<td>1</td>
+<td>5 000</td>
+<td>777/622/94</td>
+<td>56/56</td>
+<td>32</td>
+<td>15.2</td>
+<td>32</td>
+<td>100 000</td>
+<td>6 600</td>
+<td>0.45</td>
+<td>3384</td>
+</tr>
+<tr>
+<td>Лин. кор. «Реус де Сан-Педро» (Santisima)</td>
+<td>1</td>
+<td>8 500</td>
+<td>1000/800/190</td>
+<td>106/106</td>
+<td>42</td>
+<td>13.0</td>
+<td>30</td>
+<td>141 600</td>
+<td><strong>12 600</strong></td>
+<td>0.30</td>
+<td>3455</td>
+</tr>
+<tr>
+<td>ФОРТ (Fort)</td>
+<td>1</td>
+<td>300 000</td>
+<td>1800/1600/400</td>
+<td>68/68</td>
+<td>48</td>
+<td>0</td>
+<td>0</td>
+<td>12 000</td>
+<td><strong>54 000</strong></td>
+<td>—</td>
+<td>3527</td>
+</tr>
+</tbody>
+</table>
+<p>Шаблоны <code>SHIP_QUEST0..QUEST8</code> (<code>ships_init.c:2674-3312</code>) — клоны существующих кораблей для квестов
+(QUEST0 = Баркас, QUEST1 = Шлюп, QUEST3 (первый) = Валькирия, QUEST3 (второй) = Бригантина,
+QUEST4 = Полакр Тореро, QUEST5 = Корвет, QUEST6 = Фортуна, QUEST7 = Тяжёлый фрегат, QUEST8 = Военный корабль).
+<code>[код]</code> <code>ships_init.c:3554-3556</code> — у форта пересчёт: <code>MaxCrew = MaxCrew*1.25+0.5</code>, <code>OptCrew = MaxCrew</code>.</p>
+<h3>4.3. Лучшие в классе <code>[интерпретация]</code></h3>
+<ul>
+<li><strong>Класс 6:</strong> Тартана (WarTartane) — единственная вооружённая (6 пушек), скорость 12 при 210 трюма.</li>
+<li><strong>Класс 5:</strong> Курьерский люггер — скорость 16, поворот 65, ход против ветра 1.60 (лучший в игре среди ординарных);
+  Барк — самый вместительный (1500), но скорость всего 9 и поворот 30.</li>
+<li><strong>Класс 4:</strong> Флейт — трюм 3000 (макс. в классе); Бриг — лучшее HP/цена (2500 HP при 27 700);
+  Бригантина — лучший баланс (2800 HP, 14 скорость, 1.40 против ветра).</li>
+<li><strong>Класс 3:</strong> Шебека — быстрейший (15.5) и вертлявый (60), 22 пушки;
+  Пинас — трюм 4500 и HP 4200 (лучший «грузовик» класса).</li>
+<li><strong>Класс 2:</strong> Фрегат — 46 пушек при скорости 14.5 (лучший боевой);
+  Ост-Индец — трюм 5800 (лучший купец в классе);
+  Тяжёлый фрегат — 50 пушек калибра 32 и 5400 HP.</li>
+<li><strong>Класс 1:</strong> Английский Манowar — абсолютный максимум по всему (112 пушек, 10 800 HP, 9200 трюма, 1000 команды),
+  но самый неповоротливый (25) и худший против ветра (0.25).</li>
+<li><strong>Уникальные:</strong> «Фортуна» (ArabellaShip) — 17.25 скорости при 42 пушках класса 2 — вероятно лучший
+  корабль в игре по совокупности; «Мэйфэнг» — 17.0 скорости в 4 классе; «Санта-Сима»/«Реус де Сан-Педро» —
+  12 600 HP (больше любого ординарного).</li>
+<li>Форт: 54 000 HP и 68 орудий калибра 48 — численно недосягаем; берётся только выбиванием пушек (см. п. 3.10).</li>
+</ul>
+<h3>4.4. Штраф навигации по классу (повтор из п. 1.9, критично для выбора корабля)</h3>
+<p><code>[код]</code> <code>RPGUtilite.c:1278-1292</code>: требуемая Навигация 95 (кл.1) / 80 (кл.2) / 65 (кл.3) / 45 (кл.4) / 25 (кл.5) / 1 (кл.6).
+Недобор режет <strong>все</strong> навыки на разницу.</p>
+<h3>4.5. Формула фактической скорости <code>[код]</code> <code>PROGRAM/scripts/ShipsUtilites.c:752-816</code></h3>
+<pre><code>fMaxSpeedZ = SpeedRate
+  * (1.05 если скрытый перк MapMaker) * (1.15 если артефакт obereg_9)
+  * fTRFromWeight  = Clampf(1.03 - SpeedDependWeight * загрузка/Capacity)
+  * fTRFromSkill   = (0.7 + 0.03*Sailing_старая_шкала) * перки
+                     перки: ShipSpeedUp ×1.15, SailingProfessional ×1.20
+  * fTRFromShipState = (0.8 + HP/HP_max*0.3, обрезано до 1.0) * Bring2Range(0.1,1.0,0.1,100, состояние_парусов)
+  * fTRFromPeople  = 0.85 + (CrewExp_Sailors * команда)/(OptCrew * CrewExpRate) * 0.15   (макс 1.0)
+Далее в AIShip.c:3757-3760:
+  fShipSpeed *= (скорость_ветра / WIND_NORMAL_POWER)
+  fKint = 1.0 + (0.5 - класс/6.0) * ((скорость_ветра - 8.0)/10.0)
+  → при сильном ветре мелкие корабли (класс 5-6) получают БОНУС, крупные — штраф
+Аркадный режим: MaxSpeedZ *= 2.5, MaxSpeedY *= 2.0 (AIShip.c:3836-3841)
+</code></pre>
+<p><code>[интерпретация]</code> Навык Навигация даёт от ×0.7 (при 0) до ×1.0 (при 100) — то есть <strong>+43% скорости</strong>.
+Оба перка штурмана вместе — ещё ×1.20. Опыт матросов — до +18%. Повреждённые паруса режут скорость до ×0.1.</p>
+<h3>4.6. Формула маневренности <code>[код]</code> <code>ShipsUtilites.c:843-930</code></h3>
+<pre><code>fTurn = fTRFromWeight * fTRFromSkill * fTRFromPeople * fTRFromSailDamage * fSpeedFromHp
+        * (1.15 артефакт obereg_10) * (0.9 артефакт amulet_5)
+fTRFromWeight  = Clampf(1.03 - 2.0*TurnDependWeight*загрузка)  (в реализме — двойное влияние веса!)
+fTRFromSkill   = (0.3 + 0.07*Sailing_стар) * ShipTurnRateUp(1.15) * SailingProfessional(1.20) * Turn180(4.0)
+fTRFromPeople  = 0.05 + опыт_матросов*0.95   (в реализме) / 0.3 + опыт*0.7 (аркада)
+fSpeedFromHp   = 0.7 + HP/HP_max*0.3
+потеря руля (Ship.hulls.baller_destroyed): fTurn *= 0.3
+Далее AIShip.c:3772-3835:
+  fMaxSpeedY = TurnRate / Sea_TurnRateMagicNumber()
+  зависимость от состояния парусов: убраны ×0.05, половина ×1.0, полные ×0.68
+  зависимость от текущей скорости: для ГГ ×(1 - 0.86*(1 - тек.скорость/макс)) при MOD_SKILL_ENEMY_RATE &gt; 2
+      → почти стоящий корабль почти не поворачивает; для сложности 1-2 этот штраф ОТСУТСТВУЕТ
+  для NPC: ×(1 - (0.87 - MOD*0.01)*(...))
+  итог обрезается Bring2Range(0.07, 0.95, ...)
+</code></pre>
+<p><code>[интерпретация]</code> Ключ: <strong>половина парусов даёт лучшую маневренность (×1.0), чем полные (×0.68)</strong>.
+Навык Навигация: от ×0.3 до ×1.0 — троекратная разница. Опыт матросов в реализме: от ×0.05 до ×1.0 —
+<strong>двадцатикратная разница</strong>, самый мощный множитель маневренности вообще.</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

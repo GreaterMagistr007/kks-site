@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7. Репутация и отношения с нациями — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>7. Репутация и отношения с нациями</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>7.1. Шкалы <code>[код]</code> <code>PROGRAM/characters/characters.h:22-28</code></h3>
+<table>
+<thead>
+<tr>
+<th>Шкала</th>
+<th>MIN</th>
+<th>NEUTRAL</th>
+<th>MAX</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Старая <code>reputation</code> (реликт)</td>
+<td>1</td>
+<td><strong>45</strong></td>
+<td>90</td>
+</tr>
+<tr>
+<td>Комплексная <code>reputation.&lt;имя&gt;</code></td>
+<td>1</td>
+<td><strong>50</strong></td>
+<td>100</td>
+</tr>
+</tbody>
+</table>
+<p>Комплексная репутация состоит из трёх независимых атрибутов:
+- <code>reputation.nobility</code> — «благородство» (главная шкала, бывшая репутация);
+- <code>reputation.fame</code> — «известность»;
+- <code>reputation.authority</code> — «авторитет» (изменения НЕ выводятся в лог, <code>characterUtilite.c:3018</code>).</p>
+<h3>7.2. Пороги названий репутации <code>[код]</code> <code>RPGUtilite.c:650-674</code></h3>
+<p>Благородство (<code>nobility</code>), 9 уровней:
+| Диапазон | Ключ |
+|---|---|
+| &lt; 6 | REPUTATION_NOBILITY_1 (худший) |
+| 6-15 | REPUTATION_NOBILITY_2 |
+| 16-30 | REPUTATION_NOBILITY_3 |
+| 31-47 | REPUTATION_NOBILITY_4 |
+| <strong>48-52</strong> | REPUTATION_NOBILITY_5 (нейтральный, узкая полоса!) |
+| 53-70 | REPUTATION_NOBILITY_6 |
+| 71-85 | REPUTATION_NOBILITY_7 |
+| 86-95 | REPUTATION_NOBILITY_8 |
+| 96-100 | REPUTATION_NOBILITY_9 (лучший) |</p>
+<p>Известность (<code>fame</code>), 5 уровней: &lt; 21 / 21-40 / 41-60 / 61-80 / 81-100.</p>
+<p>Старая шкала <code>GetReputationName</code> <code>[код]</code> <code>RPGUtilite.c:703-725</code>:
+&lt; 11 BAD_4, &lt; 21 BAD_3, &lt; 31 BAD_2, &lt; 41 BAD_1, &lt; 51 NEUTRAL,
+&lt; 61 GOOD_1, &lt; 71 GOOD_2, &lt; 81 GOOD_3, &lt;= 90 GOOD_4.</p>
+<h3>7.3. Дрейф репутации к нейтралу (важно!) <code>[код]</code> <code>characterUtilite.c:3097-3120</code> <code>UpdateReputation()</code></h3>
+<pre><code>если nobility &lt; 40:  nobility += MOD_SKILL_ENEMY_RATE / 50.0   (растёт к нейтралу)
+если nobility &gt; 60:  nobility -= MOD_SKILL_ENEMY_RATE / 25.0   (падает к нейтралу, ВДВОЕ быстрее)
+то же самое для fame
+</code></pre>
+<p><code>[интерпретация]</code> Репутация <strong>сама сползает к 50</strong> каждый день. При сложности 4:
+из плохого +0.08/день, из хорошего −0.16/день. <strong>Хорошая репутация теряется вдвое быстрее, чем плохая.</strong>
+На сложности 10: +0.2 / −0.4 в день. Диапазон 40-60 — «мёртвая зона», где дрейфа нет.
+<code>[интерпретация]</code> Следствие: удерживать крайние значения репутации (важные для найма команды, кредитов,
+сдачи капитанов) нужно постоянными действиями — само оно уйдёт.</p>
+<h3>7.4. Конкретные изменения nobility <code>[код]</code></h3>
+<table>
+<thead>
+<tr>
+<th>Событие</th>
+<th>Δ nobility</th>
+<th>Файл:строка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Стрельба по кораблю своей нации (переход в пираты)</td>
+<td><strong>−10</strong> (+ authority −2, fame +0.5)</td>
+<td><code>AIShip.c:308-311</code></td>
+</tr>
+<tr>
+<td>Просрочка займа у ростовщика</td>
+<td><strong>−20</strong></td>
+<td><code>characterUtilite.c:3858</code></td>
+</tr>
+<tr>
+<td>Сделка с контрабандистами</td>
+<td>−1</td>
+<td><code>contraband.c:257</code></td>
+</tr>
+<tr>
+<td>Ежедневно при долге перед командой</td>
+<td>authority −0.1 / −0.2</td>
+<td><code>food.c:200,354</code></td>
+</tr>
+<tr>
+<td>Голод команды</td>
+<td>authority −1</td>
+<td><code>food.c:414</code></td>
+</tr>
+<tr>
+<td>Смерть команды от болезней</td>
+<td>authority −1</td>
+<td><code>food.c:274</code></td>
+</tr>
+<tr>
+<td>Перегруз команды</td>
+<td>authority −0.1</td>
+<td><code>food.c:343</code></td>
+</tr>
+<tr>
+<td>Восстановление отношений с ростовщиком (двойная выплата)</td>
+<td>+2 (и hunter −30)</td>
+<td><code>Usurer_dialog.c:1114-1115</code></td>
+</tr>
+<tr>
+<td>Разные генерируемые квесты</td>
+<td>от −50 до +5</td>
+<td><code>GenQuests.c:579,2133,2155,2199,2210,2225,4464,4847</code> и др.</td>
+</tr>
+<tr>
+<td>Ежедневно при долге (<code>time_events.c:133</code>)</td>
+<td>−1</td>
+<td><code>time_events.c:133</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>[интерпретация]</code> Самое «дорогое» падение — −50 (<code>GenQuests.c:4464</code>) и −30 (три места в <code>GenQuests.c</code>).</p>
+<h3>7.5. Изменения fame <code>[код]</code></h3>
+<table>
+<thead>
+<tr>
+<th>Событие</th>
+<th>Δ fame</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Переход в пираты (обстрел своих)</td>
+<td>+0.5 (<code>AIShip.c:316</code>)</td>
+</tr>
+<tr>
+<td>Потопление/захват корабля</td>
+<td>+1 (<code>AIShip.c:2706</code>)</td>
+</tr>
+<tr>
+<td>Уничтожение Золотого Флота</td>
+<td><strong>+10</strong> (<code>GoldFleet.c:173</code>)</td>
+</tr>
+<tr>
+<td>Дрейф к нейтралу</td>
+<td>±MOD/50 или ±MOD/25 в день</td>
+</tr>
+</tbody>
+</table>
+<h3>7.6. Отношения с нациями: «награда за голову» (hunter score) <code>[код]</code> <code>RPGUtilite.c:2906-2979</code></h3>
+<p>Внутренняя шкала <code>reputation.&lt;nat&gt;hunter</code> от <strong>−100 до +100</strong> (стартовое значение −5).
+<code>ChangeCharacterNationReputation</code> — это тот же счётчик с обратным знаком.</p>
+<pre><code>Названия (GetNationReputationName, RPGUtilite.c:2969-2979) — по значению i = -hunter:
+   i &lt;= -10  → «Награда за голову (-i*1000)» песо      ← т.е. hunter &gt;= 10
+   i &lt; 0     → «Враждебная»                            ← hunter от 1 до 9
+   i &lt;= 20   → «Нейтральная»                           ← hunter от 0 до -20
+   i &lt;= 50   → «Хорошая»                               ← hunter от -21 до -50
+   i &lt;= 80   → «Отличная»                              ← hunter от -51 до -80
+   i &lt;= 100  → «Восхищение»                            ← hunter от -81 до -100
+</code></pre>
+<p><code>[интерпретация]</code> <strong>Награда за голову = hunter × 1000 песо</strong> и начинается ровно при hunter = 10.
+Максимальная награда — 100 000 песо (hunter = 100). Атрибут <code>GenQuest.HunterScore2Pause</code> полностью
+блокирует прирост. Спец-случай: <code>pirhunter</code> игнорируется (<code>RPGUtilite.c:2910</code>) — у пиратов нет награды за голову.</p>
+<p>Что повышает hunter (портит отношения) <code>[код]</code>:
+| Действие | Δ hunter |
+|---|---|
+| Убийство горожанина ВРАЖЕСКОЙ нации без оружия в руках | +2 (<code>LAi_fightparams.c:1010</code>) |
+| Убийство горожанина НЕвражеской нации | +3 (<code>LAi_fightparams.c:1018</code>) |
+| Обстрел корабля нации, дружественной вашему патенту (патент изымается!) | <strong>+40</strong> (<code>AIShip.c:271</code>) |
+| Обстрел корабля нейтральной нации без патента | +1 + rand(2) (<code>AIShip.c:285</code>) |
+| Атака командира группы нации (не пираты) | +5 (<code>AIShip.c:328</code>) |
+| Потопление/захват корабля нации | +1 + rand(1) (<code>AIShip.c:2462, 2668, 2724</code>) |
+| Проваленное задание капитана (150k) | <strong>+50</strong> (<code>GenQuests.c:3008,3015</code>) |
+| Просрочка займа | +25 (<code>characterUtilite.c:3864</code>) |
+| Возврат двойного долга ростовщику | −30 (улучшение) |</p>
+<p><code>[интерпретация]</code> Обстрел «своих» под патентом (+40) — самое разрушительное для отношений действие,
+и патент при этом изымается безвозвратно (<code>AIShip.c:270-276</code>, звание в патенте сбрасывается до 1).</p>
+<h3>7.7. Убийство в городе → мгновенная вражда <code>[код]</code> <code>LAi_fightparams.c:1023-1031</code></h3>
+<pre><code>если убит персонаж с атрибутом City:
+   если GetSummonSkillFromName(атакующий, Sneak) &lt; rand(140)
+   → SetNationRelation2MainCharacter(нация, RELATION_ENEMY)
+</code></pre>
+<p><code>[интерпретация]</code> <strong>При Sneak &gt;= 140 (недостижимо, максимум 100) вражды не будет никогда.</strong>
+Практически: при Sneak 100 шанс избежать вражды 100/140 ≈ 71%; при Sneak 0 — 0%.
+Максимальный Sneak — это фактически лицензия на убийства в городах.</p>
+<p>Дополнительно <code>[код]</code> <code>LAi_fightparams.c:989-1002</code>:
+- убийство горожанина Голландии при наличии <code>HolTradeLicence</code> → <strong>лицензия аннулируется</strong>;
+- убийство пиратского горожанина → счётчик <code>GenQuest.Piratekill</code> (репутация у пиратов);
+- убийство индейцев: <code>canib</code> → индейская репутация −0.5, <code>miskito</code> → −1.0, <code>squaw</code> → <strong>−2.5</strong>.</p>
+<h3>7.8. Распознавание фальшивого флага <code>[код]</code> <code>AIShip.c:1870-1935</code> <code>Ship_CheckFlagEnemy</code></h3>
+<pre><code>1) Если нация корабля враждебна базовой нации ГГ (и нет голландской грамоты) → флаг проверяется.
+2) Иначе: если hunter этой нации &gt; (8 + rand((класс_старшего_корабля - 1)*(6 - число_кораблей)))
+   → флаг проверяется.
+3) Проверка «раскусили ли»:
+   rep = |50 - nobility| * 0.75
+   fPerkInfl = 2.0 если перк HT2, иначе 1.0
+   если (rand(100) + rand(20) + rand(rep)) &gt; fPerkInfl * Sneak/100 * 10 * класс * (6 - кораблей) * indian_11(1.15)
+   → ОБМАН РАСКРЫТ, нация становится враждебной
+   иначе Sneak +50 опыта (раз в игровой день)
+</code></pre>
+<p><code>[интерпретация]</code> Правая часть тем больше (лучше для игрока), чем <strong>выше класс корабля</strong> (класс здесь —
+номер, т.е. класс 6 «лучше» класса 1!) и чем <strong>меньше кораблей в эскадре</strong> (<code>6 - кораблей</code>).
+То есть флаг лучше всего работает на <strong>одиночном мелком корабле</strong> — что логично.
+При эскадре из 6 кораблей множитель <code>(6-6) = 0</code> → <strong>обман раскрывается всегда</strong>.
+Перк HT2 удваивает эффективность скрытности; артефакт <code>indian_11</code> даёт +15%.
+Крайняя репутация nobility (0 или 100) добавляет до <code>rand(37)</code> к шансу раскрытия — то есть
+для контрабанды под флагом лучше держать нейтральную репутацию.</p>
+<h3>7.9. Смена флага и потеря патента <code>[код]</code> <code>AIShip.c:261-287</code> <code>Ship_NationAgressivePatent</code></h3>
+<pre><code>С патентом: выстрел по кораблю нации, НЕ враждебной нации патента (и не пирату) →
+   патент изъят, TitulCur = 1 (звание сброшено), hunter этой нации +40
+Без патента: выстрел по НЕвражескому кораблю → hunter +1..2 (единожды на корабль, флаг CheckNationBounty)
+Атрибуты-исключения: Coastal_Captain, ShipEnemyDisable, AlwaysFriend — не обижаются на выстрелы
+</code></pre>
+<p>Обстрел корабля СВОЕЙ нации <code>[код]</code> <code>AIShip.c:305-313</code>: игрок <strong>автоматически становится пиратом</strong>
+(<code>pchar.nation = PIRATE</code>), nobility −10, authority −2, fame +0.5.</p>
+<h3>7.10. Индейская репутация <code>[код]</code> <code>LAi_fightparams.c:997-1006</code></h3>
+<p>Функция <code>ChangeIndianRelation(x)</code>; убийства: канниба −0.5, мискито −1.0, женщины-индейца (squaw) −2.5.</p>
+<h3>7.11. Отношения нация-нация</h3>
+<p><code>[код]</code> <code>_LSC_on_off.h:46</code> <strong><code>bWorldAlivePause = true</code> по умолчанию</strong> — «живой мир на паузе»:
+губернаторы не переезжают со временем, нации не объявляют войну и мир, эскадры не забирают города,
+город нельзя взять себе даже с патентом. <code>[интерпретация]</code> Это важнейший скрытый флаг: в стандартной
+1.7.3 динамика межнациональных войн ОТКЛЮЧЕНА.</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

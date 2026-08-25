@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5. Экономика: товары, магазины, контрабанда, ростовщики, налоги, найм — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>5. Экономика: товары, магазины, контрабанда, ростовщики, налоги, найм</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>5.1. Таблица товаров <code>[код]</code> <code>PROGRAM/store/initGoods.c</code></h3>
+<p><code>Norm</code> — норма магазина (максимум запаса), <code>Med/Small</code> — множители для средних/малых лавок,
+<code>Тип</code> — priceModify-класс товара.</p>
+<table>
+<thead>
+<tr>
+<th>Товар</th>
+<th>Цена база</th>
+<th>Вес</th>
+<th>Units</th>
+<th>Тип (Type)</th>
+<th>priceModify</th>
+<th>Norm</th>
+<th>Med</th>
+<th>Small</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Balls (ядра)</td>
+<td>40</td>
+<td>2</td>
+<td>20</td>
+<td>AMMUNITION</td>
+<td>1.0</td>
+<td>600</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Grapes (картечь)</td>
+<td>20</td>
+<td>1</td>
+<td>20</td>
+<td>AMMUNITION</td>
+<td>1.0</td>
+<td>600</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Knippels (книппели)</td>
+<td>40</td>
+<td>2</td>
+<td>20</td>
+<td>AMMUNITION</td>
+<td>1.0</td>
+<td>600</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Bombs (бомбы)</td>
+<td>60</td>
+<td>3</td>
+<td>20</td>
+<td>AMMUNITION</td>
+<td>1.0</td>
+<td>600</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Food (провизия)</td>
+<td>20</td>
+<td>1</td>
+<td>10</td>
+<td>NORMAL</td>
+<td>1.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Sailcloth (парусина)</td>
+<td>40</td>
+<td>2</td>
+<td>1</td>
+<td>NORMAL</td>
+<td>1.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Planks (доски)</td>
+<td>60</td>
+<td>3</td>
+<td>1</td>
+<td>NORMAL</td>
+<td>1.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Brick (кирпич)</td>
+<td>120</td>
+<td>6</td>
+<td>10</td>
+<td>NORMAL</td>
+<td>1.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Wheat (пшеница)</td>
+<td>20</td>
+<td>1</td>
+<td>1</td>
+<td>NORMAL</td>
+<td>1.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Clothes (ткани)</td>
+<td>20</td>
+<td>1</td>
+<td>10</td>
+<td>NORMAL</td>
+<td>1.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Fruits (фрукты)</td>
+<td>20</td>
+<td>1</td>
+<td>1</td>
+<td>NORMAL</td>
+<td>1.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Coffee (кофе)</td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>EXPORT</td>
+<td><strong>2.0</strong></td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Chocolate (какао)</td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Tobacco (табак)</td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Sugar (сахар)</td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Cotton (хлопок)</td>
+<td>40</td>
+<td>1</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Leather (кожа)</td>
+<td>40</td>
+<td>1</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Ebony (эбеновое дерево)</td>
+<td>200</td>
+<td>5</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Mahogany (махагони)</td>
+<td>160</td>
+<td>4</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Cinnamon (корица)</td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Copra (копра)</td>
+<td>80</td>
+<td>2</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Paprika (паприка)</td>
+<td>40</td>
+<td>2</td>
+<td>1</td>
+<td>EXPORT</td>
+<td>2.0</td>
+<td>2400</td>
+<td>0.75</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Powder (порох)</td>
+<td>60</td>
+<td>1</td>
+<td>20</td>
+<td>IMPORT</td>
+<td><strong>3.0</strong></td>
+<td>1200</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Weapon (оружие)</td>
+<td>60</td>
+<td>1</td>
+<td>10</td>
+<td>IMPORT</td>
+<td>3.0</td>
+<td>1200</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Medicament (медикаменты)</td>
+<td>60</td>
+<td>1</td>
+<td>30</td>
+<td>IMPORT</td>
+<td>3.0</td>
+<td>1200</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Wine (вино)</td>
+<td>120</td>
+<td>2</td>
+<td>1</td>
+<td>IMPORT</td>
+<td>3.0</td>
+<td>1200</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Rum (ром)</td>
+<td>60</td>
+<td>1</td>
+<td>1</td>
+<td>IMPORT</td>
+<td>3.0</td>
+<td>1200</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Ale (эль)</td>
+<td>60</td>
+<td>1</td>
+<td>1</td>
+<td>IMPORT</td>
+<td>3.0</td>
+<td>1200</td>
+<td>1.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Shipsilk (корабельный шёлк)</td>
+<td>160</td>
+<td>2</td>
+<td>1</td>
+<td><strong>UNIQUE</strong></td>
+<td><strong>10.0</strong></td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td>Ropes (тросы)</td>
+<td>80</td>
+<td>1</td>
+<td>1</td>
+<td>UNIQUE</td>
+<td>10.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td>Sandal (сандал)</td>
+<td>240</td>
+<td>7</td>
+<td>1</td>
+<td>UNIQUE</td>
+<td>10.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td>Oil (масло)</td>
+<td>80</td>
+<td>1</td>
+<td>1</td>
+<td>UNIQUE</td>
+<td>10.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td>Slaves (рабы)</td>
+<td>100</td>
+<td>1</td>
+<td>1</td>
+<td><strong>CROWN</strong></td>
+<td><strong>5.0</strong></td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td>Gold (золото)</td>
+<td>200</td>
+<td>2</td>
+<td>1</td>
+<td>CROWN</td>
+<td>5.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td>Silver (серебро)</td>
+<td>100</td>
+<td>1</td>
+<td>1</td>
+<td>CROWN</td>
+<td>5.0</td>
+<td>1200</td>
+<td>0.5</td>
+<td>0.25 (<code>NotSale=1</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><code>[код]</code> <code>storeutilite.c:418</code> — <strong>товары типов UNIQUE и CROWN всегда имеют Quantity = 0 в магазинах</strong>,
+т.е. корабельный шёлк, тросы, сандал, масло, рабы, золото и серебро в лавках НЕ ПРОДАЮТСЯ, только продаются игроком.</p>
+<p>Пушки как товар <code>[код]</code> <code>initGoods.c:452-644</code>: цена/вес/дальность/reload берутся напрямую из <code>Cannon[...]</code>;
+Norm: 3-фн 30, 6-фн 25, 12-фн 25, 16-фн 20, 20-фн 15, 24-фн 15, 32-фн 10, 36-фн 10, 42-фн 10,
+кулеврина 8 — 30, кулеврина 18 — 20, кулеврина 36 — 10.
+<code>NotSale = 1</code> (не продаются в лавках): Cannon_36, Cannon_42, Culverine_36.</p>
+<h3>5.2. Формула цены товара <code>[код]</code> <code>PROGRAM/store/storeutilite.c:114-239</code></h3>
+<pre><code>итоговая цена = priceModify * basePrice * tradeModify * skillModify * qty * costCoeff * cModify
+tradeModify по ТИПУ ТОРГОВЛИ в этом городе (TradeType):
+   NORMAL      1.00 + RndPriceModify
+   EXPORT      0.80 + RndPriceModify     ← дешевле всего (город производит)
+   IMPORT      1.20 + RndPriceModify
+   AGGRESSIVE  1.40 + RndPriceModify     ← дороже всего (город остро нуждается)
+   CONTRABAND / AMMUNITION / CANNONS  1.00 + RndPriceModify
+tradeModify *= AddPriceModify           // = 1.05 - (запас/норма)/20   (storeutilite.c:476-480)
+priceModify по ТИПУ ТОВАРА (Type): NORMAL/AMMUNITION/CANNONS 1.0, EXPORT 2.0, CROWN 5.0, IMPORT 3.0, UNIQUE 10.0
+ПОКУПКА игроком:  skillModify = 1.325 - Commerce_старая*0.005    (при Commerce 100 → 1.275)
+                  − 0.15 ProfessionalCommerce / − 0.10 BasicCommerce
+                  с перком HT2: − 0.20 / − 0.15 / − 0.05
+                  для пушек: cModify = 3.0 + MOD_SKILL_ENEMY_RATE/5.0  ← пушки в лавке в 3.8-5 раз дороже!
+ПРОДАЖА игроком:  skillModify = 0.675 + Commerce_старая*0.005    (при Commerce 100 → 0.725)
+                  + 0.15 ProfessionalCommerce / + 0.10 AdvancedCommerce
+                  с HT2: + 0.20 / + 0.15 / + 0.05
+                  * costCoeff (Goods.&lt;товар&gt;.costCoeff у ГГ)
+</code></pre>
+<p><code>[интерпретация]</code>
+- Навык Commerce влияет <strong>очень слабо</strong>: от 1.325 до 1.275 при покупке (−3.8%) и от 0.675 до 0.725 при продаже (+7.4%).
+  <strong>Перки казначея (10-15%) сильнее навыка Commerce в 2-4 раза.</strong>
+- Спред «купил-продал» без перков: 0.675/1.325 = <strong>51%</strong> — т.е. мгновенная перепродажа теряет ~49%.
+  С ProfessionalCommerce+HT2: 0.875/1.125 = 78% (потери 22%).
+- Максимальная разница цен между городами: EXPORT (0.80) vs AGGRESSIVE (1.40) = <strong>1.75×</strong> плюс
+  RndPriceModify до ±0.15 и AddPriceModify ±5% → до ~2.2× на маршруте.
+- Самые «дорогие» товары по priceModify: UNIQUE (×10) — тросы, масло, шёлк, сандал; но в лавках их нет.
+- <strong>Пушки покупать в лавке крайне невыгодно</strong> (cModify 3.8-5.0), а вот у контрабандистов
+  <code>[код]</code> <code>smuggling.c:484,508</code> cModify = <code>2.0 - MOD_SKILL_ENEMY_RATE/20.0</code> = 1.8-1.9 → <strong>вдвое дешевле</strong>.</p>
+<h3>5.3. Как формируется запас в лавке <code>[код]</code> <code>PROGRAM/store/initStore.c:95-160</code></h3>
+<p>Начальное количество (= <code>Norm</code> магазина, фиксируется на всю игру):
+| TradeType в городе | Начальный запас |
+|---|---|
+| NORMAL / AMMUNITION | <code>Norm*0.75 + rand(Norm*0.1)</code> |
+| EXPORT | <code>Norm*0.9 + rand(Norm*0.2)</code> ← максимум |
+| IMPORT | <code>Norm*0.4 + rand(Norm*0.05)</code> |
+| AGGRESSIVE | <code>Norm*0.1 + rand(Norm*0.05)</code> ← минимум |
+| CONTRABAND | <code>Norm*0.1 + rand(Norm*0.05)</code> |
+| CANNONS | <code>Norm*0.4 + rand(Norm*0.4)</code>, либо 0 если NotSale |
+Затем ×MediumNorm (средняя лавка) или ×SmallNorm (малая).</p>
+<p><code>RndPriceModify</code> <code>[код]</code> <code>initStore.c:50-60</code>: разыгрывается <strong>один раз на ОСТРОВ</strong>: <code>frnd()*0.15</code>;
+знак <code>RndPriceModifySign = -1.0</code> по умолчанию, но <strong>+1.0 если город главный в нации (<code>ismaincolony</code>) или пиратский</strong>.
+<code>[интерпретация]</code> Значит: в главных колониях и у пиратов цены систематически <strong>выше</strong> (до +15%),
+в остальных — <strong>ниже</strong> (до −15%). Пушки: <code>RndPriceModify = (frnd()*0.03 + RndPriceModify + 0.10) * знак</code>.</p>
+<p>Ежедневный оборот <code>[код]</code> <code>storeutilite.c:361-418</code> <code>UpdateStore()</code>:</p>
+<pre><code>Aim = frnd(); если &lt; 0.25 → +1 (товар привезли); если &gt; 0.70 → -1 (увезли); иначе 0
+Aim = Aim * Norm * (frnd()*0.2 + frnd()*0.2 + 0.1)     // т.е. ±10..50% нормы
+Manufacture = 0.2 (если товар не вывозили); Consumption = 0.1 (если запас &gt; 0.25*Norm)
+oldQty += Aim
+если oldQty &lt; 1.75*Norm:  Quantity = oldQty + (Manufacture - Consumption)*Norm
+иначе (перезатарено):     15% шанс «ревизор» → Quantity = Norm*frnd();
+                          иначе Quantity = Norm*(1.75 + frnd()*0.25)
+</code></pre>
+<p><code>[интерпретация]</code> Магазин пополняется <strong>сам на +20%−10% = +10% нормы в день</strong>, максимум затаривания 2.0×Norm.
+Опустошив лавку, полное восстановление занимает ~10 игровых дней. Раз в 6-7 дней есть шанс «привоза» до +50%.
+Магазины обновляются по одному раз в день (<code>storeutilite.c:498-511</code>, интервал 200 мс на магазин).</p>
+<h3>5.4. Контрабанда <code>[код]</code> <code>PROGRAM/scripts/smuggling.c</code>, <code>PROGRAM/interface/contraband.c</code></h3>
+<p>Когда товар становится контрабандным <code>[код]</code> <code>storeutilite.c:435-452</code>:</p>
+<pre><code>Для EXPORT/IMPORT товаров:
+   запас &lt; 0.80*Norm  → CONTRA_SELL  (можно ПРОДАТЬ контрабандистам, «за 0.7 магазинной цены» — комментарий кода)
+   запас &gt; 1.20*Norm  → CONTRA_BUY   (можно КУПИТЬ у контрабандистов дешевле магазина)
+ВСЕ пушки всегда canbecontraband = CONTRA_SELL
+Товары с TradeType == CONTRABAND в этом городе — всегда CONTRA_SELL
+</code></pre>
+<p>Цены у контрабандистов <code>[код]</code> <code>smuggling.c:503,527</code>: <code>costModify = 1.05</code> при покупке игроком
+и <code>0.85</code> при продаже игроком (вместо 1.0 в лавке) — то есть <strong>у контрабандистов ПРОДАВАТЬ на 15% дешевле,
+а ПОКУПАТЬ на 5% дороже базы</strong>, зато туда идут товары, которые лавка не берёт, и пушки вдвое дешевле.
+Запас у контрабандиста <code>[код]</code> <code>smuggling.c:88-90</code>: <code>makeint(запас_лавки/4) + rand(200)</code>.</p>
+<p>Риск при выходе из сделки <code>[код]</code> <code>contraband.c:243-256</code>:</p>
+<pre><code>если GetSummonSkillFromName(ГГ, &quot;Sneak&quot;) &lt; Rand(120)  → вызывается погоня/прерывание сделки
+   (квест Rand_ContrabandInterruption, всем 3 контрабандистам ставится ContrabandInterruption)
+за сделку: Sneak +100 опыта, отношение с контрабандистами +15 (макс. 99),
+           реакция офицеров «bad», reputation.nobility −1
+</code></pre>
+<p><code>[интерпретация]</code> <strong>При Sneak = 120 и выше контрабанда полностью безопасна</strong> (rand(120) даёт 0..119).
+При Sneak 60 — 50% шанс попасться каждый раз. Sneak — самый выгодный навык для контрабандиста.
++100 опыта Sneak за сделку — это очень быстрая прокачка (уровень навыка стоит <code>N*MOD_EXP_RATE/divBy</code>).</p>
+<p>Морской патруль <code>[код]</code> <code>smuggling.c:381-408</code> <code>SetCoastalGuardPursuit()</code>:</p>
+<pre><code>генерируются до 3 капитанов &quot;Coastal_Captain01..03&quot;, нация = GuardNation, живут 3 дня
+атрибуты: AlwaysEnemy, DontRansackCaptain (не сдаются!), AlwaysSandbankManeuver (не бьются о мели)
+если ранг ГГ &lt; 6 и эскадра = 1 корабль → только 1 патрульный
+если ранг ГГ &lt; 9 и эскадра &lt; 3 → только 2 патрульных
+иначе — 3
+</code></pre>
+<h3>5.5. Ростовщики <code>[код]</code> <code>PROGRAM/dialogs/russian/Usurer_dialog.c</code></h3>
+<table>
+<thead>
+<tr>
+<th>Размер займа</th>
+<th>Сумма</th>
+<th>Процент в месяц</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Небольшая</td>
+<td><code>500 * ранг</code></td>
+<td><code>22 - (Commerce + Leadership)/10</code></td>
+</tr>
+<tr>
+<td>Значительная</td>
+<td><code>1500 * ранг</code></td>
+<td><code>27 - (Commerce + Leadership)/10</code></td>
+</tr>
+<tr>
+<td>Максимальная</td>
+<td><code>4000 * ранг</code></td>
+<td><code>37 - (Commerce + Leadership)/10</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>[код]</code> <code>Usurer_dialog.c:673</code> Срок: <code>Period = reputation.nobility/20 + 1</code> месяцев (от 1 до 6 месяцев).
+<code>[код]</code> <code>Usurer_dialog.c:523</code> Долг к возврату: <code>Sum + (Sum/100)*Interest * (прошло_месяцев + 1)</code>.
+<code>[код]</code> <code>characterUtilite.c:3852-3862</code> При просрочке <code>LoansMoneyAvenger</code>: <code>reputation.nobility −20</code>,
+реакция офицеров «bad», ставится счётчик охотников за головой (<code>LoansMoneyAvengerAmount(_loan, 25)</code>).
+<code>[код]</code> <code>Usurer_dialog.c:1094-1115</code> Восстановить отношения после просрочки — вернуть <strong>двойной</strong> долг;
+даёт <code>hunter −30</code> и <code>nobility +2</code>.
+<code>[интерпретация]</code> При Commerce + Leadership = 200 (оба по 100) процент падает до 2% / 7% / 17% в месяц.
+Максимально «дешёвый» кредит — небольшой при прокачанных навыках. Высокая репутация nobility удлиняет срок
+(до 6 месяцев при rep = 100), но она же режет шанс сдачи капитанов (см. п. 3.16) — конфликт целей.</p>
+<h3>5.6. Налоги и колонии <code>[код]</code> <code>PROGRAM/colonies/Colonies_init.c</code></h3>
+<ul>
+<li><code>[код]</code> <code>Colonies_init.c:45</code> <strong><code>tax_rate = MOD_SKILL_ENEMY_RATE</code></strong> — налоговая ставка равна уровню сложности
+  (2/4/6/8/10 %). Это единственное место, где ставка задаётся.</li>
+<li><code>[код]</code> <code>Colonies_init.c:52</code> <code>fort = 3</code> (базовый уровень форта), <code>jail = rand(1)</code> — в половине городов
+  начальник тюрьмы взяточник.</li>
+<li><code>[код]</code> <code>Colonies_init.c:38-39</code> <code>disease = 0</code>, <code>disease.time = 0</code> — эпидемии в городах.</li>
+<li><code>[код]</code> <code>Colonies_init.c:40</code> <code>loyality = 1</code>.</li>
+<li><code>FortValue</code> («вес» города для выкупа/осад) <code>[код]</code>:
+  Порт-Ройял 95, Гавана 95, Виллемстад 95, Тортуга 95, Маракайбо 90, Бас-Тер 85, Белиз 85,
+  Мариго 80, Фор-де-Франс 80, Сан-Андрес 80, Сан-Хуан 75, Сент-Джонс 75, Кумана 75,
+  Сантьяго 70, Порто-Белло 65, Санта-Каталина 65, Бриджтаун 60, Шарльтаун 55, Порт-о-Пренс 55,
+  Санто-Доминго 45, Картахена 45, Порт-о-Спейн 40, Каракас 40.
+  <strong>У Панамы FortValue отсутствует умышленно</strong> (<code>Colonies_init.c:449</code>: «чтоб не брать осадами,
+  город себе не забрать, тк форт будет жив»).</li>
+<li>Главные колонии (<code>ismaincolony = 1</code>): Порт-Ройял (Англия), Гавана (Испания), Виллемстад (Голландия),
+  Шарльтаун (Франция), Порто-Белло. В них и в пиратских городах цены выше (см. 5.3).</li>
+<li>Пиратские города: Форт-Оранж, Пуэрто-Принсипе, Ле-Франсуа, Ла-Вега, Пиратская крепость (Pirates), Исла-Мона.</li>
+<li>31 магазин <code>[код]</code> <code>store.h:1-34</code> (<code>STORE_QUANTITY = 31</code>, из них 30-й — <code>SHIP_STORE</code>, трюм своего корабля).</li>
+<li>Города без нации (нейтральные/квестовые локации): Pearl, Tenotchitlan, Dominica, Terks, Caiman,
+  LostShipsCity, KhaelRoa, Ksochitam, RockIsland, SantaQuiteria, IslaDeVieques, Is.</li>
+<li><code>[код]</code> <code>RelationAgent_dialog.c:209,225</code> Цена патента: <code>LicenceType * (3000 + MOD_SKILL_ENEMY_RATE*500)</code>.</li>
+<li><code>[код]</code> <code>RelationAgent_dialog.c:298</code> Цена «патента на город»:
+  <code>350000 - Leadership*100 + (5000 + rand(1000)) * ранг * MOD_SKILL_ENEMY_RATE</code>.</li>
+</ul>
+<h3>5.7. Стоимость найма и содержания команды <code>[код]</code> <code>PROGRAM/scripts/Crew.c</code></h3>
+<p>Цена одного матроса в таверне <code>[код]</code> <code>Crew.c:328-338</code> <code>GetCrewPriceForTavern</code>:</p>
+<pre><code>fExp   = (опыт_матросов + опыт_канониров + опыт_солдат)/100        // 0..3
+fSkill = Leadership_стар + Commerce_стар                          // 0..20
+nCrewCost = (0.5 + MOD_SKILL_ENEMY_RATE/5.0) * 50 * (1 - fSkill/40)
+nCrewCost = fExp * nCrewCost, но не менее 10
+</code></pre>
+<p><code>[интерпретация]</code> При сложности 4 и навыках 0: <code>(0.5+0.8)*50*1 = 65</code> за «единицу опыта»;
+при Leadership+Commerce = 200 (fSkill 20): ×0.5 → 32.5. Наём дорожает пропорционально опыту наёмников
+(опытные втрое дороже). На сложности 10 — вдвое дороже, чем на 2.</p>
+<p>Ежедневное жалованье корабля <code>[код]</code> <code>Crew.c:101-162</code> <code>GetSalaryForShip</code>:</p>
+<pre><code>экипаж: fExp * (0.5 + MOD_SKILL_ENEMY_RATE/5.0) * 200 * команда / класс_корабля * (1.05 - (Leadership+Commerce)/40)
+офицер: GetMoneyForOfficer = MOD_SKILL_ENEMY_RATE * 4 * (сумма ВСЕХ 14 навыков офицера)
+        GetMoneyForOfficerFull = GetMoneyForOfficer * 2 / (Leadership_стар + Commerce_стар)
+</code></pre>
+<p><code>[интерпретация]</code>
+- Жалованье <strong>делится на класс корабля</strong>: держать команду на линкоре (класс 1) в 6 раз дороже, чем на тартане (класс 6)
+  при равной численности. То есть крупные корабли выгоднее по расходам на человека.
+- Leadership + Commerce = 200 → множитель <code>1.05 − 5.0</code> = отрицательный, но в коде обрезки нет; практически
+  при <code>(L+C)/40 &gt; 1.05</code> (т.е. сумма &gt; 42 в новой шкале / &gt; 4.2 в старой) жалованье уходит в минус,
+  и <code>makeint</code> даёт отрицательное значение — фактически при высоких навыках жалованье команды перестаёт начисляться.
+  <code>[интерпретация]</code> Это, судя по коду, «работающий эксплойт»: <strong>Leadership + Commerce выше ~42 суммарно
+  обнуляет (и делает отрицательной) выплату матросам</strong>.
+- Плата офицеру растёт линейно с суммой всех его навыков (14 навыков × до 100 = до 1400) и с уровнем сложности:
+  на сложности 10 в 5 раз дороже, чем на 2.</p>
+<p>Максимальная численность команды <code>[код]</code> <code>Crew.c:340-344</code> <code>GetMaxCrewAble</code>:</p>
+<pre><code>L = 0.5 + Leadership_стар      // 0.5..10.5
+max = L*(55 + 10*(5 - MOD_SKILL_ENEMY_RATE) + L*15) + 2*L*|REPUTATION_NEUTRAL - reputation.nobility|
+</code></pre>
+<p><code>[интерпретация]</code> При Leadership 100 и сложности 4: <code>10.5*(55+10+157.5) = 2336</code> + <code>21*|50-rep|</code>.
+<strong>Крайняя репутация (0 или 100) добавляет до +1050 человек</strong>; нейтральная — ничего.
+На «лёгком» (2) множитель <code>10*(5-2)=30</code> вместо <code>10</code> — заметно больше.</p>
+<p>Наёмники в городах <code>[код]</code> <code>Crew.c:270-274</code>:</p>
+<pre><code>nNeedCrew = |50 - reputation.nobility|/MOD + ранг/MOD + rand(ранг/2) + drand(20 + MOD)
+если сложность == 2: ×3;  если == 4: ×2
+</code></pre>
+<p><code>[интерпретация]</code> На сложностях 6/8/10 наёмников в городах втрое-вчетверо меньше, чем на 2.
+Обновление раз в 2-3 дня (<code>Crew.c:249</code>). Крайняя репутация даёт больше рекрутов.
+Квест-флаг <code>GenQuest.Shipshine</code> удваивает число наёмников (<code>Crew.c:284</code>).</p>
+<p>Опыт наёмников по нациям <code>[код]</code> <code>Crew.c:290-315</code> (базовый порог, затем <code>+rand(2*порог)+rand(10)</code>):
+| Нация | Матросы | Канониры | Солдаты |
+|---|---|---|---|
+| Англия | 45 | 5 | 20 |
+| Франция | 20 | <strong>45</strong> | 5 |
+| Испания | 5 | 20 | <strong>45</strong> |
+| Пираты | 25 | 25 | <strong>45</strong> |
+| Голландия | 25 | 25 | 5 |
+<code>[интерпретация]</code> <strong>Английские города — лучшие матросы (скорость/маневренность корабля),
+французские — лучшие канониры (перезарядка), испанские и пиратские — лучшие солдаты (абордаж).</strong>
+Это одна из самых практически важных скрытых механик в игре.</p>
+<h3>5.8. Опыт команды <code>[код]</code> <code>Crew.c:188-235</code></h3>
+<pre><code>CrewExpRate() = 50 + MOD_SKILL_ENEMY_RATE          // 52..60
+диапазон опыта: 1..100
+артефакты удваивают прирост: totem_08 канониры, totem_09 матросы, totem_10 солдаты
+каждый день в море или на карте: матросы +1
+каждый день НА БЕРЕГУ: матросы −1, канониры −1, солдаты −1   (Crew.c:14-30)
+</code></pre>
+<p><code>[интерпретация]</code> <strong>Стоять в порту вредно</strong> — команда теряет опыт по всем трём специальностям ежедневно.
+Названия уровней (<code>Crew.c:33-72</code>): Exp1 &lt;12, Exp2 ≥12, Exp3 ≥24, Exp4 ≥35, Exp5 ≥46, Exp6 ≥57, Exp7 ≥68, Exp8 ≥80, Exp9 ≥90.</p>
+<h3>5.9. Раздел добычи (bPartitionSet) <code>[код]</code> <code>Crew.c:100-105, 383-520</code></h3>
+<p>Веса долей:</p>
+<pre><code>Part_HeroPart = 200;  Part_CompanionShipPerClass = 20;  Part_Gower = 10;
+Part_Crew = 1;  Part_Companion = 30;  Part_Officer = 10
+доля ГГ:  part = 200 + (10 - MOD_SKILL_ENEMY_RATE)*200
+          → сложн.2: 1800;  4: 1400;  6: 1000;  8: 600;  10: 400
+          + 20*(6 - класс_каждого_корабля_эскадры)
+доля губернатора (если есть патент): HowGower = 10 + MOD_SKILL_ENEMY_RATE процентов от дохода
+доля команды:   HowCrew = число_матросов * 1
+доля офицеров:  HowOff = число_офицеров*10 + число_компаньонов*30
+fCrewPart = HowCrew/(HowCrew+HowOff+HeroPart);  fOffPart = HowOff/(...)
+остальное — ГГ
+</code></pre>
+<p><code>[интерпретация]</code> На «лёгком» доля ГГ (1800) при 300 матросах = 1800/(300+HowOff+1800) ≈ 83%.
+На «сложном» (400) при тех же 300 → 400/2100+ ≈ 55%. <strong>Уровень сложности напрямую режет вашу долю добычи с ~83% до ~55%.</strong>
+Патент отнимает ещё 12-20% сверху. Мелкие корабли в эскадре увеличивают долю ГГ
+(<code>20*(6-класс)</code>: тартана даёт +0, а линкор класса 1 даёт +100 — то есть <strong>чем крупнее корабли эскадры,
+тем больше доля ГГ</strong>; читать формулу: класс 1 → 20<em>5 = 100).
+Флаг <code>bPartitionSet</code> (<code>_LSC_on_off.h:99</code>, по умолчанию </em><em>true</em>*) включает раздел; на сложности 10
+он принудительно включён и не отключается (<code>selectCharacter.c:302-330</code>).
+Долг перед командой копится в <code>Partition.MonthPart</code> и, как и невыплаченное жалованье, снижает мораль на −1 в день.
+Атрибут <code>GenQuest.DontPartition</code> отменяет раздел за конкретный рейд.</p>
+<h3>5.10. Прочие экономические числа</h3>
+<ul>
+<li><code>[код]</code> <code>_LSC_on_off.h:117</code> <code>InstantRepairRATE = 65.0</code> — предел ремонта в бою (65% ресурса корпуса).</li>
+<li><code>[код]</code> <code>AIShip.c:2352-2356</code> <strong>Пенальти к ремонту растёт со сложностью</strong>:
+  <code>fPercent = 1.0 + MOD_SKILL_ENEMY_RATE/4.0</code> (для квестовых кораблей всегда 1.0);
+  <code>Ship.HP_penalty = HP_макс * fPercent/100 * (100 - процент_корпуса)/100</code>.
+  <code>[интерпретация]</code> На сложности 10 «невосстановимая» часть корпуса в 3.5 раза больше, чем на 2 —
+  корабль после боёв безвозвратно теряет максимальный HP.</li>
+<li><code>[код]</code> <code>Crew.c:177-185</code> Стоимость поднятия морали:
+  <code>15 + команда*(30 + MOD_SKILL_ENEMY_RATE*мораль/10 - Leadership - Commerce)</code>, затем <code>*(fExp + 0.5)</code>, минимум 5.
+  <code>[интерпретация]</code> При Leadership+Commerce &gt; 30+... поднятие морали становится почти бесплатным (минимум 5 монет).</li>
+<li><code>[код]</code> <code>Usurer_dialog.c:1153-1155</code> Работорговец: <code>300 + rand(100)</code> рабов по 250 монет за штуку.</li>
+<li><code>[код]</code> <code>Debuger.c:203-241</code> В игре есть отладочная функция <code>TestGoodsLiquidity()</code> — считает
+  «ликвидность» товара как <code>Cost/Weight</code> и выводит рейтинг. По этому критерию лучшие:
+  Ebony 200/5 = 40, Sandal 240/7 = 34.3, Wine 120/2 = 60, Gold 200/2 = 100, Silver 100/1 = 100,
+  Ropes 80/1 = 80, Oil 80/1 = 80, Shipsilk 160/2 = 80, Slaves 100/1 = 100.
+  <code>[интерпретация]</code> С учётом priceModify (Gold ×5 → эффективно 500/вес, Ropes/Oil ×10 → 800/вес!)
+  <strong>самые выгодные грузы на единицу трюма: тросы и масло (UNIQUE, ×10), затем корабельный шёлк,
+  затем золото/серебро/рабы (CROWN, ×5).</strong></li>
+</ul>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

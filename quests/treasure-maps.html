@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Клады по картам сокровищ — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="on">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="">
+<h1>Клады по картам сокровищ</h1>
+<p class="sub">Системные (клады)</p>
+<a class="back" href="../quests.html">← все квесты</a>
+<p><span class="tag generator">генераторное задание</span></p>
+<table><tr><th>Где начинается</th><td>любой город, джунгли, пещеры</td></tr><tr><th>У кого</th><td>продавец карты сокровищ, пленный капитан, зек, девица в джунглях</td></tr><tr><th>Триггер</th><td>карту сокровищ продают в тавернах и на улицах; наводки дают пленные капитаны, заключённые и девицы в джунглях</td></tr><tr><th>Линия</th><td>Системные (клады)</td></tr><tr><th>В скриптах игры</th><td><code>Treasure (scripts/Treasure.c), карты mapQuest</code></td></tr></table>
+<h3>Требования</h3><ul><li>Fortune &gt; 10+rand(50)+rand(50) для генерации клада [код]</li><li>лопата/место в инвентаре, свободный вес</li><li>готовность к «джентльменам удачи» на месте клада</li></ul>
+<h3>Порядок действий</h3><ol><li>Купить карту сокровищ (обычная 11 000-40 000 песо или 300 дублонов; капитанская дороже) либо получить наводку от пленного капитана, зека или девицы в джунглях.</li><li>Идти в указанное место, найти пещеру или точку на берегу.</li><li>СДЕЛАТЬ СЕЙВ ПЕРЕД ВХОДОМ В ПЕЩЕРУ: в кладах по квестовым картам оружие, амулеты и отличные карты пересчитываются при перезагрузке с этого сейва, а сундуки и камни — нет.</li><li>Выкопать клад: типичный состав капитанского клада — сундуки с дублонами и сокровищами, неплохой клинок, амулет, отличная карта, камни.</li><li>На месте могут ждать «джентльмены удачи» — плата за клад боем.</li><li>Сбывать: камни ростовщику, лампады и кувшины торговкам, амулеты соответствующим торговцам, оружие уличным оружейникам.</li></ol><h3>Награды</h3><ul><li>сундуки с дублонами и сокровищами</li><li>клинки, амулеты, отличные карты</li><li>драгоценные камни</li></ul>
+<h3>Предупреждения</h3><div class="warnbox"><ul><li>патч от Вейна меняет генерацию: клад 1 уровня без оружия и амулетов [одно мнение]</li><li>клад могли выкопать до вас</li><li>«джентльмены удачи» появляются у пещеры</li></ul></div><h3>Города квеста</h3><a class="tag" href="../towns.html">любой остров</a><h3>Действующие лица</h3><span class="tag">продавец карты</span><span class="tag">пленный капитан</span><span class="tag">зек</span><span class="tag">девица в джунглях</span><span class="tag">джентльмены удачи</span><h3>Предметы</h3><span class="tag">карта сокровищ</span><span class="tag">сундуки с дублонами</span><span class="tag">амулеты</span><p class="src">Источники: 06-scripts-analysis.md, 12-harbour-sidequests.md</p>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Поиск по справочнику — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="assets/icon-192.png"><link rel="apple-touch-icon" href="assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="index.html" class="">Главная</a><a href="guide.html" class="">Прохождение</a><a href="quests.html" class="">Квесты</a><a href="towns.html" class="">Города</a><a href="trade.html" class="">Торговля</a><a href="tips.html" class="">Фишки</a><a href="maps.html" class="">Карты</a><a href="timers.html" class="">Таймеры</a><a href="mechanics.html" class="">Механика</a><a href="achievements.html" class="">Достижения</a><a href="search.html" class="on">Поиск</a></nav>
+  <form class="qs" action="search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>Поиск по справочнику</h1>
+<p class="sub">квесты, города, товары, карты, фишки и разделы</p>
+<script src="data/search-index.js"></script>
+<div class="filters"><input type="search" id="search-q" placeholder="Например: Калеуче, Бриджтаун, ром, абордаж, Элен…" style="flex:1"></div>
+<div id="search-out"><p class="sub">Загрузка индекса…</p></div>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script></body></html>

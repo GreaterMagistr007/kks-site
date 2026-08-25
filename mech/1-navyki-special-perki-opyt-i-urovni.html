@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1. Навыки, SPECIAL, перки, опыт и уровни — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>1. Навыки, SPECIAL, перки, опыт и уровни</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>1.1. Система SPECIAL (7 характеристик)</h3>
+<p><code>[код]</code> <code>PROGRAM/characters/characters.h:59-65</code> — SPECIAL: Strength (Сила), Perception (Восприятие),
+Endurance (Выносливость), Charisma (Обаяние), Intellect (Интеллект), Agility (Ловкость), Luck (Удача).
+- <code>[код]</code> <code>characters.h:39</code> <code>#define SPECIAL_MAX 10</code> — предел любой характеристики 10.
+- <code>[код]</code> <code>characters.h:37-38</code> <code>SKILL_MAX 100</code>, <code>SKILL_MAX_TOTAL 100</code> — навыки от 1 до 100.
+- <code>[код]</code> <code>characters.h:40</code> <code>SKILL_TO_OLD 10.0</code> — старые формулы (К2/К3) делят навык на 10, т.е. навык 100 = «10» в старой шкале.
+- <code>[код]</code> <code>RPGUtilite.c:162-172</code> <code>SetRandSPECIAL()</code> — случайный NPC: S/P/E = 3+rand(7), C = 2+rand(8), I = 4+rand(6), A = 4+rand(6), L = 2+rand(8).</p>
+<h3>1.2. Навыки (14 штук, 2 группы)</h3>
+<p><code>[код]</code> <code>characters.h:42-56</code>:
+- Личные (<code>SelfType</code>, <code>RPGUtilite.c:268-274</code>): FencingL (лёгкие клинки), FencingS (средние/сабли),
+  FencingH (тяжёлые), Pistol, Fortune (удача/везение), Leadership, Sneak.
+- Корабельные (<code>ShipType</code>, <code>RPGUtilite.c:276-282</code>): Commerce, Accuracy, Cannons, Sailing, Repair, Grappling, Defence.
+- <code>[интерпретация]</code> Leadership и Sneak формально числятся в <code>SelfType</code>, но качаются «в общем котле личных очков»;
+  Commerce/Accuracy/Cannons/Sailing/Repair/Grappling/Defence дают корабельные очки перков.</p>
+<h3>1.3. Формула роста навыка (сколько опыта надо)</h3>
+<p><code>[код]</code> <code>RPGUtilite.c:590-648</code> <code>GetCharacterExpRate()</code> — «порог навыка» = <code>MOD_EXP_RATE / divBy</code>, где divBy зависит от SPECIAL:</p>
+<table>
+<thead>
+<tr>
+<th>Навык</th>
+<th>divBy (формула из кода)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FencingL</td>
+<td>Agility<em>0.9 + Perception</em>0.1</td>
+</tr>
+<tr>
+<td>FencingS</td>
+<td>Strength<em>0.6 + Agility</em>0.4</td>
+</tr>
+<tr>
+<td>FencingH</td>
+<td>Strength<em>0.9 + Endurance</em>0.1</td>
+</tr>
+<tr>
+<td>Pistol</td>
+<td>Agility<em>0.5 + Luck</em>0.5</td>
+</tr>
+<tr>
+<td>Fortune</td>
+<td>Luck</td>
+</tr>
+<tr>
+<td>Leadership</td>
+<td>Intellect<em>0.1 + Charisma</em>0.9</td>
+</tr>
+<tr>
+<td>Commerce</td>
+<td>Intellect<em>0.8 + Charisma</em>0.2</td>
+</tr>
+<tr>
+<td>Accuracy</td>
+<td>Perception<em>0.8 + Luck</em>0.2</td>
+</tr>
+<tr>
+<td>Cannons</td>
+<td>Intellect<em>0.6 + Strength</em>0.4</td>
+</tr>
+<tr>
+<td>Sailing</td>
+<td>Perception<em>0.2 + Intellect</em>0.8</td>
+</tr>
+<tr>
+<td>Repair</td>
+<td>Perception<em>0.2 + Endurance</em>0.8</td>
+</tr>
+<tr>
+<td>Grappling</td>
+<td>Agility<em>0.7 + Intellect</em>0.3</td>
+</tr>
+<tr>
+<td>Defence</td>
+<td>Charisma<em>0.5 + Endurance</em>0.5</td>
+</tr>
+<tr>
+<td>Sneak</td>
+<td>Perception<em>0.5 + Luck</em>0.5</td>
+</tr>
+</tbody>
+</table>
+<p><code>[код]</code> <code>RPGUtilite.c:1478-1492</code> <code>AddCharacterExpToSkill()</code> — навык растёт, когда накопленный <code>_exp</code> &gt;=
+<code>makeint(текущий_уровень_навыка * ExpRate)</code>. Т.е. стоимость следующего уровня <strong>линейно растёт</strong>:
+цена уровня N = <code>N * MOD_EXP_RATE / divBy</code> (округление вниз через makeint).
+<code>[интерпретация]</code> Итого суммарный опыт до навыка 100 ≈ <code>(1+2+...+99) * MOD_EXP_RATE/divBy</code> = <code>4950 * MOD_EXP_RATE/divBy</code>.
+Высокий соответствующий SPECIAL напрямую делит стоимость прокачки: при divBy=10 качать вдвое дешевле, чем при divBy=5.</p>
+<h3>1.4. MOD_EXP_RATE — множитель порогов (зависит от сложности!)</h3>
+<ul>
+<li><code>[код]</code> <code>_LSC_on_off.h:104</code> <code>int MOD_EXP_RATE = 10; // это база... + (сложность)</code></li>
+<li><code>[код]</code> <code>interface/selectCharacter.c:580</code> при выходе из экрана создания персонажа:
+  <code>MOD_EXP_RATE = makeint(5 + MOD_SKILL_ENEMY_RATE); // от 5 до 15</code>
+  → при сложности 2 → 7, при 4 → 9, при 6 → 11, при 8 → 13, при 10 → 15.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:3458-3459</code> (в <code>initNewMainCharacter</code>):
+  <code>MOD_EXP_RATE = makeint(MOD_EXP_RATE + MOD_SKILL_ENEMY_RATE * MOD_EXP_RATE / 1.666666666); if (MOD_EXP_RATE &lt; 10) MOD_EXP_RATE = 10;</code>
+  → фактические итоговые значения: сложн.2 → 7+8.4≈15; 4 → 9+21.6≈30; 6 → 11+39.6≈50; 8 → 13+62.4≈75; 10 → 15+90=105.</li>
+<li><code>[интерпретация]</code> <strong>На «сложном» (10) прокачка навыков в 7 раз медленнее, чем на «лёгком» (2)</strong> (105 vs 15).
+  Это самое сильное численное отличие сложностей в игре.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:575-588</code> <code>InitStartParam()</code> — стартовые значения всех 14 навыков =
+  <code>makeint(MOD_EXP_RATE / ExpRate + 0.5)</code> = <code>makeint(divBy + 0.5)</code>, т.е. <strong>стартовый навык ≈ divBy</strong> (округлённый),
+  и от MOD_EXP_RATE не зависит.</li>
+</ul>
+<h3>1.5. Очки способностей (перков) за уровень</h3>
+<ul>
+<li><code>[код]</code> <code>RPGUtilite.c:116-125</code>:
+  <code>GetFreePoints_SelfRate = 40 - Intellect</code>, <code>GetFreePoints_ShipRate = 40 - Intellect</code>.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:483-535</code> <code>ApplayNewSkill()</code> — каждое +1 к любому личному навыку копится в
+  <code>perks.FreePoints_self_exp</code>; когда накопится <code>40 - Intellect</code>, даётся <strong>1 очко личной способности</strong>.
+  Аналогично для корабельных навыков → <code>perks.FreePoints_ship</code>.</li>
+<li><code>[интерпретация]</code> Intellect 10 → очко перка каждые 30 поднятых уровней навыка соотв. группы; Intellect 3 → каждые 37.
+  Максимум личных очков за игру ≈ <code>7*99 / (40-I)</code>; при I=10 это 693/30 ≈ 23 личных перка, корабельных 7*99/30 ≈ 23.</li>
+<li><code>[код]</code> <code>interface/character.c:1098-1102</code> — 1 перк = 1 очко (без «стоимости» в очках &gt;1).</li>
+</ul>
+<h3>1.6. Ранг (уровень персонажа)</h3>
+<ul>
+<li><code>[код]</code> <code>RPGUtilite.c:7-10</code> <code>GetCharacterRankRate = 35 - Intellect</code> — столько поднятых уровней навыков нужно на +1 ранг.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:537-573</code> — при накоплении <code>rank_exp &gt;= 35 - Intellect</code>: <code>rank+1</code>, HP растёт на <code>GetCharacterAddHPValue</code>.</li>
+<li><code>[интерпретация]</code> Ранг = чисто производная от суммы всех поднятых уровней навыков.
+  При Intellect 10 ранг растёт каждые 25 «поднятий навыка», при Intellect 3 — каждые 32.
+  Максимальный теоретический ранг = 14*99/(35-I): при I=10 ≈ 55, при I=3 ≈ 43.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:103-114</code> <code>AddCharacterExp()</code> и <code>CalculateExperienceFromRank()</code> — <strong>заглушки</strong> (возвращают false/100).
+  Классического «опыта за ранг» в ККС нет вообще, ранг вычисляется от навыков.</li>
+</ul>
+<h3>1.7. HP и Энергия</h3>
+<ul>
+<li><code>[код]</code> <code>RPGUtilite.c:51-55</code> База HP: <code>30 + Strength*Endurance*0.5</code>. При S=E=10 → 80 HP на старте.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:20-49</code> Прирост HP за ранг: <code>makeint(2 + Endurance_скорр*0.55 + 0.5)</code>; перк <code>HPPlus</code> даёт <strong>+1</strong> к этому приросту.
+  Кирасы <code>underwater</code> дают +2 к учитываемой E, <code>cirass1</code>, <code>cirass2</code>, <code>cirass4</code> — +1 (компенсация их штрафа к E).</li>
+<li><code>[код]</code> <code>RPGUtilite.c:57-69</code> Макс. энергия: <code>30 + Agility*10</code> (+ <code>PerkValue.EnergyPlus</code>);
+  амулет <code>indian_7</code> добавляет <code>makeint(1500/энергия)</code>.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:552-561</code> перк <code>EnergyPlus</code> даёт <strong>+1 к максимуму энергии за каждый ранг</strong>.</li>
+<li><code>[интерпретация]</code> Ловкость 10 → 130 энергии; Ловкость 3 → 60. Разница огромна для наземного боя.</li>
+</ul>
+<h3>1.8. Число офицеров и вес</h3>
+<ul>
+<li><code>[код]</code> <code>RPGUtilite.c:98-101</code> Максимум офицеров/пассажиров: <code>Charisma * 2</code> (до 20 при C=10).</li>
+<li><code>[код]</code> <code>_LSC_on_off.h:115</code> <code>CHAR_ITEMS_WEIGHT 70</code> — базовый лимит веса.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:1611-1629</code> <code>GetMaxItemsWeight</code>:
+  <code>лимит = (Grus?30:0) + 70 + Strength*(Endurance + 12 - MOD_SKILL_ENEMY_RATE)</code>;
+  амулет <code>obereg_3</code> ×1.15, <code>indian_7</code> ×0.9.
+  → <strong>на лёгкой сложности (2) лимит веса заметно выше</strong>: при S=E=10 → 70+10<em>20=270; при сложности 10 → 70+10</em>12=190.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:1266-1271</code> Перегруз (вес &gt; лимита) даёт <strong>−20 ко ВСЕМ навыкам</strong>; артефакт <code>totem_06</code> отменяет штраф.</li>
+</ul>
+<h3>1.9. Штраф за «слишком крутой корабль» (Navy penalty) — неочевидная механика</h3>
+<ul>
+<li><code>[код]</code> <code>RPGUtilite.c:1278-1292</code> <code>GetShipClassNavySkill()</code> — требуемая Навигация по классу корабля:
+  класс 1 → 95, класс 2 → 80, класс 3 → 65, класс 4 → 45, класс 5 → 25, класс 6 → 1.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:197-217</code> <code>ApplayNavyPenaltyToSkill()</code> — если Sailing &lt; требуемого,
+  <strong>все навыки</strong> снижаются на <code>(нужно − есть)</code> (в SPECIAL — на <code>(нужно−есть)/10</code>, <code>RPGUtilite.c:175-195</code>).</li>
+<li><code>[интерпретация]</code> Захватить линкор (класс 1) при навигации 40 → −55 ко ВСЕМ навыкам. Это фактически запрет на
+  раннее использование больших кораблей. Атрибут <code>NoNavyPenalty</code> у персонажа снимает штраф (needSkill=1).</li>
+</ul>
+<h3>1.10. Навыки офицеров: берётся МАКСИМУМ, а не сумма</h3>
+<p><code>[код]</code> <code>RPGUtilite.c:1355-1408</code> <code>GetSummonSkillFromNameSimple()</code> — для ГГ по конкретным навыкам берётся
+<code>max(навык ГГ, навык профильного офицера)</code>:
+- Sailing ← navigator (штурман)
+- Cannons, Accuracy ← cannoner (канонир)
+- Grappling ← boatswain (боцман)
+- Defence ← doctor (доктор)
+- Repair ← carpenter (плотник)
+- Commerce ← treasurer (казначей)</p>
+<p><code>[интерпретация]</code> Leadership офицером НЕ усиливается (закомментировано в коде, строки 1364-1366) — только личный.
+Смысл: держать офицера с навыком выше своего строго выгодно; двух офицеров одной специальности — бессмысленно.</p>
+<h3>1.11. Передача опыта офицерам/компаньонам</h3>
+<p><code>[код]</code> <code>RPGUtilite.c:1494-1548</code>:
+- Без перка <code>SharedExperience</code>: офицер на корабле получает <code>exp/4</code> (25%), прочий пассажир <code>exp/20</code> (5%), компаньон <code>exp/6</code> (16.7%).
+- С перком <code>SharedExperience</code>: офицер <code>exp/2</code> (50%), пассажир <code>exp/10</code> (10%), компаньон <code>exp/3</code> (33%).
+<code>[код]</code> описание перка <code>RESOURCE/INI/texts/russian/AbilityDescribe.txt:106-111</code> подтверждает 10%/50%/33%.</p>
+<h3>1.12. Здоровье ГГ (скрытая шкала «самочувствия», 6 уровней)</h3>
+<ul>
+<li><code>[код]</code> <code>RPGUtilite.c:2721-2731</code> <code>GetHealthNum = makeint((Health.HP + 9)/10)</code> — шкала 1..6:
+  1 УЖАСНОЕ, 2 ПЛОХОЕ, 3 НЕВАЖНОЕ, 4 СРЕДНЕЕ, 5 ХОРОШЕЕ, 6 ОТЛИЧНОЕ (<code>RPGUtilite.c:2747-2772</code>).</li>
+<li><code>[код]</code> <code>RPGUtilite.c:236-241</code> — у ГГ <strong>все SPECIAL корректируются на <code>GetHealthNum − 6</code></strong> (т.е. до −5 при УЖАСНОМ);
+  работает только при <code>MOD_SKILL_ENEMY_RATE &gt; 1</code>.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:1191-1199</code> — все ЛИЧНЫЕ навыки корректируются на <code>5*(GetHealthNum − 6)</code>, т.е. <strong>до −25</strong>.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:2803-2830</code> <code>SetNewDayHealth()</code> — за день: если полученный урон <code>damg &gt;= maxhp/1.5</code>,
+  здоровье падает на <code>damg/maxhp</code>; иначе восстанавливается <strong>+1 в день на суше</strong> и <strong>+0.5 в день в море</strong>.
+  Перк <code>Medic</code> даёт +1 к восстановлению (и снижает падение), амулет <code>amulet_6</code> ещё +1.</li>
+<li><code>[код]</code> <code>RPGUtilite.c:2841-2854</code> <code>SetNewDayHealthMax()</code> — если за неделю урон &gt; <code>maxhp*3.5</code>, <strong>максимум здоровья падает на 1 навсегда</strong>
+  (амулет <code>amulet_6</code> даёт ×1.15 порога). Потолок maxHP = 60 (<code>RPGUtilite.c:2896-2899</code>).</li>
+<li><code>[интерпретация]</code> Это скрытая «система усталости/ран»: играть избитым — терять до −25 к личным навыкам
+  и −5 SPECIAL; отдых на берегу восстанавливает вдвое быстрее, чем плавание.</li>
+</ul>
+<h3>1.13. Полный список перков и их числовые эффекты</h3>
+<p><code>[код]</code> файлы: <code>PROGRAM/interface/perks/perks_init.c</code> (список, условия, таймеры) и
+<code>RESOURCE/INI/texts/russian/AbilityDescribe.txt</code> (эффекты).</p>
+<h4>Личные (self)</h4>
+<table>
+<thead>
+<tr>
+<th>Перк</th>
+<th>Эффект <code>[код]</code></th>
+<th>Условия открытия <code>[код]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BasicDefense «Навык основной защиты»</td>
+<td>−10% получаемого урона</td>
+<td>—</td>
+</tr>
+<tr>
+<td>AdvancedDefense «продвинутой защиты»</td>
+<td>−20% получаемого урона</td>
+<td>BasicDefense</td>
+</tr>
+<tr>
+<td>CriticalHit «Критический удар»</td>
+<td>шанс крита 5%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>HPPlus «Растущая жизнь»</td>
+<td>+1 HP за ранг сверх обычного</td>
+<td>AdvancedDefense</td>
+</tr>
+<tr>
+<td>Tireless «Неутомимость»</td>
+<td>скорость восстановления энергии +15%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>EnergyPlus «Растущая энергия»</td>
+<td>+1 макс. энергии за ранг</td>
+<td>Tireless</td>
+</tr>
+<tr>
+<td>Sliding «Неотразимый удар»</td>
+<td>+20% шанс пробить блок противника</td>
+<td>AdvancedDefense</td>
+</tr>
+<tr>
+<td>SwordplayProfessional «Проф. фехтовальщик»</td>
+<td>шанс крита 15%, −30% получаемого урона</td>
+<td>CriticalHit + AdvancedDefense + Tireless</td>
+</tr>
+<tr>
+<td>HardHitter «Тяжёлая рука»</td>
+<td>успешный пробивающий удар ×2 урона; снимает энергию врагу</td>
+<td>SwordplayProfessional</td>
+</tr>
+<tr>
+<td>BladeDancer «Танец с саблями»</td>
+<td>+30% урона круговым ударом</td>
+<td>SwordplayProfessional</td>
+</tr>
+<tr>
+<td>Gunman «Мушкетёр»</td>
+<td>перезарядка −10%, точность +10%; разрешает аркебузы/мортирки/1-ств. мушкеты</td>
+<td>—</td>
+</tr>
+<tr>
+<td>GunProfessional «Стрелок»</td>
+<td>перезарядка −25%, точность +25%; разрешает многоствольное/многозарядное</td>
+<td>Gunman</td>
+</tr>
+<tr>
+<td>Grus «Дополнительный вес»</td>
+<td>+30 фунтов к лимиту веса</td>
+<td>—</td>
+</tr>
+<tr>
+<td>IronWill «Железная воля»</td>
+<td>снижает вероятность мятежа от невыплат и голода</td>
+<td>— (офицерский тип: boatswain)</td>
+</tr>
+<tr>
+<td>ShipEscape «Спасение на шлюпке»</td>
+<td>при корпусе &lt;15% пересесть на другой корабль эскадры</td>
+<td>IronWill</td>
+</tr>
+<tr>
+<td>SharedExperience «Обмен опытом»</td>
+<td>опыт офицерам ×2 (50%/10%/33%); обмен предметами в абордаже</td>
+<td>— (только ГГ)</td>
+</tr>
+<tr>
+<td>Medic «Отменное здоровье»</td>
+<td>здоровье восстанавливается вдвое быстрее (в море хуже)</td>
+<td>AdvancedDefense (только ГГ)</td>
+</tr>
+<tr>
+<td>Trustworthy «Вызывающий доверие»</td>
+<td>отрицательная репутация не мешает найму</td>
+<td>AdvancedCommerce + IronWill (только ГГ)</td>
+</tr>
+<tr>
+<td>Alchemy «Алхимия»</td>
+<td>доступ к алхимии (создание предметов)</td>
+<td>— (только ГГ)</td>
+</tr>
+<tr>
+<td>ByWorker «Совместитель»</td>
+<td>NPC занимает 2 офицерские должности</td>
+<td>— (только NPC)</td>
+</tr>
+<tr>
+<td>ByWorker2 «Совместитель-универсал»</td>
+<td>NPC занимает 3 должности</td>
+<td>ByWorker (только NPC)</td>
+</tr>
+</tbody>
+</table>
+<h4>Корабельные (ship) — боцман</h4>
+<table>
+<thead>
+<tr>
+<th>Перк</th>
+<th>Эффект</th>
+<th>Условия</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Brander «Брандер»</td>
+<td>послать союзный корабль взорваться рядом с врагом</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Troopers «Высадка десанта»</td>
+<td>объединить команды эскадры перед штурмом форта</td>
+<td>—</td>
+</tr>
+<tr>
+<td>LongRangeGrappling</td>
+<td>дистанция абордажа +15%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>MusketsShoot «Мушкетный залп»</td>
+<td>залп по команде врага перед абордажем</td>
+<td>CrewDamageUp</td>
+</tr>
+<tr>
+<td>GrapplingProfessional</td>
+<td>дистанция абордажа +25%, абордаж под любым углом и скоростью</td>
+<td>LongRangeGrappling + MusketsShoot</td>
+</tr>
+</tbody>
+</table>
+<h4>Корабельные — канонир</h4>
+<table>
+<thead>
+<tr>
+<th>Перк</th>
+<th>Эффект</th>
+<th>Условия</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FastReload</td>
+<td>скорость перезарядки пушек +10%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>ImmediateReload</td>
+<td>следующая перезарядка на 30% быстрее; блокировка 5 мин (<code>TimeDelay=300</code>, <code>TimeDuration=60</code>)</td>
+<td>FastReload</td>
+</tr>
+<tr>
+<td>HullDamageUp</td>
+<td>+15% урона корпусу</td>
+<td>—</td>
+</tr>
+<tr>
+<td>SailsDamageUp</td>
+<td>+15% урона парусам</td>
+<td>—</td>
+</tr>
+<tr>
+<td>CrewDamageUp</td>
+<td>+15% урона команде</td>
+<td>—</td>
+</tr>
+<tr>
+<td>CriticalShoot</td>
+<td>шанс крит. залпа 5%</td>
+<td>HullDamageUp+SailsDamageUp+CrewDamageUp</td>
+</tr>
+<tr>
+<td>LongRangeShoot</td>
+<td>дальность орудий +15%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>CannonProfessional</td>
+<td>+30% урона любой части корабля, шанс крита 15%</td>
+<td>CriticalShoot+LongRangeShoot+FastReload</td>
+</tr>
+</tbody>
+</table>
+<h4>Корабельные — плотник</h4>
+<table>
+<thead>
+<tr>
+<th>Перк</th>
+<th>Эффект</th>
+<th>Условия</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Carpenter «Автономный ремонт»</td>
+<td>медленный ремонт корпуса/парусов на карте и на суше (нужны доски/парусина)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>LightRepair «Неотложный ремонт»</td>
+<td>до +10% HP корпуса без ресурсов; 60 с каждые 3 мин (<code>TimeDelay=240</code>,<code>TimeDuration=60</code>); +50% скорости автономного ремонта. Без перка корабль медленно разваливается при HP&lt;10%</td>
+<td>Carpenter</td>
+</tr>
+<tr>
+<td>Builder «Мастерский ремонт»</td>
+<td>расход досок/парусины −25%, скорость автономного ремонта ×2</td>
+<td>LightRepair</td>
+</tr>
+<tr>
+<td>BasicBattleState</td>
+<td>общий урон кораблю −15%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>AdvancedBattleState</td>
+<td>общий урон кораблю −25%</td>
+<td>BasicBattleState</td>
+</tr>
+<tr>
+<td>ShipDefenseProfessional</td>
+<td>общий урон кораблю −35%, шанс получить крит −70%</td>
+<td>AdvancedBattleState</td>
+</tr>
+<tr>
+<td>InstantRepair «Ремонт в бою»</td>
+<td>ремонт в бою до 65% ресурса (<code>InstantRepairRATE 65.0</code>, <code>_LSC_on_off.h:117</code>); повтор ≥90 с (<code>TimeDelay=240</code>,<code>TimeDuration=30</code>). <strong>Существует только при MOD_SKILL_ENEMY_RATE &lt; 5</strong>, т.е. на сложности 2 и 4 (<code>perks_init.c:217-226</code>)</td>
+<td>BasicBattleState + Carpenter</td>
+</tr>
+<tr>
+<td>SelfRepair «Полный ремонт»</td>
+<td>полный ремонт корпуса/парусов/мачт на берегу</td>
+<td>Builder + AdvancedBattleState</td>
+</tr>
+</tbody>
+</table>
+<h4>Корабельные — штурман</h4>
+<table>
+<thead>
+<tr>
+<th>Перк</th>
+<th>Эффект</th>
+<th>Условия</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ShipSpeedUp</td>
+<td>макс. скорость +15%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>ShipTurnRateUp</td>
+<td>маневренность +15%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>StormProfessional</td>
+<td>урон от шторма −30%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>WindCatcher</td>
+<td>+10% к динамике набора скорости</td>
+<td>—</td>
+</tr>
+<tr>
+<td>SailsMan</td>
+<td>все операции с парусами на 10% быстрее</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Turn180</td>
+<td>разворот: скорость поворота ×4 на 1 мин, повтор через 3 мин (<code>TimeDelay=240</code>,<code>TimeDuration=60</code>)</td>
+<td>ShipSpeedUp+ShipTurnRateUp+WindCatcher</td>
+</tr>
+<tr>
+<td>SailingProfessional</td>
+<td>скорость и маневренность +20%; в 75% случаев на карте мира можно пропустить встречу с обычными кораблями</td>
+<td>SailsMan+StormProfessional+Turn180</td>
+</tr>
+</tbody>
+</table>
+<h4>Корабельные — казначей / доктор / ГГ</h4>
+<table>
+<thead>
+<tr>
+<th>Перк</th>
+<th>Эффект</th>
+<th>Условия</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BasicCommerce</td>
+<td>скидка на покупку 10%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>AdvancedCommerce</td>
+<td>надбавка на продажу 10%</td>
+<td>BasicCommerce</td>
+</tr>
+<tr>
+<td>ProfessionalCommerce</td>
+<td>−15% на покупку и +15% на продажу при любых сделках</td>
+<td>BasicCommerce+AdvancedCommerce</td>
+</tr>
+<tr>
+<td>Doctor1 «Врач»</td>
+<td>потери команды в морском бою от ран и картечи −10%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Doctor2 «Спаситель жизни»</td>
+<td>потери команды −20%</td>
+<td>Doctor1</td>
+</tr>
+<tr>
+<td>SeaDogProfessional «Гроза Морей»</td>
+<td>исключает атаку вражескими эскадрами в море; <strong>не работает на малых классах</strong></td>
+<td>SailingProfessional (только ГГ)</td>
+</tr>
+<tr>
+<td>FlagPir / FlagEng / FlagFra / FlagSpa / FlagHol</td>
+<td>смена флага; шанс раскрытия обмана зависит от Sneak, класса и числа своих кораблей, числа кораблей врага и награды за голову</td>
+<td>— (только ГГ)</td>
+</tr>
+</tbody>
+</table>
+<h4>Скрытые перки <code>[код]</code> <code>perks_init.c:321-354</code></h4>
+<table>
+<thead>
+<tr>
+<th>Перк</th>
+<th>Эффект</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Energaiser</td>
+<td>+1.5 к приросту энергии; выдаётся ГГ и боссам уровней (<code>Hiden</code>)</td>
+</tr>
+<tr>
+<td>MapMaker</td>
+<td>+5% к базовой скорости корабля при наличии всех карт (<code>Hiden</code>, только ГГ)</td>
+</tr>
+<tr>
+<td>Rush «Тинктура Ометочтли»</td>
+<td>12 с мощного баффа, <code>TimeDelay=72</code>, <code>TimeDuration=12</code> (12 с действия + 60 с откат)</td>
+</tr>
+<tr>
+<td>HT1..HT4</td>
+<td>личные спецперки в зависимости от выбранного стартового типа героя (<code>Hiden</code>, только ГГ)</td>
+</tr>
+<tr>
+<td>Ciras</td>
+<td>«позволяет использовать кирасы» (текст есть, в perks_init.c 1.7.3 отсутствует — реликт)</td>
+</tr>
+</tbody>
+</table>
+<h3>1.14. Бонусы навыков от одежды/кирас <code>[код]</code> <code>RPGUtilite.c:819-1013</code></h3>
+<p>Штрафы к SPECIAL (<code>ApplySPECIALCirassPenalty</code>):
+| Одежда | SPECIAL-штраф |
+|---|---|
+| cirass1 | E −1, A −2 |
+| cirass2 | E −1, A −1 |
+| cirass3 | A −1 |
+| cirass4 | E −1 |
+| cirass6 | P −1 |
+| cirass7 | A −1, P −1 |
+| cirass8 | P −1 |
+| suit1/suit2/suit3 | A −1 |
+| suit4 (костюм Лампорта) | P −1 |
+| underwater (водолаз) | P −2, E −2, A −1 |</p>
+<p>Бонусы/штрафы к навыкам (<code>SetCharacterSkillBySuit</code>):
+| Одежда | Leadership | Sneak | Прочее |
+|---|---|---|---|
+| cirass1 | — | −5 | |
+| cirass2 | — | −10 | |
+| cirass3 | +5 | −15 | |
+| cirass4 | +10 | −20 | |
+| cirass6 | −5 | −5 | |
+| cirass7 | −10 | −10 | |
+| cirass8 | −15 | <strong>+15</strong> | |
+| suit1/2/3 (франц./англ./исп. мундир) | +15 | −15 | |
+| suit4 (Лампорт, Калеуче) | −25 | <strong>+30</strong> | |
+| underwater | −20 | −100 | FencingL/S/H −15, Pistol −50 |</p>
+<p><code>[код]</code> <code>RPGUtilite.c:885-931</code> <code>GetCharacterSuitType</code>: cirass1-4 = тяжёлые доспехи (тип 2),
+cirass5-8 = легкие (тип 1), underwater/suit1-3 = прочее (тип 0).</p>
+<h3>1.15. Предметы, меняющие навыки (скрытые штрафы!) <code>[код]</code> <code>RPGUtilite.c:1201-1216</code></h3>
+<p>Просто <strong>наличие в инвентаре</strong> (не экипировка!):
+| Предмет | Эффект |
+|---|---|
+| SkullAztec (ацтекский череп) | Fortune −20, Leadership +10 |
+| KnifeAztec (ацтекский нож) | Pistol −30, FencingL −20, FencingS −20, FencingH −20 |
+| mineral8 | Fortune −10 |
+| mineral14 | Fortune −10 |
+| Coins («монеты») | <strong>Fortune −50</strong> |
+| mineral30 | Leadership −10 |
+| mineral31 | Leadership −10, Fortune −10 |</p>
+<p>Экипированные артефакты (<code>RPGUtilite.c:1218</code> и <code>1243-1256</code>):
+| Артефакт | Эффект |
+|---|---|
+| obereg_7 | Sailing +10 |
+| indian_9 | Accuracy ×1.10 |
+| obereg_4 | Sneak ×1.15 |
+| obereg_5 | Fortune ×1.15 |
+| obereg_6 | Leadership ×1.15 |
+| obereg_8 | Commerce ×1.15 |
+| amulet_7 | Fortune ×0.50 |
+| amulet_6 | Sneak ×0.50 (но +1 к восстановлению здоровья) |
+| totem_12 | <strong>Accuracy ×2 ночью</strong> (<code>RPGUtilite.c:1258-1264</code>) |
+| obereg_3 | лимит веса ×1.15 |
+| indian_7 | лимит веса ×0.9, но +<code>1500/энергия</code> к макс. энергии |
+| totem_06 | отменяет −20 за перегруз |
+| kaleuche_amulet2 (амулеты Туттуатхапака) | FencingL/S/H и Pistol <strong>+25 каждый</strong> (<code>RPGUtilite.c:1141-1152</code>) |
+| перк HT2 | Sneak ×1.15 |</p>
+<p>Квестовые клинки, дающие навык <code>[код]</code> <code>RPGUtilite.c:1016-1058</code>:
+<code>knife_01</code> FencingL +5; <code>q_blade_10</code> FencingS +10; <code>q_blade_13</code> FencingH +10; <code>q_blade_16</code> FencingL +10;
+<code>q_blade_18</code> FencingL +12; <code>q_blade_19</code> FencingS +12; <code>q_blade_21</code> FencingH +12; <code>topor_06</code> FencingH +5.</p>
+<p>Зелья Мангаросы <code>[код]</code> <code>RPGUtilite.c:1084-1139</code>:
+- Potion.Power: S +2, E +2; FencingH +15, FencingS +5
+- Potion.Fast: A +2, P +2; FencingL +10, Pistol +10
+- Potion.Total: S/E/A/P/C +1, L +2; FencingH/FencingL/Pistol/Leadership/Fortune +5</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

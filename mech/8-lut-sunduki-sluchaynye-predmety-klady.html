@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8. Лут, сундуки, случайные предметы, клады — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>8. Лут, сундуки, случайные предметы, клады</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><h3>8.1. Константы <code>[код]</code> <code>PROGRAM/ITEMS/items.h</code></h3>
+<table>
+<thead>
+<tr>
+<th>Константа</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RANDITEMS_QUANTITY</td>
+<td>52</td>
+<td>размер таблицы случайных предметов</td>
+</tr>
+<tr>
+<td>OBJECTS_IN_BOX</td>
+<td>9</td>
+<td>базовое число попыток спавна предметов в сундуке</td>
+</tr>
+</tbody>
+</table>
+<h3>8.2. Наполнение сундука <code>[код]</code> <code>PROGRAM/ITEMS/itemLogic.c:808-834</code></h3>
+<pre><code>spawnItemsCount = 9 + 9 * Fortune_старая_шкала / 10
+   → при Fortune 0: 9 попыток; при Fortune 100 (стар. 10): 9 + 9 = 18 попыток
+для каждой попытки вызывается SpawnItem()
+</code></pre>
+<p><code>SpawnItem</code> <code>[код]</code> <code>itemLogic.c:872-917</code>:</p>
+<pre><code>берётся случайный предмет из RandItems (52 записи)
+если minLevel предмета &gt; ранг ГГ → отказ
+itemProb = атрибут rare предмета (по умолчанию 0.05, т.е. 5%)
+для АБОРДАЖНОГО сундука: itemProb *= (1.5 + Fortune_стар/20)
+   → при Fortune 100: ×2.0  (при Fortune 0: ×1.5)
+itemProb ограничивается 1.0
+бросок rand(1000); если &gt; itemProb*1000 → отказ
+Предметы с quality &gt;= B_EXCELLENT в сундуках НЕ ГЕНЕРЯТСЯ («отличные клинки в сундуках больше не генерятся»)
+</code></pre>
+<p><code>[интерпретация]</code> Ожидаемое число предметов в обычном сундуке ≈ <code>9 * 0.05 = 0.45</code> при Fortune 0
+и <code>18 * 0.05 = 0.9</code> при Fortune 100 — то есть <strong>навык Удача ровно удваивает лут из сундуков</strong>.
+Для абордажных сундуков ещё ×1.5..×2.0 → до <code>18*0.05*2 = 1.8</code> предмета. С учётом того, что редкие
+предметы имеют собственный <code>rare</code>, реальные значения выше.
+Также важно: <strong>отличного качества (B_EXCELLENT и выше) оружия в сундуках не бывает</strong> — только в лавках,
+у убитых NPC и в кладах.</p>
+<h3>8.3. Случайные предметы на локации <code>[код]</code> <code>itemLogic.c:504, 524</code></h3>
+<pre><code>if (GetCharacterSkillToOld(ГГ, SKILL_FORTUNE) &lt; rand(15)) return;   // предмет НЕ отображается
+</code></pre>
+<p><code>[интерпретация]</code> Валяющиеся на земле предметы <strong>видны с вероятностью Fortune_стар/15</strong>:
+при Fortune 100 (стар. 10) — 10/15 ≈ 67%; при Fortune 45 (стар. 4.5) — 30%; при Fortune &lt; 15 — почти никогда.
+<strong>Это самая недооценённая функция Удачи: без неё вы просто не видите лут в локациях.</strong>
+Проверка выполняется дважды (при спавне и при отрисовке) — фактически шанс <code>(F/15)²</code>.</p>
+<h3>8.4. Ловушки в сундуках <code>[код]</code> <code>itemLogic.c:658</code></h3>
+<pre><code>if (GenQuest.God_hit_us == 1 &amp;&amp; rand(100) &gt;= (85 + Fortune_старая) &amp;&amp; локация не из списка исключений)
+   → «Ловушка!» + квест-реакция God_hit_us
+</code></pre>
+<p><code>[интерпретация]</code> Шанс ловушки = <code>(100 - 85 - Fortune_стар)/100</code>: при Fortune 0 — 15%,
+при Fortune 100 (стар. 10) — 5%, при Fortune &gt; 150 — 0 (недостижимо).
+Исключения (сундуки без ловушек): <code>SentJons_HouseF3_Room2</code>, <code>IslaMona_TwoFloorHouse</code>, <code>IslaMona_TwoFloorRoom</code>.
+Работает только при активном квестовом флаге <code>GenQuest.God_hit_us == 1</code>.</p>
+<h3>8.5. Респавн сундуков <code>[код]</code> <code>itemLogic.c:740-841</code></h3>
+<ul>
+<li>Абордажные сундуки (<code>isAbordageBox</code>) наполняются <strong>каждый раз заново</strong>.</li>
+<li>Сундуки внутри корабля (<code>isShipInside</code>) и <code>Deck_Near_Ship</code> — <strong>не респавнятся</strong>.</li>
+<li>При флаге локации <code>MustSetReloadBack</code> содержимое сундуков <strong>обнуляется</strong>.</li>
+<li>После наполнения вызывается <code>FillGenerableItemsForChest</code> — генерируемые предметы (оружие/броня)
+  заменяются на конкретный сгенерированный экземпляр (<code>GetGeneratedItem</code>).</li>
+</ul>
+<h3>8.6. Карты сокровищ и клады <code>[код]</code> <code>PROGRAM/scripts/Treasure.c</code></h3>
+<p>Структура: карта (<code>item</code>) содержит <code>MapIslId</code> (остров), <code>MapLocId</code> (локация), <code>MapBoxId</code> (сундук),
+<code>MapTypeIdx = rand(2)</code> (0 или 1 — тип отображения карты).
+<code>[код]</code> <code>Treasure.c:135-138</code>: <strong>шанс 1/16 (<code>rand(15)==1</code>), что карта «пустышка» (<code>MapTypeIdx = -1</code>)</strong> —
+если только не активен флаг <code>GenQuest.TreasureBuild</code> (сборная карта), тогда вызывается <code>FillBoxForTreasureSuper</code>.
+<code>[код]</code> <code>Treasure.c:148</code>: при валидной карте локация клада получает <code>DisableEncounters = true</code>
+(в ней не будет случайных встреч) и разыгрывается <code>GenQuest.Treasure.Vario = rand(5)</code> — одно из 5 событий у клада.</p>
+<p>Содержимое клада — базовое <code>[код]</code> <code>Treasure.c:152+</code> <code>FillBoxForTreasure(item, rand(3))</code>, тип 0 («good»):</p>
+<pre><code>50%: jewelry2  x(2 + rand(30))    ИЛИ  jewelry3 x(10 + rand(3))
+50%: gold_dublon x(20 + rand(100))
+50%: jewelry3  x(1 + rand(30))
+50%: jewelry5  x(5 + rand(60))
+50%: jewelry40 x(15 + rand(100))
+33%: jewelry41 x(15 + rand(100))
+33%: jewelry42 x(5 + rand(100))
+33%: jewelry43 x(5 + rand(100))
+33%: jewelry44 x(5 + rand(100))
+</code></pre>
+<p>Дополнение <code>[код]</code> <code>Treasure.c:361-465</code> <code>FillBoxForTreasureAddition</code>:</p>
+<pre><code>если 5*Fortune_стар &gt; rand(55)  → кусок сборной карты (map_part1, затем map_part2)
+   → при Fortune 100 (стар.10): 50 &gt; rand(55) ≈ 91% шанс;  при Fortune 20 (стар.2): 10/55 ≈ 18%
+switch (rand(40)) — один случайный бонус из 28 вариантов (случаи 29-40 = пусто):
+   gold_dublon (rand(40)+20) — 3 варианта из 40 (случаи 1, 24, 28)
+   jewelry10/11/12/13 — по 1 варианту
+   ВСЕ индейские артефакты indian_1..indian_11 — по 1 варианту каждый
+   амулеты amulet_1..amulet_8 — по 1 варианту каждый
+   Mineral14, Mineral15 — по 1 варианту
++ GenerateMapsTreasure(item, 10, 20) — шанс каждой из 25 карт сокровищ: 1/10 или 1/20
+</code></pre>
+<p><code>[интерпретация]</code> <strong>Шанс получить конкретный артефакт из клада = 1/40 = 2.5%.</strong>
+Шанс получить хотя бы что-то из бонуса = 28/40 = 70%. В каждом кладе также разыгрывается
+25 карт сокровищ с шансом 10% (или 5% для map_cayman, map_dominica, map_terks, map_Pearl,
+map_maine_1, map_maine_2) — то есть <strong>клады это основной способ получить новые карты сокровищ</strong>.
+Ожидаемое число новых карт из одного клада ≈ 19<em>0.1 + 6</em>0.05 = 2.2 (при условии, что карт ещё нет).</p>
+<p><code>[код]</code> <code>Treasure.c:471+</code> <code>FillBoxForTreasureSuper</code> (только для сборных карт): порог получения куска
+<code>3*Fortune_стар &gt; rand(21)</code> → при Fortune 100 (стар. 10): 30 &gt; rand(21) = <strong>100%</strong>; при Fortune 23 (стар. 2.3): 33%.</p>
+<p><code>[код]</code> <code>Treasure.c:109-118</code> Адмиральские карты: только 1 шт., шанс <code>rand(abl) == 1</code>
+и только при флаге <code>questTemp.AdmiralMap</code>.</p>
+<h3>8.7. Воровство/скрытность (по коду)</h3>
+<p>Отдельной «системы карманных краж» в скриптах нет; Sneak применяется в:
+- контрабанда (<code>contraband.c:243</code> — <code>Sneak &lt; rand(120)</code> → провал);
+- убийства в городе (<code>LAi_fightparams.c:1025</code> — <code>Sneak &lt; rand(140)</code> → нация становится врагом);
+- фальшивый флаг (<code>AIShip.c:1913-1916</code>, формула в п. 7.8);
+- урон при абордажном сцеплении (<code>AIAbordage.c:138-141</code> — <code>1.05 - Sneak/100</code>);
+- одежда меняет Sneak от −100 (водолазный костюм) до +30 (костюм Лампорта), см. п. 1.14;
+- артефакты: <code>obereg_4</code> ×1.15, <code>amulet_6</code> ×0.50, перк HT2 ×1.15.
+<code>[интерпретация]</code> Sneak — «универсальный навык безнаказанности». Опыт даётся крупными порциями:
++100 за контрабандную сделку, +50 за успешный обман флагом (раз в день).</p>
+<hr />
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

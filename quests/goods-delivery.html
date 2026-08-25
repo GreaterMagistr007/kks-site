@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Доставка грузов для магазинов — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="on">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="">
+<h1>Доставка грузов для магазинов</h1>
+<p class="sub">Генераторные (торговцы)</p>
+<a class="back" href="../quests.html">← все квесты</a>
+<p><span class="tag generator">генераторное задание</span></p>
+<table><tr><th>Где начинается</th><td>любой магазин</td></tr><tr><th>У кого</th><td>владелец магазина</td></tr><tr><th>Триггер</th><td>диалог о делах — доставка партии груза в срок</td></tr><tr><th>Линия</th><td>Генераторные (торговцы)</td></tr><tr><th>В скриптах игры</th><td><code>DELIVERY_TRADE_QUEST</code></td></tr></table>
+<h3>Требования</h3><ul><li>вместительный трюм</li><li>Оле в команде или запас на потери от крыс</li></ul>
+<h3>Таймеры</h3><table><tr><th>Что</th><th>Срок</th><th>Если просрочить</th></tr><tr><td>срок доставки</td><td><b>ограничен, назначается торговцем</b></td><td>провал, оплаты нет</td></tr></table><h3>Порядок действий</h3><ol><li>Взять у владельца магазина заказ на доставку груза, оплата в песо.</li><li>Закупить или загрузить требуемый груз.</li><li>Следить, чтобы груз не сожрали крысы — иначе придётся докупать недостающее (помогает офицер Оле).</li><li>Довезти партию в срок и сдать заказчику.</li></ol><h3>Награды</h3><ul><li>оплата в песо</li><li>Честь, Харизма, Навигация, Торговля</li></ul>
+<h3>Предупреждения</h3><div class="warnbox"><ul><li>крысы съедают часть груза в трюме</li></ul></div><h3>Города квеста</h3><a class="tag" href="../towns.html">любой город</a><h3>Действующие лица</h3><span class="tag">владелец магазина</span><p class="src">Источники: 06-scripts-analysis.md, 12-harbour-sidequests.md</p>
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>
