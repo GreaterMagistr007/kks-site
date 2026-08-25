@@ -25,6 +25,145 @@
     window.addEventListener('resize', () => { if (window.innerWidth > 700) setOpen(false); });
   }
 
+  // --- просмотр изображений в модалке ---
+  // Карты открываются поверх страницы, а не в новой вкладке: в PWA на Android из новой
+  // вкладки нельзя вернуться кнопкой «Назад». Открытие добавляет запись в history,
+  // поэтому системная кнопка «Назад» закрывает просмотр и оставляет пользователя на странице.
+  const IMG_HREF = /\.(webp|png|jpe?g|gif|svg)$/i;
+  const viewer = (() => {
+    let box, stage, pic, caption, opened = false;
+    let scale = 0;   // 0 — вписано в экран, иначе множитель к натуральному размеру
+
+    const natural = () => pic.naturalWidth || 1;
+    const current = () => scale || pic.clientWidth / natural();
+
+    const fit = () => {
+      scale = 0;
+      stage.classList.remove('zoomed');
+      pic.style.width = '';
+    };
+
+    const zoomTo = (value, anchorX, anchorY) => {
+      const before = current();
+      scale = Math.min(8, Math.max(0.05, value));
+      // точка, вокруг которой масштабируем: центр видимой области или место двойного тапа
+      const cx = (anchorX === undefined ? stage.clientWidth / 2 : anchorX) + stage.scrollLeft;
+      const cy = (anchorY === undefined ? stage.clientHeight / 2 : anchorY) + stage.scrollTop;
+      stage.classList.add('zoomed');
+      pic.style.width = natural() * scale + 'px';
+      const k = scale / before;
+      stage.scrollLeft = cx * k - (anchorX === undefined ? stage.clientWidth / 2 : anchorX);
+      stage.scrollTop = cy * k - (anchorY === undefined ? stage.clientHeight / 2 : anchorY);
+    };
+
+    const build = () => {
+      box = document.createElement('div');
+      box.className = 'lb';
+      box.innerHTML =
+        '<div class="lb-bar">' +
+        '<span class="lb-cap"></span>' +
+        '<button type="button" data-lb="out" aria-label="Уменьшить">−</button>' +
+        '<button type="button" data-lb="in" aria-label="Увеличить">+</button>' +
+        '<button type="button" data-lb="fit" aria-label="Вписать в экран">⤢</button>' +
+        '<button type="button" data-lb="close" aria-label="Закрыть просмотр">✕</button>' +
+        '</div><div class="lb-stage"><img class="lb-img" alt=""></div>';
+      document.body.appendChild(box);
+      stage = box.querySelector('.lb-stage');
+      pic = box.querySelector('.lb-img');
+      caption = box.querySelector('.lb-cap');
+
+      box.addEventListener('click', e => {
+        const act = e.target.dataset && e.target.dataset.lb;
+        if (act === 'close' || e.target === stage) close();
+        else if (act === 'in') zoomTo(current() * 1.5);
+        else if (act === 'out') zoomTo(current() / 1.5);
+        else if (act === 'fit') fit();
+      });
+
+      // двойной тап/клик по картинке: натуральный размер <-> вписать
+      let lastTap = 0;
+      const toggle = (x, y) => (scale ? fit() : zoomTo(1, x, y));
+      pic.addEventListener('dblclick', e => {
+        const r = stage.getBoundingClientRect();
+        toggle(e.clientX - r.left, e.clientY - r.top);
+      });
+      pic.addEventListener('touchend', e => {
+        if (e.touches.length) return;
+        const now = e.timeStamp;
+        if (now - lastTap < 300) { e.preventDefault(); toggle(); }
+        lastTap = now;
+      });
+
+      // щипок двумя пальцами
+      let pinchStart = 0, pinchScale = 1;
+      const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+      stage.addEventListener('touchstart', e => {
+        if (e.touches.length === 2) { pinchStart = dist(e.touches); pinchScale = current(); }
+      }, { passive: true });
+      stage.addEventListener('touchmove', e => {
+        if (e.touches.length === 2 && pinchStart) {
+          e.preventDefault();
+          zoomTo(pinchScale * dist(e.touches) / pinchStart);
+        }
+      }, { passive: false });
+      stage.addEventListener('touchend', e => { if (e.touches.length < 2) pinchStart = 0; }, { passive: true });
+    };
+
+    const hide = () => {
+      opened = false;
+      box.classList.remove('open');
+      document.documentElement.style.overflow = '';
+      pic.removeAttribute('src');
+    };
+
+    const close = () => {
+      if (!opened) return;
+      // запись в истории добавляли мы — снимаем её, popstate доведёт закрытие до конца
+      if (history.state && history.state.kksViewer) history.back();
+      else hide();
+    };
+
+    const open = (href, text) => {
+      if (!box) build();
+      fit();
+      pic.src = href;
+      pic.alt = text || '';
+      caption.textContent = text || href.split('/').pop();
+      box.classList.add('open');
+      document.documentElement.style.overflow = 'hidden';
+      opened = true;
+      history.pushState({ kksViewer: true }, '');
+    };
+
+    window.addEventListener('popstate', () => { if (opened) hide(); });
+    document.addEventListener('keydown', e => {
+      if (!opened) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === '+' || e.key === '=') zoomTo(current() * 1.5);
+      else if (e.key === '-') zoomTo(current() / 1.5);
+      else if (e.key === '0') fit();
+    });
+
+    return { open, isOpen: () => opened };
+  })();
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest) return;
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (!IMG_HREF.test(href.split(/[?#]/)[0])) return;
+    // не мешаем открыть картинку в новой вкладке или сохранить её
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    // подпись: заголовок из галереи, иначе подпись фигуры, иначе alt или текст ссылки
+    const fig = a.closest('figure');
+    const cap = fig && (fig.querySelector('figcaption b') || fig.querySelector('figcaption'));
+    const inner = a.querySelector('img');
+    const text = (cap && cap.textContent.trim()) || (inner && inner.alt) || a.textContent.trim();
+    viewer.open(a.href, text.slice(0, 120));
+  });
+
   // --- фильтры на страницах каталогов (квесты, города, карты) ---
   const box = document.querySelector('[data-filter-root]');
   if (box) {

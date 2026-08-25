@@ -97,6 +97,23 @@ mark{background:#5c4a1e;color:#fff3d6;padding:0 2px;border-radius:2px}
 .tips-list li b.num{color:var(--dim);font-weight:400;font-size:12px;margin-right:5px}
 .src{font-size:12px;color:var(--dim);margin-top:4px}
 .back{display:inline-block;margin:0 0 14px;font-size:14px}
+/* просмотр изображений поверх страницы (карты, картинки в тексте) */
+.lb{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;background:#080b0e}
+.lb.open{display:flex}
+.lb-bar{display:flex;align-items:center;gap:6px;padding:7px 10px;
+  background:linear-gradient(180deg,#1b242c,#131a20);border-bottom:1px solid var(--line)}
+.lb-cap{flex:1;min-width:0;font-size:13px;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-bar button{flex:0 0 auto;width:38px;height:34px;padding:0;cursor:pointer;font-size:16px;line-height:1;
+  background:#0d1216;border:1px solid var(--line);border-radius:6px;color:var(--text)}
+.lb-bar button:hover{border-color:var(--accent)}
+.lb-bar button:active{background:#1b242c}
+.lb-stage{flex:1;min-height:0;overflow:auto;display:flex;align-items:center;justify-content:center;
+  padding:8px;overscroll-behavior:contain}
+.lb-img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+/* увеличенная картинка: прокручивается внутри области, а не сжимается */
+.lb-stage.zoomed{align-items:flex-start;justify-content:flex-start}
+.lb-stage.zoomed .lb-img{max-width:none;max-height:none;object-fit:none}
 @media (max-width:700px){
   .top{gap:8px;padding:8px 12px}
   .brand{flex:0 0 auto}
