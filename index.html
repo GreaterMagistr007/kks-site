@@ -32,23 +32,7 @@
 <li>Просмотреть <a href="tips.html">топ-30 фишек</a> — они экономят десятки часов (цена прокачки по сложностям, Интеллект, товар «Оружие» для абордажа).</li>
 <li>Держать под рукой <a href="timers.html">таблицу таймеров</a> и <a href="towns.html">торговый профиль городов</a>.</li>
 </ol>
-<p class="sub" id="kks-offline" hidden></p>
-<script>
-(function () {
-  const el = document.querySelector('#kks-offline');
-  if (!el || !navigator.serviceWorker) return;
-  el.hidden = false;
-  el.textContent = 'Оффлайн-копия: подготовка…';
-  navigator.serviceWorker.addEventListener('message', e => {
-    const d = e.data;
-    if (!d || d.type !== 'kks-cache') return;
-    el.textContent = d.done >= d.total
-      ? 'Оффлайн-копия готова: ' + d.total + ' файлов. Интернет больше не нужен.'
-      : 'Оффлайн-копия загружается: ' + d.done + ' из ' + d.total + ' файлов — можно продолжать читать.';
-  });
-  navigator.serviceWorker.ready.then(r => r.active && r.active.postMessage('kks-status'));
-})();
-</script></main>
+</main>
 <footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-25</footer>
 <script src="assets/app.js"></script>
 <script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script></body></html>

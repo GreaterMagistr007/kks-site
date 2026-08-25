@@ -28,7 +28,15 @@
   // --- фильтры на страницах каталогов (квесты, города, карты) ---
   const box = document.querySelector('[data-filter-root]');
   if (box) {
-    const rows = Array.from(box.querySelectorAll('[data-row]'));
+    // строки лежат рядом с блоком фильтров, а не внутри него — ищем по всему документу
+    const rows = Array.from(document.querySelectorAll('[data-row]'));
+    // группы галереи (карты): заголовок + сетка, их прячем целиком, если внутри ничего не осталось
+    const groups = Array.from(document.querySelectorAll('.gal')).map(gal => ({
+      gal,
+      head: gal.previousElementSibling && /^H[23]$/.test(gal.previousElementSibling.tagName)
+        ? gal.previousElementSibling : null,
+      items: Array.from(gal.querySelectorAll('[data-row]')),
+    })).filter(g => g.items.length);
     const q = document.querySelector('#f-q');
     const selects = Array.from(document.querySelectorAll('[data-facet]'));
     const counter = document.querySelector('#f-count');
@@ -45,6 +53,11 @@
         }
         r.style.display = ok ? '' : 'none';
         if (ok) shown++;
+      });
+      groups.forEach(g => {
+        const empty = g.items.every(it => it.style.display === 'none');
+        g.gal.style.display = empty ? 'none' : '';
+        if (g.head) g.head.style.display = empty ? 'none' : '';
       });
       if (counter) counter.textContent = `показано ${shown} из ${rows.length}`;
     };
