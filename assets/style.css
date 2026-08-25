@@ -40,7 +40,7 @@ h2{font-size:22px;margin:32px 0 10px;padding-bottom:5px;border-bottom:1px solid 
 h3{font-size:18px;margin:22px 0 8px;color:var(--accent2)}
 h4{font-size:16px;margin:16px 0 6px;color:var(--dim)}
 p.sub{color:var(--dim);margin:0 0 22px}
-code{background:#0c1115;padding:1px 5px;border-radius:3px;font-size:13px;color:#cfd8dd}
+code{background:#0c1115;padding:1px 5px;border-radius:3px;font-size:13px;color:#cfd8dd;overflow-wrap:anywhere}
 pre{background:#0c1115;padding:12px;border-radius:6px;overflow-x:auto;border:1px solid var(--line)}
 blockquote{border-left:3px solid var(--accent);margin:14px 0;padding:2px 14px;color:var(--dim)}
 table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto}
