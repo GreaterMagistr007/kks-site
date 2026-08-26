@@ -14,6 +14,10 @@ a:hover{text-decoration:underline}
 .brand{display:flex;flex-direction:column;line-height:1.15;color:var(--text)}
 .brand b{font-size:18px;color:var(--accent);letter-spacing:.3px}
 .brand span{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+/* Где мы находимся: название текущего раздела, квеста или города.
+   Нужно только на узком экране, где бренд занимает место, а активный
+   пункт меню спрятан в бургер и подсказки не даёт. */
+.where{display:none}
 .top nav{display:flex;gap:4px;flex-wrap:wrap;flex:1}
 .top nav a{padding:6px 11px;border-radius:5px;color:var(--text);font-size:14px}
 .top nav a:hover{background:#222e37;text-decoration:none}
@@ -152,9 +156,21 @@ mark{background:#5c4a1e;color:#fff3d6;padding:0 2px;border-radius:2px}
 .lb-stage.zoomed .lb-img{max-width:none;max-height:none;object-fit:none}
 @media (max-width:700px){
   .top{gap:8px;padding:8px 12px}
-  .brand{flex:0 0 auto}
-  .brand b{font-size:16px}
-  .brand span{display:none}
+  /* вместо постоянного бренда показываем текущий раздел — на телефоне это
+     единственная подсказка о месте: активный пункт меню скрыт в бургере.
+     Домой всё равно можно уйти через пункт «Главная» в меню. */
+  .brand{display:none}
+  /* Нулевой базис принципиален: перенос во flex считается по содержимому ДО сжатия,
+     поэтому при basis:auto длинное название («Таймеры и точки невозврата») выдавливало
+     кнопку меню на вторую строку. С basis:0 строка не переносится никогда, а доля
+     роста 6 против 1 у поиска отдаёт названию большую часть свободного места:
+     замером на экране 390px это 183px под название и 110px под поиск, чего хватает
+     на типичные имена квестов («Бесчестный конкурент» — 179px). Дальше 6:1 выигрыш
+     почти исчезает, а поиск становится неудобным.
+     min-width:0 — иначе в flex не срабатывает обрезка троеточием. */
+  .where{display:block;order:1;flex:6 1 0;min-width:0;
+    color:var(--accent);font-size:16px;font-weight:600;line-height:1.2;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* малый базис вместо auto: при flex-wrap перенос считается по базовой ширине,
      и поле поиска 230px выталкивало кнопку на вторую строку */
   .qs{order:2;flex:1 1 80px;min-width:0}
