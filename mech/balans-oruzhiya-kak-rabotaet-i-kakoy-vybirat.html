@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Баланс оружия: как работает и какой выбирать — Корсары: Каждому Своё</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0f1418"><link rel="icon" href="../assets/icon-192.png"><link rel="apple-touch-icon" href="../assets/icon-192.png"></head><body>
+<header class="top">
+  <a class="brand" href="../index.html"><b>Каждому Своё</b><span>справочник 1.7.3</span></a>
+  <span class="where">Баланс оружия</span>
+  <nav id="mainnav"><a href="../index.html" class="">Главная</a><a href="../guide.html" class="">Прохождение</a><a href="../quests.html" class="">Квесты</a><a href="../towns.html" class="">Города</a><a href="../trade.html" class="">Торговля</a><a href="../tips.html" class="">Фишки</a><a href="../maps.html" class="">Карты</a><a href="../timers.html" class="">Таймеры</a><a href="../mechanics.html" class="on">Механика</a><a href="../achievements.html" class="">Достижения</a><a href="../search.html" class="">Поиск</a></nav>
+  <form class="qs" action="../search.html" method="get"><input type="search" name="q" placeholder="Поиск: квест, город, товар…" autocomplete="off"></form>
+  <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainnav"><span></span></button>
+</header>
+<main class="wide">
+<h1>Баланс оружия: как работает и какой выбирать</h1>
+
+<a class="back" href="../mechanics.html">← вся механика</a><p>Раздел собран из кода игры 1.7.3 — все формулы и числа взяты из скриптов, внешние источники приведены отдельно для сверки. Уровень достоверности: <code>[код]</code> — высший (значение прочитано в скрипте), <code>[сверка]</code> — то же утверждение независимо подтверждено внешним источником, <code>[расхождение]</code> — внешний источник расходится с кодом, верить коду.</p>
+<h3>Что такое баланс <code>[код]</code> <code>ITEMS/initItems.c:3670-3671</code></h3>
+<pre><code>blade.Balance = fRandSmall(2.0);          // диапазон 0.00 .. 2.00
+if(ModelID == &quot;unarmed&quot;) blade.Balance = 1.0;   // у кулаков фиксирован
+</code></pre>
+<ul>
+<li>Баланс — свойство <strong>экземпляра</strong>, а не модели клинка: две «Бретты» с одной полки имеют разный баланс, вес и атаку <code>[код]</code> <code>initItems.c:3654-3703</code> <code>[сверка]</code> форум и corsairslegacy говорят то же.</li>
+<li>Шаг значения — <strong>1/16 = 0.0625</strong> (проверено выгрузкой всех клинков из реального сохранения: 0.0000, 0.0625, 0.1250 … 2.0000) <code>[код]</code> + <code>[проверка на сейве]</code>.</li>
+<li>Часть квестовых клинков получает баланс жёстко: <code>1.0</code> (<code>Norman.c:505</code>), <code>1.9</code> (<code>Puancie.c:1474</code>), <code>2.0</code> (<code>Vincento.c:435</code>, <code>reaction_functions.c:29215</code>) <code>[код]</code>.</li>
+<li>На цену клинка баланс <strong>не влияет</strong>: <code>35*(1/Curve + Lenght)*(Attack*2-30)</code> для лёгких <code>[код]</code> <code>initItems.c:3705-3728</code>. Идеальный экземпляр стоит столько же, сколько мусорный.</li>
+</ul>
+<h3>Куда именно входит баланс <code>[код]</code> <code>Loc_ai/LAi_fightparams.c:63-256</code></h3>
+<p>Баланс работает через два множителя, и это <strong>единственное</strong> его применение в бою:</p>
+<table>
+<thead>
+<tr>
+<th>Множитель</th>
+<th>Формула</th>
+<th>B = 0</th>
+<th>B = 1</th>
+<th>B = 2</th>
+<th>На какие удары</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«к острию»</td>
+<td><code>0.85 + B/6.67</code></td>
+<td>0.850</td>
+<td>1.000</td>
+<td>1.150</td>
+<td>быстрый (fast), пробивающий (break)</td>
+</tr>
+<tr>
+<td>«к рукояти»</td>
+<td><code>1.22 - B*0.22</code></td>
+<td>1.220</td>
+<td>1.000</td>
+<td>0.780</td>
+<td>обычный (force), финт (feint, feintc)</td>
+</tr>
+<tr>
+<td>—</td>
+<td>множителя нет</td>
+<td>1.000</td>
+<td>1.000</td>
+<td>1.000</td>
+<td>круговой (round)</td>
+</tr>
+</tbody>
+</table>
+<p>Отсюда весь размах: переход с B = 2 на B = 0 даёт <strong>+56 %</strong> к обычному удару и финту и <strong>−26 %</strong> к быстрому и пробивающему. Обратный переход — <strong>+35 %</strong> к быстрому и пробивающему и <strong>−36 %</strong> к обычному и финту. Круговой удар балансом не управляется вовсе <code>[код]</code>.</p>
+<p>Больше баланс нигде в бою не участвует: ни в скорости ударов, ни в расходе энергии (<code>LAi_fightparams.c:447-495</code>), ни в блоке и парировании. Единственное место вне боя — функция автовыбора оружия, см. ниже <code>[код]</code>.</p>
+<h3>FencingL (рапиры и шпаги): влияние баланса <code>[код]</code></h3>
+<p><svg viewBox="0 0 720 330" width="100%" role="img" aria-label="рапиры и шпаги — коэффициент удара в зависимости от баланса">
+<rect x="0" y="0" width="720" height="330" fill="#151c22" rx="8"/>
+<text x="62" y="16" fill="#e6e2d8" font-size="13" font-family="sans-serif">рапиры и шпаги — коэффициент удара в зависимости от баланса</text>
+<line x1="62" y1="262.0" x2="560" y2="262.0" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="266.0" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.00</text>
+<line x1="62" y1="218.8" x2="560" y2="218.8" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="222.8" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.25</text>
+<line x1="62" y1="175.6" x2="560" y2="175.6" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="179.6" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.50</text>
+<line x1="62" y1="132.5" x2="560" y2="132.5" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="136.5" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.75</text>
+<line x1="62" y1="89.3" x2="560" y2="89.3" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="93.3" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">1.00</text>
+<line x1="62" y1="46.1" x2="560" y2="46.1" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="50.1" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">1.25</text>
+<line x1="62.0" y1="26" x2="62.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="62.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">0.0</text>
+<line x1="186.5" y1="26" x2="186.5" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="186.5" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">0.5</text>
+<line x1="311.0" y1="26" x2="311.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="311.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">1.0</text>
+<line x1="435.5" y1="26" x2="435.5" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="435.5" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">1.5</text>
+<line x1="560.0" y1="26" x2="560.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="560.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">2.0</text>
+<text x="311.0" y="296" fill="#9aa7b1" font-size="12" text-anchor="middle" font-family="sans-serif">баланс клинка</text>
+<text x="14" y="144" fill="#9aa7b1" font-size="12" font-family="sans-serif" transform="rotate(-90 14 144)" text-anchor="middle">коэффициент урона</text>
+<polyline points="62.0,173.9 74.5,173.1 86.9,172.4 99.3,171.6 111.8,170.8 124.2,170.0 136.7,169.3 149.1,168.5 161.6,167.7 174.1,166.9 186.5,166.1 199.0,165.4 211.4,164.6 223.8,163.8 236.3,163.0 248.8,162.3 261.2,161.5 273.6,160.7 286.1,159.9 298.5,159.2 311.0,158.4 323.4,157.6 335.9,156.8 348.3,156.0 360.8,155.3 373.2,154.5 385.7,153.7 398.2,152.9 410.6,152.2 423.1,151.4 435.5,150.6 447.9,149.8 460.4,149.1 472.8,148.3 485.3,147.5 497.8,146.7 510.2,145.9 522.7,145.2 535.1,144.4 547.5,143.6 560.0,142.8" fill="none" stroke="#7fb3c8" stroke-width="2.5"/>
+<line x1="582" y1="38" x2="606" y2="38" stroke="#7fb3c8" stroke-width="3"/>
+<text x="612" y="42" fill="#e6e2d8" font-size="12" font-family="sans-serif">быстрый</text>
+<polyline points="62.0,51.3 74.5,53.2 86.9,55.1 99.3,57.0 111.8,58.9 124.2,60.8 136.7,62.7 149.1,64.6 161.6,66.5 174.1,68.4 186.5,70.3 199.0,72.2 211.4,74.1 223.8,76.0 236.3,77.9 248.8,79.8 261.2,81.7 273.6,83.6 286.1,85.5 298.5,87.4 311.0,89.3 323.4,91.2 335.9,93.1 348.3,95.0 360.8,96.9 373.2,98.8 385.7,100.7 398.2,102.6 410.6,104.5 423.1,106.4 435.5,108.3 447.9,110.2 460.4,112.1 472.8,114.0 485.3,115.9 497.8,117.8 510.2,119.7 522.7,121.6 535.1,123.5 547.5,125.4 560.0,127.3" fill="none" stroke="#d9a13b" stroke-width="2.5"/>
+<line x1="582" y1="60" x2="606" y2="60" stroke="#d9a13b" stroke-width="3"/>
+<text x="612" y="64" fill="#e6e2d8" font-size="12" font-family="sans-serif">обычный</text>
+<polyline points="62.0,158.4 74.5,158.4 86.9,158.4 99.3,158.4 111.8,158.4 124.2,158.4 136.7,158.4 149.1,158.4 161.6,158.4 174.1,158.4 186.5,158.4 199.0,158.4 211.4,158.4 223.8,158.4 236.3,158.4 248.8,158.4 261.2,158.4 273.6,158.4 286.1,158.4 298.5,158.4 311.0,158.4 323.4,158.4 335.9,158.4 348.3,158.4 360.8,158.4 373.2,158.4 385.7,158.4 398.2,158.4 410.6,158.4 423.1,158.4 435.5,158.4 447.9,158.4 460.4,158.4 472.8,158.4 485.3,158.4 497.8,158.4 510.2,158.4 522.7,158.4 535.1,158.4 547.5,158.4 560.0,158.4" fill="none" stroke="#7fbf7f" stroke-width="2.5"/>
+<line x1="582" y1="82" x2="606" y2="82" stroke="#7fbf7f" stroke-width="3"/>
+<text x="612" y="86" fill="#e6e2d8" font-size="12" font-family="sans-serif">круговой</text>
+<polyline points="62.0,159.2 74.5,158.3 86.9,157.4 99.3,156.5 111.8,155.6 124.2,154.7 136.7,153.8 149.1,152.9 161.6,152.0 174.1,151.1 186.5,150.2 199.0,149.3 211.4,148.4 223.8,147.5 236.3,146.5 248.8,145.6 261.2,144.7 273.6,143.8 286.1,142.9 298.5,142.0 311.0,141.1 323.4,140.2 335.9,139.3 348.3,138.4 360.8,137.5 373.2,136.6 385.7,135.7 398.2,134.8 410.6,133.9 423.1,133.0 435.5,132.0 447.9,131.1 460.4,130.2 472.8,129.3 485.3,128.4 497.8,127.5 510.2,126.6 522.7,125.7 535.1,124.8 547.5,123.9 560.0,123.0" fill="none" stroke="#d97b6c" stroke-width="2.5"/>
+<line x1="582" y1="104" x2="606" y2="104" stroke="#d97b6c" stroke-width="3"/>
+<text x="612" y="108" fill="#e6e2d8" font-size="12" font-family="sans-serif">пробивающий</text>
+<polyline points="62.0,72.4 74.5,74.1 86.9,75.8 99.3,77.5 111.8,79.2 124.2,80.9 136.7,82.6 149.1,84.3 161.6,86.0 174.1,87.7 186.5,89.5 199.0,91.2 211.4,92.9 223.8,94.6 236.3,96.3 248.8,98.0 261.2,99.7 273.6,101.4 286.1,103.1 298.5,104.8 311.0,106.6 323.4,108.3 335.9,110.0 348.3,111.7 360.8,113.4 373.2,115.1 385.7,116.8 398.2,118.5 410.6,120.2 423.1,121.9 435.5,123.7 447.9,125.4 460.4,127.1 472.8,128.8 485.3,130.5 497.8,132.2 510.2,133.9 522.7,135.6 535.1,137.3 547.5,139.0 560.0,140.8" fill="none" stroke="#c58fd0" stroke-width="2.5"/>
+<line x1="582" y1="126" x2="606" y2="126" stroke="#c58fd0" stroke-width="3"/>
+<text x="612" y="130" fill="#e6e2d8" font-size="12" font-family="sans-serif">финт</text>
+<text x="582" y="154" fill="#9aa7b1" font-size="11" font-family="sans-serif">L = C = 1.00, вес 2.50</text>
+</svg></p>
+<table>
+<thead>
+<tr>
+<th>Удар</th>
+<th>B = 0</th>
+<th>B = 1</th>
+<th>B = 2</th>
+<th>Что делать</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>быстрый (fast)</td>
+<td>0.51</td>
+<td>0.6</td>
+<td>0.69</td>
+<td>нужен баланс к 2</td>
+</tr>
+<tr>
+<td>обычный (force)</td>
+<td>1.22</td>
+<td>1</td>
+<td>0.78</td>
+<td>нужен баланс к 0</td>
+</tr>
+<tr>
+<td>круговой (round)</td>
+<td>0.6</td>
+<td>0.6</td>
+<td>0.6</td>
+<td>балансу безразличен</td>
+</tr>
+<tr>
+<td>пробивающий (break)</td>
+<td>0.595</td>
+<td>0.7</td>
+<td>0.805</td>
+<td>нужен баланс к 2</td>
+</tr>
+<tr>
+<td>финт (feint)</td>
+<td>1.098</td>
+<td>0.9</td>
+<td>0.702</td>
+<td>нужен баланс к 0</td>
+</tr>
+</tbody>
+</table>
+<p>Значения при <code>L = C = 1.00</code> и весе 2.50 (середина диапазона класса 2.0–3.0, <code>initItems.c:3654-3668</code>). Сильнейший удар класса при балансе 0 — <strong>обычный</strong>, при балансе 2 — <strong>пробивающий</strong> <code>[код]</code>.</p>
+<h3>FencingS (сабли и тесаки): влияние баланса <code>[код]</code></h3>
+<p><svg viewBox="0 0 720 330" width="100%" role="img" aria-label="сабли и тесаки — коэффициент удара в зависимости от баланса">
+<rect x="0" y="0" width="720" height="330" fill="#151c22" rx="8"/>
+<text x="62" y="16" fill="#e6e2d8" font-size="13" font-family="sans-serif">сабли и тесаки — коэффициент удара в зависимости от баланса</text>
+<line x1="62" y1="262.0" x2="560" y2="262.0" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="266.0" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.00</text>
+<line x1="62" y1="216.2" x2="560" y2="216.2" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="220.2" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.25</text>
+<line x1="62" y1="170.4" x2="560" y2="170.4" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="174.4" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.50</text>
+<line x1="62" y1="124.6" x2="560" y2="124.6" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="128.6" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.75</text>
+<line x1="62" y1="78.7" x2="560" y2="78.7" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="82.7" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">1.00</text>
+<line x1="62" y1="32.9" x2="560" y2="32.9" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="36.9" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">1.25</text>
+<line x1="62.0" y1="26" x2="62.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="62.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">0.0</text>
+<line x1="186.5" y1="26" x2="186.5" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="186.5" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">0.5</text>
+<line x1="311.0" y1="26" x2="311.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="311.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">1.0</text>
+<line x1="435.5" y1="26" x2="435.5" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="435.5" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">1.5</text>
+<line x1="560.0" y1="26" x2="560.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="560.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">2.0</text>
+<text x="311.0" y="296" fill="#9aa7b1" font-size="12" text-anchor="middle" font-family="sans-serif">баланс клинка</text>
+<text x="14" y="144" fill="#9aa7b1" font-size="12" font-family="sans-serif" transform="rotate(-90 14 144)" text-anchor="middle">коэффициент урона</text>
+<polyline points="62.0,106.2 74.5,104.9 86.9,103.5 99.3,102.1 111.8,100.7 124.2,99.4 136.7,98.0 149.1,96.6 161.6,95.2 174.1,93.9 186.5,92.5 199.0,91.1 211.4,89.7 223.8,88.4 236.3,87.0 248.8,85.6 261.2,84.3 273.6,82.9 286.1,81.5 298.5,80.1 311.0,78.8 323.4,77.4 335.9,76.0 348.3,74.6 360.8,73.3 373.2,71.9 385.7,70.5 398.2,69.1 410.6,67.8 423.1,66.4 435.5,65.0 447.9,63.6 460.4,62.3 472.8,60.9 485.3,59.5 497.8,58.2 510.2,56.8 522.7,55.4 535.1,54.0 547.5,52.7 560.0,51.3" fill="none" stroke="#7fb3c8" stroke-width="2.5"/>
+<line x1="582" y1="38" x2="606" y2="38" stroke="#7fb3c8" stroke-width="3"/>
+<text x="612" y="42" fill="#e6e2d8" font-size="12" font-family="sans-serif">быстрый</text>
+<polyline points="62.0,127.9 74.5,129.1 86.9,130.3 99.3,131.5 111.8,132.7 124.2,133.9 136.7,135.1 149.1,136.3 161.6,137.5 174.1,138.7 186.5,140.0 199.0,141.2 211.4,142.4 223.8,143.6 236.3,144.8 248.8,146.0 261.2,147.2 273.6,148.4 286.1,149.6 298.5,150.8 311.0,152.0 323.4,153.3 335.9,154.5 348.3,155.7 360.8,156.9 373.2,158.1 385.7,159.3 398.2,160.5 410.6,161.7 423.1,162.9 435.5,164.1 447.9,165.4 460.4,166.6 472.8,167.8 485.3,169.0 497.8,170.2 510.2,171.4 522.7,172.6 535.1,173.8 547.5,175.0 560.0,176.2" fill="none" stroke="#d9a13b" stroke-width="2.5"/>
+<line x1="582" y1="60" x2="606" y2="60" stroke="#d9a13b" stroke-width="3"/>
+<text x="612" y="64" fill="#e6e2d8" font-size="12" font-family="sans-serif">обычный</text>
+<polyline points="62.0,97.1 74.5,97.1 86.9,97.1 99.3,97.1 111.8,97.1 124.2,97.1 136.7,97.1 149.1,97.1 161.6,97.1 174.1,97.1 186.5,97.1 199.0,97.1 211.4,97.1 223.8,97.1 236.3,97.1 248.8,97.1 261.2,97.1 273.6,97.1 286.1,97.1 298.5,97.1 311.0,97.1 323.4,97.1 335.9,97.1 348.3,97.1 360.8,97.1 373.2,97.1 385.7,97.1 398.2,97.1 410.6,97.1 423.1,97.1 435.5,97.1 447.9,97.1 460.4,97.1 472.8,97.1 485.3,97.1 497.8,97.1 510.2,97.1 522.7,97.1 535.1,97.1 547.5,97.1 560.0,97.1" fill="none" stroke="#7fbf7f" stroke-width="2.5"/>
+<line x1="582" y1="82" x2="606" y2="82" stroke="#7fbf7f" stroke-width="3"/>
+<text x="612" y="86" fill="#e6e2d8" font-size="12" font-family="sans-serif">круговой</text>
+<polyline points="62.0,137.4 74.5,136.3 86.9,135.2 99.3,134.1 111.8,133.0 124.2,131.9 136.7,130.8 149.1,129.7 161.6,128.6 174.1,127.5 186.5,126.4 199.0,125.3 211.4,124.2 223.8,123.1 236.3,122.0 248.8,120.9 261.2,119.8 273.6,118.7 286.1,117.6 298.5,116.5 311.0,115.4 323.4,114.3 335.9,113.2 348.3,112.1 360.8,111.0 373.2,109.9 385.7,108.8 398.2,107.7 410.6,106.6 423.1,105.5 435.5,104.4 447.9,103.3 460.4,102.2 472.8,101.1 485.3,100.0 497.8,98.9 510.2,97.8 522.7,96.7 535.1,95.6 547.5,94.5 560.0,93.4" fill="none" stroke="#d97b6c" stroke-width="2.5"/>
+<line x1="582" y1="104" x2="606" y2="104" stroke="#d97b6c" stroke-width="3"/>
+<text x="612" y="108" fill="#e6e2d8" font-size="12" font-family="sans-serif">пробивающий</text>
+<polyline points="62.0,172.6 74.5,173.4 86.9,174.2 99.3,175.0 111.8,175.8 124.2,176.6 136.7,177.4 149.1,178.2 161.6,179.0 174.1,179.8 186.5,180.6 199.0,181.4 211.4,182.2 223.8,183.1 236.3,183.9 248.8,184.7 261.2,185.5 273.6,186.3 286.1,187.1 298.5,187.9 311.0,188.7 323.4,189.5 335.9,190.3 348.3,191.1 360.8,191.9 373.2,192.7 385.7,193.5 398.2,194.3 410.6,195.1 423.1,196.0 435.5,196.8 447.9,197.6 460.4,198.4 472.8,199.2 485.3,200.0 497.8,200.8 510.2,201.6 522.7,202.4 535.1,203.2 547.5,204.0 560.0,204.8" fill="none" stroke="#c58fd0" stroke-width="2.5"/>
+<line x1="582" y1="126" x2="606" y2="126" stroke="#c58fd0" stroke-width="3"/>
+<text x="612" y="130" fill="#e6e2d8" font-size="12" font-family="sans-serif">финт</text>
+<text x="582" y="154" fill="#9aa7b1" font-size="11" font-family="sans-serif">L = C = 1.00, вес 3.00</text>
+</svg></p>
+<table>
+<thead>
+<tr>
+<th>Удар</th>
+<th>B = 0</th>
+<th>B = 1</th>
+<th>B = 2</th>
+<th>Что делать</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>быстрый (fast)</td>
+<td>0.85</td>
+<td>1</td>
+<td>1.15</td>
+<td>нужен баланс к 2</td>
+</tr>
+<tr>
+<td>обычный (force)</td>
+<td>0.732</td>
+<td>0.6</td>
+<td>0.468</td>
+<td>нужен баланс к 0</td>
+</tr>
+<tr>
+<td>круговой (round)</td>
+<td>0.9</td>
+<td>0.9</td>
+<td>0.9</td>
+<td>балансу безразличен</td>
+</tr>
+<tr>
+<td>пробивающий (break)</td>
+<td>0.68</td>
+<td>0.8</td>
+<td>0.92</td>
+<td>нужен баланс к 2</td>
+</tr>
+<tr>
+<td>финт (feint)</td>
+<td>0.488</td>
+<td>0.4</td>
+<td>0.312</td>
+<td>нужен баланс к 0</td>
+</tr>
+</tbody>
+</table>
+<p>Значения при <code>L = C = 1.00</code> и весе 3.00 (середина диапазона класса 2.4–3.6, <code>initItems.c:3654-3668</code>). Сильнейший удар класса при балансе 0 — <strong>круговой</strong>, при балансе 2 — <strong>быстрый</strong> <code>[код]</code>.</p>
+<h3>FencingH (палаши и топоры): влияние баланса <code>[код]</code></h3>
+<p><svg viewBox="0 0 720 330" width="100%" role="img" aria-label="палаши и топоры — коэффициент удара в зависимости от баланса">
+<rect x="0" y="0" width="720" height="330" fill="#151c22" rx="8"/>
+<text x="62" y="16" fill="#e6e2d8" font-size="13" font-family="sans-serif">палаши и топоры — коэффициент удара в зависимости от баланса</text>
+<line x1="62" y1="262.0" x2="560" y2="262.0" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="266.0" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.00</text>
+<line x1="62" y1="216.2" x2="560" y2="216.2" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="220.2" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.25</text>
+<line x1="62" y1="170.4" x2="560" y2="170.4" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="174.4" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.50</text>
+<line x1="62" y1="124.6" x2="560" y2="124.6" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="128.6" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">0.75</text>
+<line x1="62" y1="78.7" x2="560" y2="78.7" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="82.7" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">1.00</text>
+<line x1="62" y1="32.9" x2="560" y2="32.9" stroke="#2b3841" stroke-width="1"/>
+<text x="56" y="36.9" fill="#9aa7b1" font-size="11" text-anchor="end" font-family="sans-serif">1.25</text>
+<line x1="62.0" y1="26" x2="62.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="62.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">0.0</text>
+<line x1="186.5" y1="26" x2="186.5" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="186.5" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">0.5</text>
+<line x1="311.0" y1="26" x2="311.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="311.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">1.0</text>
+<line x1="435.5" y1="26" x2="435.5" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="435.5" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">1.5</text>
+<line x1="560.0" y1="26" x2="560.0" y2="262" stroke="#2b3841" stroke-width="1"/>
+<text x="560.0" y="278" fill="#9aa7b1" font-size="11" text-anchor="middle" font-family="sans-serif">2.0</text>
+<text x="311.0" y="296" fill="#9aa7b1" font-size="12" text-anchor="middle" font-family="sans-serif">баланс клинка</text>
+<text x="14" y="144" fill="#9aa7b1" font-size="12" font-family="sans-serif" transform="rotate(-90 14 144)" text-anchor="middle">коэффициент урона</text>
+<polyline points="62.0,121.8 74.5,120.6 86.9,119.3 99.3,118.1 111.8,116.9 124.2,115.6 136.7,114.4 149.1,113.2 161.6,111.9 174.1,110.7 186.5,109.4 199.0,108.2 211.4,107.0 223.8,105.7 236.3,104.5 248.8,103.3 261.2,102.0 273.6,100.8 286.1,99.6 298.5,98.3 311.0,97.1 323.4,95.8 335.9,94.6 348.3,93.4 360.8,92.1 373.2,90.9 385.7,89.7 398.2,88.4 410.6,87.2 423.1,86.0 435.5,84.7 447.9,83.5 460.4,82.2 472.8,81.0 485.3,79.8 497.8,78.5 510.2,77.3 522.7,76.1 535.1,74.8 547.5,73.6 560.0,72.4" fill="none" stroke="#7fb3c8" stroke-width="2.5"/>
+<line x1="582" y1="38" x2="606" y2="38" stroke="#7fb3c8" stroke-width="3"/>
+<text x="612" y="42" fill="#e6e2d8" font-size="12" font-family="sans-serif">быстрый</text>
+<polyline points="62.0,150.2 74.5,151.2 86.9,152.2 99.3,153.2 111.8,154.2 124.2,155.3 136.7,156.3 149.1,157.3 161.6,158.3 174.1,159.3 186.5,160.3 199.0,161.3 211.4,162.3 223.8,163.3 236.3,164.3 248.8,165.3 261.2,166.3 273.6,167.3 286.1,168.4 298.5,169.4 311.0,170.4 323.4,171.4 335.9,172.4 348.3,173.4 360.8,174.4 373.2,175.4 385.7,176.4 398.2,177.4 410.6,178.4 423.1,179.4 435.5,180.5 447.9,181.5 460.4,182.5 472.8,183.5 485.3,184.5 497.8,185.5 510.2,186.5 522.7,187.5 535.1,188.5 547.5,189.5 560.0,190.5" fill="none" stroke="#d9a13b" stroke-width="2.5"/>
+<line x1="582" y1="60" x2="606" y2="60" stroke="#d9a13b" stroke-width="3"/>
+<text x="612" y="64" fill="#e6e2d8" font-size="12" font-family="sans-serif">обычный</text>
+<polyline points="62.0,133.7 74.5,133.7 86.9,133.7 99.3,133.7 111.8,133.7 124.2,133.7 136.7,133.7 149.1,133.7 161.6,133.7 174.1,133.7 186.5,133.7 199.0,133.7 211.4,133.7 223.8,133.7 236.3,133.7 248.8,133.7 261.2,133.7 273.6,133.7 286.1,133.7 298.5,133.7 311.0,133.7 323.4,133.7 335.9,133.7 348.3,133.7 360.8,133.7 373.2,133.7 385.7,133.7 398.2,133.7 410.6,133.7 423.1,133.7 435.5,133.7 447.9,133.7 460.4,133.7 472.8,133.7 485.3,133.7 497.8,133.7 510.2,133.7 522.7,133.7 535.1,133.7 547.5,133.7 560.0,133.7" fill="none" stroke="#7fbf7f" stroke-width="2.5"/>
+<line x1="582" y1="82" x2="606" y2="82" stroke="#7fbf7f" stroke-width="3"/>
+<text x="612" y="86" fill="#e6e2d8" font-size="12" font-family="sans-serif">круговой</text>
+<polyline points="62.0,106.2 74.5,104.9 86.9,103.5 99.3,102.1 111.8,100.7 124.2,99.4 136.7,98.0 149.1,96.6 161.6,95.2 174.1,93.9 186.5,92.5 199.0,91.1 211.4,89.7 223.8,88.4 236.3,87.0 248.8,85.6 261.2,84.3 273.6,82.9 286.1,81.5 298.5,80.1 311.0,78.8 323.4,77.4 335.9,76.0 348.3,74.6 360.8,73.3 373.2,71.9 385.7,70.5 398.2,69.1 410.6,67.8 423.1,66.4 435.5,65.0 447.9,63.6 460.4,62.3 472.8,60.9 485.3,59.5 497.8,58.2 510.2,56.8 522.7,55.4 535.1,54.0 547.5,52.7 560.0,51.3" fill="none" stroke="#d97b6c" stroke-width="2.5"/>
+<line x1="582" y1="104" x2="606" y2="104" stroke="#d97b6c" stroke-width="3"/>
+<text x="612" y="108" fill="#e6e2d8" font-size="12" font-family="sans-serif">пробивающий</text>
+<polyline points="62.0,172.6 74.5,173.4 86.9,174.2 99.3,175.0 111.8,175.8 124.2,176.6 136.7,177.4 149.1,178.2 161.6,179.0 174.1,179.8 186.5,180.6 199.0,181.4 211.4,182.2 223.8,183.1 236.3,183.9 248.8,184.7 261.2,185.5 273.6,186.3 286.1,187.1 298.5,187.9 311.0,188.7 323.4,189.5 335.9,190.3 348.3,191.1 360.8,191.9 373.2,192.7 385.7,193.5 398.2,194.3 410.6,195.1 423.1,196.0 435.5,196.8 447.9,197.6 460.4,198.4 472.8,199.2 485.3,200.0 497.8,200.8 510.2,201.6 522.7,202.4 535.1,203.2 547.5,204.0 560.0,204.8" fill="none" stroke="#c58fd0" stroke-width="2.5"/>
+<line x1="582" y1="126" x2="606" y2="126" stroke="#c58fd0" stroke-width="3"/>
+<text x="612" y="130" fill="#e6e2d8" font-size="12" font-family="sans-serif">финт</text>
+<text x="582" y="154" fill="#9aa7b1" font-size="11" font-family="sans-serif">L = C = 1.00, вес 3.75</text>
+</svg></p>
+<table>
+<thead>
+<tr>
+<th>Удар</th>
+<th>B = 0</th>
+<th>B = 1</th>
+<th>B = 2</th>
+<th>Что делать</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>быстрый (fast)</td>
+<td>0.765</td>
+<td>0.9</td>
+<td>1.035</td>
+<td>нужен баланс к 2</td>
+</tr>
+<tr>
+<td>обычный (force)</td>
+<td>0.61</td>
+<td>0.5</td>
+<td>0.39</td>
+<td>нужен баланс к 0</td>
+</tr>
+<tr>
+<td>круговой (round)</td>
+<td>0.7</td>
+<td>0.7</td>
+<td>0.7</td>
+<td>балансу безразличен</td>
+</tr>
+<tr>
+<td>пробивающий (break)</td>
+<td>0.85</td>
+<td>1</td>
+<td>1.15</td>
+<td>нужен баланс к 2</td>
+</tr>
+<tr>
+<td>финт (feint)</td>
+<td>0.488</td>
+<td>0.4</td>
+<td>0.312</td>
+<td>нужен баланс к 0</td>
+</tr>
+</tbody>
+</table>
+<p>Значения при <code>L = C = 1.00</code> и весе 3.75 (середина диапазона класса 3.0–4.5, <code>initItems.c:3654-3668</code>). Сильнейший удар класса при балансе 0 — <strong>пробивающий</strong>, при балансе 2 — <strong>пробивающий</strong> <code>[код]</code>.</p>
+<h3>Какой клинок под какой удар <code>[код]</code> <code>initItems.c:101-155</code></h3>
+<p>Длина и кривизна фиксированы для модели, поэтому «лучший под удар» определяется однозначно, а баланс добирается перебором экземпляров.</p>
+<p><svg viewBox="0 0 720 264" width="100%" role="img" aria-label="Рапиры и шпаги под обычный удар (баланс 0)">
+<rect x="0" y="0" width="720" height="264" fill="#151c22" rx="8"/>
+<text x="16" y="20" fill="#e6e2d8" font-size="13" font-family="sans-serif">Рапиры и шпаги под обычный удар (баланс 0)</text>
+<text x="16" y="34" fill="#9aa7b1" font-size="11" font-family="sans-serif">при балансе 0.0, вес 2.50</text>
+<text x="182" y="54" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Асоледа</text>
+<rect x="190" y="42" width="338.1" height="16" fill="#d9a13b" rx="3"/>
+<text x="536.1" y="54" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.403  (Д 1.15 / И 1.00)</text>
+<text x="182" y="80" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Стокката</text>
+<rect x="190" y="68" width="308.7" height="16" fill="#d9a13b" rx="3"/>
+<text x="506.7" y="80" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.281  (Д 1.05 / И 1.00)</text>
+<text x="182" y="106" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Саксенфедер</text>
+<rect x="190" y="94" width="308.7" height="16" fill="#d9a13b" rx="3"/>
+<text x="506.7" y="106" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.281  (Д 1.05 / И 1.00)</text>
+<text x="182" y="132" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Бильбо</text>
+<rect x="190" y="120" width="294.0" height="16" fill="#d9a13b" rx="3"/>
+<text x="492.0" y="132" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.220  (Д 1.10 / И 1.10)</text>
+<text x="182" y="158" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Бретта</text>
+<rect x="190" y="146" width="294.0" height="16" fill="#d9a13b" rx="3"/>
+<text x="492.0" y="158" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.220  (Д 1.00 / И 1.00)</text>
+<text x="182" y="184" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Паппенхаймер</text>
+<rect x="190" y="172" width="294.0" height="16" fill="#d9a13b" rx="3"/>
+<text x="492.0" y="184" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.220  (Д 1.05 / И 1.05)</text>
+<text x="182" y="210" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Моргана</text>
+<rect x="190" y="198" width="280.6" height="16" fill="#d9a13b" rx="3"/>
+<text x="478.6" y="210" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.165  (Д 1.05 / И 1.10)</text>
+<text x="182" y="236" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Карцолета</text>
+<rect x="190" y="224" width="279.3" height="16" fill="#d9a13b" rx="3"/>
+<text x="477.3" y="236" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.159  (Д 0.95 / И 1.00)</text>
+</svg></p>
+<p><svg viewBox="0 0 720 264" width="100%" role="img" aria-label="Рапиры и шпаги под быстрый удар (баланс 2)">
+<rect x="0" y="0" width="720" height="264" fill="#151c22" rx="8"/>
+<text x="16" y="20" fill="#e6e2d8" font-size="13" font-family="sans-serif">Рапиры и шпаги под быстрый удар (баланс 2)</text>
+<text x="16" y="34" fill="#9aa7b1" font-size="11" font-family="sans-serif">при балансе 2.0, вес 2.50</text>
+<text x="182" y="54" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Бильбо</text>
+<rect x="190" y="42" width="338.1" height="16" fill="#7fb3c8" rx="3"/>
+<text x="536.1" y="54" fill="#9aa7b1" font-size="11" font-family="sans-serif">0.835  (Д 1.10 / И 1.10)</text>
+<text x="182" y="80" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Моргана</text>
+<rect x="190" y="68" width="322.7" height="16" fill="#7fb3c8" rx="3"/>
+<text x="520.7" y="80" fill="#9aa7b1" font-size="11" font-family="sans-serif">0.797  (Д 1.05 / И 1.10)</text>
+<text x="182" y="106" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Асоледа</text>
+<rect x="190" y="94" width="321.3" height="16" fill="#7fb3c8" rx="3"/>
+<text x="519.3" y="106" fill="#9aa7b1" font-size="11" font-family="sans-serif">0.793  (Д 1.15 / И 1.00)</text>
+<text x="182" y="132" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Паппенхаймер</text>
+<rect x="190" y="120" width="308.1" height="16" fill="#7fb3c8" rx="3"/>
+<text x="506.1" y="132" fill="#9aa7b1" font-size="11" font-family="sans-serif">0.761  (Д 1.05 / И 1.05)</text>
+<text x="182" y="158" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Гнев Пророка</text>
+<rect x="190" y="146" width="307.4" height="16" fill="#7fb3c8" rx="3"/>
+<text x="505.4" y="158" fill="#9aa7b1" font-size="11" font-family="sans-serif">0.759  (Д 1.00 / И 1.10)</text>
+<text x="182" y="184" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Стокката</text>
+<rect x="190" y="172" width="293.4" height="16" fill="#7fb3c8" rx="3"/>
+<text x="491.4" y="184" fill="#9aa7b1" font-size="11" font-family="sans-serif">0.724  (Д 1.05 / И 1.00)</text>
+<text x="182" y="210" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Саксенфедер</text>
+<rect x="190" y="198" width="293.4" height="16" fill="#7fb3c8" rx="3"/>
+<text x="491.4" y="210" fill="#9aa7b1" font-size="11" font-family="sans-serif">0.724  (Д 1.05 / И 1.00)</text>
+<text x="182" y="236" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Бретта</text>
+<rect x="190" y="224" width="279.4" height="16" fill="#7fb3c8" rx="3"/>
+<text x="477.4" y="236" fill="#9aa7b1" font-size="11" font-family="sans-serif">0.690  (Д 1.00 / И 1.00)</text>
+</svg></p>
+<p><svg viewBox="0 0 720 264" width="100%" role="img" aria-label="Сабли и тесаки под быстрый удар (баланс 2)">
+<rect x="0" y="0" width="720" height="264" fill="#151c22" rx="8"/>
+<text x="16" y="20" fill="#e6e2d8" font-size="13" font-family="sans-serif">Сабли и тесаки под быстрый удар (баланс 2)</text>
+<text x="16" y="34" fill="#9aa7b1" font-size="11" font-family="sans-serif">при балансе 2.0, вес 3.00</text>
+<text x="182" y="54" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Скимитар</text>
+<rect x="190" y="42" width="338.1" height="16" fill="#7fb3c8" rx="3"/>
+<text x="536.1" y="54" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.328  (Д 1.05 / И 1.10)</text>
+<text x="182" y="80" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Шамшир</text>
+<rect x="190" y="68" width="338.1" height="16" fill="#7fb3c8" rx="3"/>
+<text x="536.1" y="80" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.328  (Д 1.10 / И 1.05)</text>
+<text x="182" y="106" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Сторта</text>
+<rect x="190" y="94" width="338.1" height="16" fill="#7fb3c8" rx="3"/>
+<text x="536.1" y="106" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.328  (Д 1.05 / И 1.10)</text>
+<text x="182" y="132" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Катана</text>
+<rect x="190" y="120" width="322.0" height="16" fill="#7fb3c8" rx="3"/>
+<text x="520.0" y="132" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.265  (Д 1.00 / И 1.10)</text>
+<text x="182" y="158" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Офицерский катлас</text>
+<rect x="190" y="146" width="319.8" height="16" fill="#7fb3c8" rx="3"/>
+<text x="517.8" y="158" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.256  (Д 0.95 / И 1.15)</text>
+<text x="182" y="184" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Катлас</text>
+<rect x="190" y="172" width="307.4" height="16" fill="#7fb3c8" rx="3"/>
+<text x="505.4" y="184" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.207  (Д 1.00 / И 1.05)</text>
+<text x="182" y="210" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Морская сабля</text>
+<rect x="190" y="198" width="307.4" height="16" fill="#7fb3c8" rx="3"/>
+<text x="505.4" y="210" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.207  (Д 1.00 / И 1.05)</text>
+<text x="182" y="236" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Мадонна</text>
+<rect x="190" y="224" width="303.0" height="16" fill="#7fb3c8" rx="3"/>
+<text x="501.0" y="236" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.190  (Д 0.90 / И 1.15)</text>
+</svg></p>
+<p><svg viewBox="0 0 720 264" width="100%" role="img" aria-label="Палаши и топоры под быстрый удар (баланс 2)">
+<rect x="0" y="0" width="720" height="264" fill="#151c22" rx="8"/>
+<text x="16" y="20" fill="#e6e2d8" font-size="13" font-family="sans-serif">Палаши и топоры под быстрый удар (баланс 2)</text>
+<text x="16" y="34" fill="#9aa7b1" font-size="11" font-family="sans-serif">при балансе 2.0, вес 3.75</text>
+<text x="182" y="54" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Нарвал</text>
+<rect x="190" y="42" width="338.1" height="16" fill="#7fb3c8" rx="3"/>
+<text x="536.1" y="54" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.141  (Д 1.05 / И 1.05)</text>
+<text x="182" y="80" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Танат</text>
+<rect x="190" y="68" width="337.3" height="16" fill="#7fb3c8" rx="3"/>
+<text x="535.3" y="80" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.138  (Д 1.00 / И 1.10)</text>
+<text x="182" y="106" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Меч Стража</text>
+<rect x="190" y="94" width="337.3" height="16" fill="#7fb3c8" rx="3"/>
+<text x="535.3" y="106" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.138  (Д 1.00 / И 1.10)</text>
+<text x="182" y="132" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Бартакс</text>
+<rect x="190" y="120" width="335.0" height="16" fill="#7fb3c8" rx="3"/>
+<text x="533.0" y="132" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.131  (Д 0.95 / И 1.15)</text>
+<text x="182" y="158" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Топор викинга</text>
+<rect x="190" y="146" width="335.0" height="16" fill="#7fb3c8" rx="3"/>
+<text x="533.0" y="158" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.131  (Д 0.95 / И 1.15)</text>
+<text x="182" y="184" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Валлонская шпага</text>
+<rect x="190" y="172" width="322.0" height="16" fill="#7fb3c8" rx="3"/>
+<text x="520.0" y="184" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.087  (Д 1.05 / И 1.00)</text>
+<text x="182" y="210" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Кханда</text>
+<rect x="190" y="198" width="317.4" height="16" fill="#7fb3c8" rx="3"/>
+<text x="515.4" y="210" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.071  (Д 0.90 / И 1.15)</text>
+<text x="182" y="236" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Секира</text>
+<rect x="190" y="224" width="317.4" height="16" fill="#7fb3c8" rx="3"/>
+<text x="515.4" y="236" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.071  (Д 0.90 / И 1.15)</text>
+</svg></p>
+<p><svg viewBox="0 0 720 264" width="100%" role="img" aria-label="Палаши и топоры под пробивающий удар (баланс 2)">
+<rect x="0" y="0" width="720" height="264" fill="#151c22" rx="8"/>
+<text x="16" y="20" fill="#e6e2d8" font-size="13" font-family="sans-serif">Палаши и топоры под пробивающий удар (баланс 2)</text>
+<text x="16" y="34" fill="#9aa7b1" font-size="11" font-family="sans-serif">при балансе 2.0, вес 3.75</text>
+<text x="182" y="54" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Томагавк</text>
+<rect x="190" y="42" width="338.1" height="16" fill="#d97b6c" rx="3"/>
+<text x="536.1" y="54" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.807  (Д 0.70 / И 1.10)</text>
+<text x="182" y="80" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Годендаг</text>
+<rect x="190" y="68" width="291.1" height="16" fill="#d97b6c" rx="3"/>
+<text x="489.1" y="80" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.556  (Д 0.85 / И 1.15)</text>
+<text x="182" y="106" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Макуауитль</text>
+<rect x="190" y="94" width="278.4" height="16" fill="#d97b6c" rx="3"/>
+<text x="476.4" y="106" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.488  (Д 0.85 / И 1.10)</text>
+<text x="182" y="132" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Кханда</text>
+<rect x="190" y="120" width="274.9" height="16" fill="#d97b6c" rx="3"/>
+<text x="472.9" y="132" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.469  (Д 0.90 / И 1.15)</text>
+<text x="182" y="158" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Секира</text>
+<rect x="190" y="146" width="274.9" height="16" fill="#d97b6c" rx="3"/>
+<text x="472.9" y="158" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.469  (Д 0.90 / И 1.15)</text>
+<text x="182" y="184" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Бартакс</text>
+<rect x="190" y="172" width="260.4" height="16" fill="#d97b6c" rx="3"/>
+<text x="458.4" y="184" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.392  (Д 0.95 / И 1.15)</text>
+<text x="182" y="210" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Топор викинга</text>
+<rect x="190" y="198" width="260.4" height="16" fill="#d97b6c" rx="3"/>
+<text x="458.4" y="210" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.392  (Д 0.95 / И 1.15)</text>
+<text x="182" y="236" fill="#e6e2d8" font-size="12" text-anchor="end" font-family="sans-serif">Офицерский палаш</text>
+<rect x="190" y="224" width="237.8" height="16" fill="#d97b6c" rx="3"/>
+<text x="435.8" y="236" fill="#9aa7b1" font-size="11" font-family="sans-serif">1.271  (Д 0.95 / И 1.05)</text>
+</svg></p>
+<h3>Ответ для шпаги и рапиры: баланс к нулю <code>[код]</code></h3>
+<table>
+<thead>
+<tr>
+<th>Клинок</th>
+<th>Д / И</th>
+<th>обычный, B = 0</th>
+<th>обычный, B = 2</th>
+<th>быстрый, B = 0</th>
+<th>быстрый, B = 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Асоледа</td>
+<td>1.15 / 1.00</td>
+<td><strong>1.403</strong></td>
+<td>0.897</td>
+<td>0.586</td>
+<td>0.793</td>
+</tr>
+<tr>
+<td>Бретта</td>
+<td>1.00 / 1.00</td>
+<td><strong>1.22</strong></td>
+<td>0.78</td>
+<td>0.51</td>
+<td>0.69</td>
+</tr>
+<tr>
+<td>Смоллсворд</td>
+<td>0.95 / 1.00</td>
+<td><strong>1.159</strong></td>
+<td>0.741</td>
+<td>0.484</td>
+<td>0.655</td>
+</tr>
+<tr>
+<td>Моргана</td>
+<td>1.05 / 1.10</td>
+<td><strong>1.165</strong></td>
+<td>0.745</td>
+<td>0.589</td>
+<td>0.797</td>
+</tr>
+</tbody>
+</table>
+<p>Читается так: у лёгкого клинка обычный удар (<code>force</code>, формула <code>L/C</code>) настолько сильнее остальных, что <strong>ослабленный балансом обычный удар всё равно бьёт больнее, чем усиленный балансом быстрый</strong>. Асоледа при балансе 0 даёт 1.403 против 0.793 у быстрого удара при балансе 2 — разница почти вдвое <code>[код]</code>.</p>
+<p>Практический вывод по коду:</p>
+<ol>
+<li><strong>Берите баланс 0.0–0.3.</strong> Именно он усиливает обычный удар и финт — два удара, на которых лёгкий класс и построен <code>[код]</code> <code>[сверка]</code> (форумная рекомендация «рапира с балансом 0.0–0.3» совпадает).</li>
+<li><strong>Длина важнее кривизны.</strong> Обычный удар считается как <code>L/C</code>: нужен длинный и прямой клинок. Лучшие лёгкие по геометрии — Асоледа (1.15 / 1.00), затем Стокката и Саксенфедер (1.05 / 1.00), Бретта (1.00 / 1.00) <code>[код]</code>.</li>
+<li><strong>Обычный удар ещё и самый дешёвый по энергии</strong> — 7.0 против 10.0 у быстрого и 18.0 у кругового <code>[код]</code> <code>LAi_fightparams.c:447-495</code>. Стиль «баланс 0 + обычные удары» выгоден дважды.</li>
+<li><strong>Баланс 2 у рапиры — испорченная рапира.</strong> Он усиливает быстрый и пробивающий, но у лёгкого класса быстрый режется коэффициентом 0.6, а пробивающий — делителем <code>0.7/L</code>: чем длиннее клинок, тем хуже он пробивает <code>[код]</code>.</li>
+<li><strong>Исключение — противник, который держит блок.</strong> Пробивающий удар при блоке даёт фиксированный <code>kAttackDmg = 1.0</code> мимо всех формул, то есть параметры клинка в этот момент не важны совсем <code>[код]</code> <code>LAi_fightparams.c:155-157</code>. Против «блокеров» переключайтесь на пробивающий, не меняя клинок.</li>
+</ol>
+<h3>Ловушка автоподбора оружия <code>[код]</code> <code>characters/characterUtilite.c:2207</code></h3>
+<pre><code>curBladeValue = (20 + (0.6*Attack + 0.4*Attack*(навык/100)*(1 + (1-B)*(B-1)/5))) / Weight
+</code></pre>
+<p>Множитель <code>1 + (1-B)(B-1)/5</code> = <code>1 - (B-1)²/5</code>: максимум <strong>1.00 при B = 1</strong>, минимум <strong>0.80 при B = 0 и B = 2</strong>. То есть встроенная оценка «лучшего клинка» считает лучшим ровно тот баланс, который в бою хуже всего, и вдобавок делит на вес. Отсюда известная жалоба, что офицер сам берёт палаш вместо выданной рапиры <code>[код]</code> <code>[сверка]</code> (форум: «функция определения лучшего клинка» — офицер перебирает инвентарь сам). Вывод: клинок офицеру выдавать вручную и проверять после боёв.</p>
+<h3>Сверка с внешними источниками</h3>
+<table>
+<thead>
+<tr>
+<th>Утверждение источника</th>
+<th>Источник</th>
+<th>Вердикт по коду</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«<code>bBlnce</code> = 0.85 при балансе 0.0, 1.0 при 1.0, 1.15 при 2.0»</td>
+<td>corsairslegacy.com, статья «Лучшее оружие»</td>
+<td><strong>совпадает точно</strong>: <code>0.85 + B/6.67</code> <code>[сверка]</code></td>
+</tr>
+<tr>
+<td>«Чем выше баланс, тем сильнее рубящие и пробивающие и слабее выпад и финт»</td>
+<td>corsairslegacy.com</td>
+<td><strong>совпадает</strong>: растут <code>fast</code> и <code>break</code>, падают <code>force</code> и <code>feint</code> <code>[сверка]</code></td>
+</tr>
+<tr>
+<td>«Чем больше баланс — тем лучше пробивающие, рубящие И КРУГОВЫЕ»</td>
+<td>форум (свод фишек)</td>
+<td><strong>частично неверно</strong>: круговой удар (<code>round</code>) от баланса не зависит вообще <code>[расхождение]</code></td>
+</tr>
+<tr>
+<td>«Ближе к 2 — сильнее рубящие, ближе к 0 — сильнее колющие (рапиры)»</td>
+<td>форум</td>
+<td><strong>совпадает</strong> <code>[сверка]</code></td>
+</tr>
+<tr>
+<td>«Чем больше баланс рапиры смещён к острию, тем она хуже как рапира»</td>
+<td>форум</td>
+<td><strong>совпадает</strong>: <code>force</code> теряет до 36 % <code>[сверка]</code></td>
+</tr>
+<tr>
+<td>«Рапира с балансом 0.0–0.3 для одиночных боёв»</td>
+<td>форум</td>
+<td><strong>совпадает с расчётом</strong> <code>[сверка]</code></td>
+</tr>
+<tr>
+<td>«При балансе около 2 финт почти бесполезен, 4–5 HP за удар»</td>
+<td>форум</td>
+<td><strong>объясняется кодом</strong>: <code>0.9/L/C * 0.78</code>, для длинного клинка это худший удар в наборе <code>[сверка]</code></td>
+</tr>
+<tr>
+<td>«Пробивающий удар часто слабее обычного даже при балансе 1.7»</td>
+<td>форум <code>[спорно]</code></td>
+<td><strong>подтверждается для лёгких клинков</strong>: <code>0.7/L</code> против <code>L/C</code> — пробивающий проигрывает обычному в разы; для тяжёлых наоборот <code>[сверка]</code></td>
+</tr>
+<tr>
+<td>«Вес и баланс каждого экземпляра случайны»</td>
+<td>форум, corsairslegacy</td>
+<td><strong>совпадает</strong>: <code>fRandSmall</code> в <code>initItems.c:3654-3670</code> <code>[сверка]</code></td>
+</tr>
+</tbody>
+</table>
+<p>Ни один внешний источник не описывает поведение кругового удара верно и ни один не упоминает ловушку автоподбора — эти два факта есть только в коде.</p>
+<h3>Как искать нужный экземпляр</h3>
+<ol>
+<li>Баланс виден в описании предмета, длина и кривизна — скрытые параметры, они постоянны для модели: таблица в разделе 12.3 <code>[код]</code>.</li>
+<li>Клинки лучшего качества (<code>EXCELLENT</code>) дают атаку 85–100 % от потолка класса (60 / 80 / 100), квестовые отличные — ровно потолок <code>[код]</code> <code>initItems.c:3670-3703</code>.</li>
+<li>Перебирать экземпляры проще всего у лавочника и в кладах: цена от баланса не зависит, поэтому «идеальный» клинок не дороже обычного <code>[код]</code>.</li>
+<li>Проверить параметры конкретного экземпляра в своём сохранении можно редактором сейвов: <code>sdedit.py</code> читает массив <code>Items</code> (<code>attack</code>, <code>balance</code>, <code>weight</code>, <code>lenght</code>, <code>curve</code>).</li>
+</ol>
+<h3>Источники</h3>
+<ul>
+<li>Код игры 1.7.3: <code>PROGRAM/Loc_ai/LAi_fightparams.c</code>, <code>PROGRAM/ITEMS/initItems.c</code>, <code>PROGRAM/characters/characterUtilite.c</code> — высший уровень достоверности <code>[код]</code>.</li>
+<li>Выгрузка массива <code>Items</code> из реального сохранения — проверка диапазона и шага баланса на живых данных.</li>
+<li>corsairslegacy.com, «Лучшее оружие Корсары: Каждому своё» — https://corsairslegacy.com/ru/article/best_weapon_sea_dogs_to_each_his_own</li>
+<li>Форум «Корсарская Гавань» и pirates-life.ru — практические наблюдения игроков, сведены в <code>TIPS.md</code>, раздел «Фехтование и оружие».</li>
+</ul>
+<!-- BALANCE-SECTION-END -->
+</main>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-27</footer>
+<script src="../assets/app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>

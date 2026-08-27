@@ -15,7 +15,7 @@
 <main class="wide">
 <h1>Провизия, здоровье, быт</h1>
 <p class="sub">164 пунктов</p>
-<a class="back" href="../tips.html">← все разделы фишек</a><ol start="1538">
+<a class="back" href="../tips.html">← все разделы фишек</a><ol start="1554">
 <li>У ГГ есть скрытая шкала самочувствия из 6 уровней: <code>GetHealthNum = makeint((HP + 9)/10)</code> → 1 УЖАСНОЕ, 2 ПЛОХОЕ, 3 НЕВАЖНОЕ, 4 СРЕДНЕЕ, 5 ХОРОШЕЕ, 6 ОТЛИЧНОЕ. [код] <code>RPGUtilite.c:2721-2731, 2747-2772</code> [подтверждено]</li>
 <li>Все ЛИЧНЫЕ навыки ГГ корректируются на <code>5*(GetHealthNum − 6)</code>, т.е. при «УЖАСНОМ» самочувствии это −25 ко всем личным навыкам. [код] <code>RPGUtilite.c:1191-1199</code> [подтверждено]</li>
 <li>Все SPECIAL-параметры ГГ корректируются на <code>GetHealthNum − 6</code> (до −5 при «УЖАСНОМ»), но только при сложности <code>MOD_SKILL_ENEMY_RATE &gt; 1</code>. [код] <code>RPGUtilite.c:236-241</code> [подтверждено]</li>
@@ -182,6 +182,6 @@
 <li>Эпидемия после абордажа длится до 14 дней и лечится лекарствами, освящением корабля или капелланом на борту. [форум] [подтверждено]</li>
 </ol>
 </main>
-<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-26</footer>
+<footer>Собрано из скриптов игры (версия 1.7.3 x64), Steam-руководств, форума Корсарской Гавани, pirates-life.ru, вики «Корсары», corsairslegacy.com · обновлено 2026-08-27</footer>
 <script src="../assets/app.js"></script>
 <script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("../sw.js"));</script></body></html>
