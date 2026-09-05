@@ -82,6 +82,11 @@ hr{border:0;border-top:1px solid var(--line);margin:28px 0}
 .tag.side{background:#22302a;color:var(--good);border-color:#33513c}
 .tag.mini,.tag.generator{background:#2c2530;color:#c3a3d0;border-color:#463a4e}
 .tag.stage{background:#2a2118;color:var(--warn)}
+/* достижения: значок порога счётчика и метка «не выдаётся».
+   У порога перенос разрешён: единица счёта бывает длинной («захваченных на
+   абордаже кораблей») и на телефоне не влезает в строку одним куском. */
+.tag.thr{background:#2a2118;color:var(--warn);border-color:#4a3a22;white-space:normal}
+.tag.dead{background:#33201c;color:var(--bad);border-color:#5e332b}
 .row{display:block;background:var(--card);border:1px solid var(--line);border-radius:8px;
   padding:12px 15px;margin:0 0 9px;color:var(--text)}
 .row:hover{border-color:var(--accent);text-decoration:none}
